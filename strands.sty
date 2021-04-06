@@ -1,0 +1,861 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{strands}[2021/04/04 Strands v1.0]
+
+% packages:
+\RequirePackage{tikz}
+\RequirePackage{xfp}
+\RequirePackage{xstring}
+\RequirePackage{xkeyval}
+
+\usetikzlibrary{snakes}
+
+\newcommand{\getelem}[3]{ % \getelem{list}{num}{\name} % get the "num"th element from "list" to "\name".
+	\StrBetween[#2,\fpeval{#2+1}]{,#1,}{,}{,}[#3]
+}
+
+% default options:
+\newcommand{\bending}{right} % left or right curvature of tangles.
+\newcommand{\bulletsize}{0.5mm}
+\newcommand{\curve}{45}
+\newcommand{\height}{1} % to set the height of strands.
+\newcommand{\norma}{0} % to normalize the height above.
+\newcommand{\normb}{0} % to normalize the height below.
+\newcommand{\normcolor}{transparent}
+\newcommand{\normsymbol}{-}
+\newcommand{\nstr}{0} % number of strands.
+\newcommand{\num}{0} % number of dots for arc partitions.
+\newcommand{\rotate}{0} % to rotate all pictures.
+\newcommand{\scale}{1} % to scale all pictures.
+\newcommand{\strwidth}{0.7} % to set the width of the strands.
+\newcommand{\tiebend}{0} % to set bending of ties.
+\newcommand{\tiecolor}{red} % to set color of the ties.
+\newcommand{\tieheight}{0.5} % height of ties respect to the global height.
+\newcommand{\tietype}{dashed} % to set the type of the tie lines.
+\newcommand{\tiewidth}{0.5} % to set the width of tie lines.
+\newcommand{\width}{0.6} % to set the width between strands.
+
+% declare custom options:
+\DeclareOptionX{bending}{\renewcommand{\bending}{#1}}
+\DeclareOptionX{bulletsize}{\renewcommand{\bulletsize}{#1}}
+\DeclareOptionX{curve}{\renewcommand{\curve}{#1}}
+\DeclareOptionX{height}{\renewcommand{\height}{#1}}
+\DeclareOptionX{norma}{\renewcommand{\norma}{#1}}
+\DeclareOptionX{normb}{\renewcommand{\normb}{#1}}
+\DeclareOptionX{normcolor}{\renewcommand{\normcolor}{#1}}
+\DeclareOptionX{nstr}{\renewcommand{\nstr}{#1}}
+\DeclareOptionX{num}{\renewcommand{\num}{#1}}
+\DeclareOptionX{rotate}{\renewcommand{\rotate}{#1}}
+\DeclareOptionX{scale}{\renewcommand{\scale}{#1}}
+\DeclareOptionX{strwidth}{\renewcommand{\strwidth}{#1}}
+\DeclareOptionX{tiebend}{\renewcommand{\tiebend}{#1}}
+\DeclareOptionX{tiecolor}{\renewcommand{\tiecolor}{#1}}
+\DeclareOptionX{tietype}{\renewcommand{\tietype}{#1}}
+\DeclareOptionX{tiewidth}{\renewcommand{\tiewidth}{#1}}
+\DeclareOptionX{width}{\renewcommand{\width}{#1}}
+\DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
+\ProcessOptionsX\relax
+
+% \vvpartition  - macro to draw set partitions in the partition monoid (with tikz environment).
+
+% Example: the set partition {1,2}{3,-4}{4,-3} of [2*4] is drawn as follows: 
+
+% \begin{tikzpicture} \vvpartition[<options>]{{1,2},{3,-4},{4,-3}} \end{\tikzpicture}
+
+%  1   2   3   4
+%  |   |   |   |
+%  -----    - -
+%            -
+%           - -
+%          |   |
+%  5   6   7   8
+
+\makeatletter
+\define@cmdkey[str]{vvpart}{bending}{}
+\define@cmdkey[str]{vvpart}{bulla}{}
+\define@cmdkey[str]{vvpart}{bullb}{}
+\define@cmdkey[str]{vvpart}{floor}{}
+\define@cmdkey[str]{vvpart}{font}{}
+\define@cmdkey[str]{vvpart}{height}{}
+\define@cmdkey[str]{vvpart}{negt}{}
+\define@cmdkey[str]{vvpart}{norma}{}
+\define@cmdkey[str]{vvpart}{normb}{}
+\define@cmdkey[str]{vvpart}{nstr}{}
+\define@cmdkey[str]{vvpart}{permut}{}
+\define@cmdkey[str]{vvpart}{strwidth}{}
+\define@cmdkey[str]{vvpart}{type}{}
+\define@cmdkey[str]{vvpart}{width}{}
+
+\presetkeys[str]{vvpart}{
+	bending=\bending, % use left or right to change the bending of the tangles.
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor*height.
+	font=\tiny, % size of font for labels (does it work?).
+	height=\height, % height of the strands.
+	negt=0, % use 1 to reflect the connections vertically (to use with \aarcpartition).
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	nstr=\nstr, % number of strands.
+	permut=0, % use 1 to draw permutations (to use with \ppermutation).
+	strwidth=\strwidth, % set the width of the strands.
+	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
+	width=\width % width between strands.
+}{}
+
+\newcommand{\vvpartition}[2][
+	bending=\bending,
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\tiny,
+	height=\height,
+	negt=0,
+	norma=\norma,
+	normb=\normb,
+	nstr=\nstr,
+	permut=0,
+	strwidth=\strwidth,
+	type=3,
+	width=\width
+]{
+	\setkeys[str]{vvpart}{#1}
+	\node[\normcolor]at(0,\cmdstr@vvpart@norma){\normsymbol};
+	\node[\normcolor]at(0,\cmdstr@vvpart@normb){\normsymbol};
+	\StrRemoveBraces{#2}[\nobracespart] % remove braces.
+	\let\oldnumstrands\cmdstr@vvpart@nstr
+	\renewcommand{\cmdstr@vvpart@nstr} % compute number of strands.
+	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
+	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{ % to draw bullets and their labels.
+		\ifnum \cmdstr@vvpart@bulla=1 % to draw bullets above.
+			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
+			\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height})
+			circle(\bulletsize);
+		\fi
+		\ifnum \cmdstr@vvpart@bullb=1 % to draw bullets below.
+			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
+			\cmdstr@vvpart@floor*\cmdstr@vvpart@height)circle(\bulletsize);
+		\fi
+		\ifnum \cmdstr@vvpart@type<5; % to label classic bullets.
+			\ifnum \cmdstr@vvpart@type=-1 % to label bullets below from 1 to n.
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					{$\fpeval{\ind+1}$};
+			\fi
+			\ifnum \cmdstr@vvpart@type>0 % to label bullets above from 1 to n.
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
+					{$\fpeval{\ind+1}$};
+			\fi
+			\ifnum \cmdstr@vvpart@type=2 % to label bullets below from 1 to n.
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					{$\fpeval{\ind+1}$};
+			\fi
+			\ifnum \cmdstr@vvpart@type=3 % to label bullets below from n+1 to 2n.
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					{$\fpeval{\ind+\cmdstr@vvpart@nstr+1}$};
+			\fi
+			\ifnum \cmdstr@vvpart@type=4 % to label bullets below from 1' to n'.
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*height-0.2})
+					{$\fpeval{\ind+1}'$};
+			\fi
+		\fi
+		\ifnum \cmdstr@vvpart@type=5 % to label signed partitions from -n/2 to n/2 (n must be even).
+			\ifnum\ind<\fpeval{\cmdstr@vvpart@nstr/2}
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
+					{$\fpeval{\ind+1}$};
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width-0.03},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
+					{-$\fpeval{\cmdstr@vvpart@nstr/2-\ind}$};
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					{$\fpeval{\ind+\cmdstr@vvpart@nstr/2+1}$};
+				\node[font=\cmdstr@vvpart@font]at
+					(\fpeval{\ind*\cmdstr@vvpart@width-0.03},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					{-$\fpeval{\cmdstr@vvpart@nstr-\ind}$};
+			\fi
+		\fi
+		\ifnum\cmdstr@vvpart@permut=1 % draw connection of a permutation.
+			\getelem{#2}{\fpeval{\ind+1}}{\index} 
+			\draw[line width=\cmdstr@vvpart@strwidth](\fpeval{\ind*\cmdstr@vvpart@width},
+			\fpeval{\cmdstr@vvpart@height+\cmdstr@vvpart@floor*\cmdstr@vvpart@height})to
+			(\fpeval{(\ifnum\fpeval{\index+0}>0 \index\else\fpeval{\ind+1}\fi-1)*
+			\cmdstr@vvpart@width},\cmdstr@vvpart@floor*\cmdstr@vvpart@height);
+		\fi
+	}
+	\ifnum\cmdstr@vvpart@permut=0 \foreach\block in{#2}{ % to draw connections.
+		\StrCount{\block}{,}[\numcom] % number of commas.
+		\ifnum\numcom>0\foreach\ind in {2,...,\fpeval{\numcom+1}}{
+			\getelem{\block}{\fpeval{\ind-1}}{\firbul}
+			\getelem{\block}{\ind}{\secbul}
+			\ifnum \cmdstr@vvpart@negt=1 % to reflect the connections vertically.
+				\let\oldfirbul\firbul
+				\renewcommand{\firbul}{-\oldfirbul}
+				\let\oldsecbul\secbul
+				\renewcommand{\secbul}{-\oldsecbul}
+			\fi
+			\draw[line width=\cmdstr@vvpart@strwidth]
+				(\fpeval{(abs(\firbul)-1)*\cmdstr@vvpart@width},\ifnum\firbul>0 
+				\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height}
+				\else\cmdstr@vvpart@floor*\cmdstr@vvpart@height
+			\fi)to[
+				bend \cmdstr@vvpart@bending=\ifnum \fpeval{\firbul*\secbul}>0
+				\fpeval{(\firbul/abs(\firbul))*((abs(\secbul)-abs(\firbul))/
+				abs(abs(\secbul)-abs(\firbul)))*\curve}\else0\fi
+			](\fpeval{(abs(\secbul)-1)*\cmdstr@vvpart@width},\ifnum\secbul>0
+				\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height}
+				\else\cmdstr@vvpart@floor*\cmdstr@vvpart@height
+			\fi);
+		}\fi
+	}\fi
+}
+
+% \vpartition  - macro to draw set partitions in the partition monoid (with no tikz environment).
+
+% Example: the set partition {1,2}{3,-4}{4,-3} of [2*4] is drawn as follows: 
+
+% \vvpartition[<options>]{{1,2},{3,-4},{4,-3}}
+
+%  1   2   3   4
+%  |   |   |   |
+%  -----    - -
+%            -
+%           - -
+%          |   |
+%  5   6   7   8
+
+\makeatletter
+\define@cmdkey[str]{vpart}{bending}{}
+\define@cmdkey[str]{vpart}{bulla}{}
+\define@cmdkey[str]{vpart}{bullb}{}
+\define@cmdkey[str]{vpart}{floor}{}
+\define@cmdkey[str]{vpart}{font}{}
+\define@cmdkey[str]{vpart}{height}{}
+\define@cmdkey[str]{vpart}{negt}{}
+\define@cmdkey[str]{vpart}{norma}{}
+\define@cmdkey[str]{vpart}{normb}{}
+\define@cmdkey[str]{vpart}{scale}{}
+\define@cmdkey[str]{vpart}{nstr}{}
+\define@cmdkey[str]{vpart}{permut}{}
+\define@cmdkey[str]{vpart}{rotate}{}
+\define@cmdkey[str]{vpart}{strwidth}{}
+\define@cmdkey[str]{vpart}{type}{}
+\define@cmdkey[str]{vpart}{width}{}
+
+\presetkeys[str]{vpart}{
+	bending=\bending, % use left or right to change the bending of the tangles.
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor*height.
+	font=\tiny, % size of font for labels (does it work?).
+	height=\height, % height of the strands.
+	negt=0, % use 1 to reflect the connections vertically (to use with \arcpartition).
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	nstr=\nstr, % number of strands.
+	permut=0, % use 1 to draw permutations (to use with \permutation).
+	rotate=\rotate, % to rotate the picture.
+	scale=\scale, % positive number to scale the picture (do not work for labels).
+	strwidth=\strwidth, % set the width of the strands.
+	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
+	width=\width % width between strands.
+}{}
+
+\newcommand{\vpartition}[2][
+	bending=\bending,
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\tiny,
+	height=\height,
+	negt=0,
+	norma=\norma,
+	normb=\normb,
+	nstr=\nstr,
+	permut=0,
+	rotate=\rotate,
+	scale=\scale,
+	strwidth=\strwidth,
+	type=3,
+	width=\width
+]{
+	\setkeys[str]{vpart}{#1}
+	\begin{tikzpicture}[
+		rotate=\cmdstr@vpart@rotate,
+		scale=\cmdstr@vpart@scale
+	]
+		\vvpartition[
+			bending=\cmdstr@vpart@bending,
+			bulla=\cmdstr@vpart@bulla,
+			bullb=\cmdstr@vpart@bullb,
+			floor=\cmdstr@vpart@floor,
+			font=\cmdstr@vpart@font,
+			height=\cmdstr@vpart@height,
+			negt=\cmdstr@vpart@negt,
+			norma=\cmdstr@vpart@norma,
+			normb=\cmdstr@vpart@normb,
+			nstr=\cmdstr@vpart@nstr,
+			permut=\cmdstr@vpart@permut,
+			strwidth=\cmdstr@vpart@strwidth,
+			type=\cmdstr@vpart@type,
+			width=\cmdstr@vpart@width
+		]{#2}
+	\end{tikzpicture}
+}
+
+% \aarcpartition  - macro to draw set partitions via arcs (with tikz environment).
+
+% Example: the set partition {1,4}{2,3,7} of [7] is drawn as follows: 
+
+% \begin{tikzpicture} \aarcpartition[<options>]{{1,4},{2,3,7}} \end{tikzpicture}
+
+%          -----------------
+%          |               |
+%  -------------           |
+%  |       |   |           |
+%  |   -----   |           |
+%  |   |   |   |           |
+%  1   2   3   4   5   6   7
+
+\makeatletter
+\define@cmdkey[str]{aapart}{bending}{}
+\define@cmdkey[str]{aapart}{bull}{}
+\define@cmdkey[str]{aapart}{floor}{}
+\define@cmdkey[str]{aapart}{font}{}
+\define@cmdkey[str]{aapart}{norma}{}
+\define@cmdkey[str]{aapart}{normb}{}
+\define@cmdkey[str]{aapart}{num}{}
+\define@cmdkey[str]{aapart}{strwidth}{}
+\define@cmdkey[str]{aapart}{type}{}
+\define@cmdkey[str]{aapart}{width}{}
+
+\presetkeys[str]{aapart}{
+	bending=\bending, % use left or right to change the bending of tangles.
+	bull=1, % use 1 to draw bullets, otherwise 0.
+	floor=0, % the picture starts at floor.
+	font=\tiny, % size of font for labels (does it work?).
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	num=\num, % number of dots.
+	strwidth=\strwidth, % set the width of the strands.
+	type=1, % 0 with no labels | 1 with labels below.
+	width=\width % width between dots.
+}{}
+
+\newcommand{\aarcpartition}[2][
+	bending=\bending,
+	bull=1,
+	floor=0,
+	font=\tiny,
+	norma=\norma,
+	normb=\normb,
+	num=\num,
+	strwidth=\strwidth,
+	type=1,
+	width=\width
+]{
+	\setkeys[str]{aapart}{#1}
+	\vvpartition[
+		bending=\cmdstr@aapart@bending,
+		bulla=0, % no bullets above.
+		bullb=\cmdstr@aapart@bull,
+		floor=\cmdstr@aapart@floor,
+		font=\cmdstr@aapart@font,
+		negt=1, % put connections below.
+		norma=\cmdstr@aapart@norma,
+		normb=\cmdstr@aapart@normb,
+		nstr=\cmdstr@aapart@num,
+		strwidth=\cmdstr@aapart@strwidth,
+		type=-\cmdstr@aapart@type,
+		width=\cmdstr@aapart@width
+	]{#2}
+}
+
+% \arcpartition  - macro to draw set partitions via arcs (with no tikz environment).
+
+% Example: the set partition {1,4}{2,3,7} of [7] is drawn as follows: 
+
+% \arcpartition[<options>]{{1,4},{2,3,7}}
+
+%          -----------------
+%          |               |
+%  -------------           |
+%  |       |   |           |
+%  |   -----   |           |
+%  |   |   |   |           |
+%  1   2   3   4   5   6   7
+
+\makeatletter
+\define@cmdkey[str]{apart}{bending}{}
+\define@cmdkey[str]{apart}{bull}{}
+\define@cmdkey[str]{apart}{floor}{}
+\define@cmdkey[str]{apart}{font}{}
+\define@cmdkey[str]{apart}{norma}{}
+\define@cmdkey[str]{apart}{normb}{}
+\define@cmdkey[str]{apart}{num}{}
+\define@cmdkey[str]{apart}{rotate}{}
+\define@cmdkey[str]{apart}{scale}{}
+\define@cmdkey[str]{apart}{strwidth}{}
+\define@cmdkey[str]{apart}{type}{}
+\define@cmdkey[str]{apart}{width}{}
+
+\presetkeys[str]{apart}{
+	bending=\bending, % use left or right to change the bending of tangles.
+	bull=1, % use 1 to draw bullets, otherwise 0.
+	floor=0, % the picture starts at floor.
+	font=\tiny, % size of font for labels (does it work?).
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	num=\num, % number of dots.
+	rotate=\rotate, % to rotate the picture.
+	scale=\scale, % positive number to scale the picture (do not work for labels).
+	strwidth=\strwidth, % set the width of the strands.
+	type=1, % 0 with no labels | 1 with labels below.
+	width=\width % width between dots.
+}{}
+
+\newcommand{\arcpartition}[2][
+	bending=\bending,
+	bull=1,
+	floor=0,
+	font=\tiny,
+	norma=\norma,
+	normb=\normb,
+	num=\num,
+	rotate=\rotate,
+	scale=\scale,
+	strwidth=\strwidth,
+	type=1,
+	width=\width
+]{
+	\setkeys[str]{apart}{#1}
+	\vpartition[
+		bending=\cmdstr@apart@bending,
+		bulla=0, % no bullets above.
+		bullb=\cmdstr@apart@bull,
+		floor=\cmdstr@apart@floor,
+		font=\cmdstr@apart@font,
+		negt=1, % put connections below.
+		norma=\cmdstr@apart@norma,
+		normb=\cmdstr@apart@normb,
+		nstr=\cmdstr@apart@num,
+		rotate=\cmdstr@apart@rotate,
+		scale=\cmdstr@apart@scale,
+		strwidth=\cmdstr@apart@strwidth,
+		type=-\cmdstr@apart@type,
+		width=\cmdstr@apart@width
+	]{#2}
+}
+
+% \ppermutation  - macro to draw permutations by lines (with tikz environment).
+
+% Example: the permutation 2134 of [4] is drawn as follows: 
+
+% \begin{tikzpicture} \ppermutation[<options>]{2,1,3,4} \end{tikzpicture}
+
+%  1   2   3   4
+%  |   |   |   |
+%   - -    |   |
+%    -     |   |
+%   - -    |   |
+%  |   |   |   |
+%  1   2   3   4
+
+\makeatletter
+\define@cmdkey[str]{pperm}{bulla}{}
+\define@cmdkey[str]{pperm}{bullb}{}
+\define@cmdkey[str]{pperm}{floor}{}
+\define@cmdkey[str]{pperm}{font}{}
+\define@cmdkey[str]{pperm}{height}{}
+\define@cmdkey[str]{pperm}{norma}{}
+\define@cmdkey[str]{pperm}{normb}{}
+\define@cmdkey[str]{pperm}{nstr}{}
+\define@cmdkey[str]{pperm}{strwidth}{}
+\define@cmdkey[str]{pperm}{type}{}
+\define@cmdkey[str]{pperm}{width}{}
+
+\presetkeys[str]{pperm}{
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor.
+	font=\tiny, % size of font for labels (does it work?).
+	height=\height, % height of the strands.
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	nstr=\nstr, % number of dots.
+	strwidth=\strwidth, % set the width of the strands.
+	type=2, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
+	width=\width % width between dots.
+}{}
+
+\newcommand{\ppermutation}[2][
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\tiny,
+	height=\height,
+	norma=\norma,
+	normb=\normb,
+	nstr=\nstr,
+	strwidth=\strwidth,
+	type=2,
+	width=\width
+]{
+	\setkeys[str]{pperm}{#1}
+	\ifnum\cmdstr@pperm@type>2 \renewcommand{\cmdstr@pperm@type}{5}\fi % renumerate type.
+	\vvpartition[
+		bulla=\cmdstr@pperm@bulla,
+		bullb=\cmdstr@pperm@bullb,
+		floor=\cmdstr@pperm@floor,
+		font=\cmdstr@pperm@font,
+		height=\cmdstr@pperm@height,
+		norma=\cmdstr@pperm@norma,
+		normb=\cmdstr@pperm@normb,
+		nstr=\cmdstr@pperm@nstr,
+		permut=1, % permutation.
+		strwidth=\cmdstr@pperm@strwidth,
+		type=\cmdstr@pperm@type, % renumerated labels.
+		width=\cmdstr@pperm@width
+	]{#2}
+}
+
+% \permutation  - macro to draw permutations by lines (with no tikz environment).
+
+% Example: the permutation 2134 of [4] is drawn as follows:
+
+% \permutation[<options>]{2,1,3,4}
+
+%  1   2   3   4
+%  |   |   |   |
+%   - -    |   |
+%    -     |   |
+%   - -    |   |
+%  |   |   |   |
+%  1   2   3   4
+
+\makeatletter
+\define@cmdkey[str]{perm}{bulla}{}
+\define@cmdkey[str]{perm}{bullb}{}
+\define@cmdkey[str]{perm}{floor}{}
+\define@cmdkey[str]{perm}{font}{}
+\define@cmdkey[str]{perm}{height}{}
+\define@cmdkey[str]{perm}{norma}{}
+\define@cmdkey[str]{perm}{normb}{}
+\define@cmdkey[str]{perm}{nstr}{}
+\define@cmdkey[str]{perm}{scale}{}
+\define@cmdkey[str]{perm}{strwidth}{}
+\define@cmdkey[str]{perm}{type}{}
+\define@cmdkey[str]{perm}{width}{}
+
+\presetkeys[str]{perm}{
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor.
+	font=\tiny, % size of font for labels (does it work?).
+	height=\height, % height of the strands.
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	nstr=\nstr, % number of dots.
+	scale=\scale, % positive number to scale the picture (do not work for labels).
+	strwidth=\strwidth, % set the width of the strands.
+	type=2, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
+	width=\width % width between dots.
+}{}
+
+\newcommand{\permutation}[2][
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\tiny,
+	height=\height,
+	norma=\norma,
+	normb=\normb,
+	nstr=\nstr,
+	scale=\scale,
+	strwidth=\strwidth,
+	type=2,
+	width=\width
+]{
+	\setkeys[str]{perm}{#1}
+	\ifnum\cmdstr@perm@type>2 \renewcommand{\cmdstr@perm@type}{5}\fi % renumerate type.
+	\vpartition[
+		bulla=\cmdstr@perm@bulla,
+		bullb=\cmdstr@perm@bullb,
+		floor=\cmdstr@perm@floor,
+		font=\cmdstr@perm@font,
+		height=\cmdstr@perm@height,
+		norma=\cmdstr@perm@norma,
+		normb=\cmdstr@perm@normb,
+		nstr=\cmdstr@perm@nstr,
+		permut=1, % permutation.
+		scale=\cmdstr@perm@scale,
+		strwidth=\cmdstr@perm@strwidth,
+		type=\cmdstr@perm@type,
+		width=\cmdstr@perm@width
+	]{#2}
+}
+
+% \ttiedpair  - macro to draw a tied permutation as a pair (with tikz environment).
+
+% Example: the permutation ({2,4},2134) of [4] is drawn as follows:
+
+% \begin{tikzpicture} \tiedpair[<options>]{{2,4}}{2,1,3,4} \end{tikzpicture}
+
+%      2       4
+%      ---------
+%  1   |   3   |
+%  |   |   |   |
+%   - -    |   |
+%    -     |   |
+%   - -    |   |
+%  |   |   |   |
+%  1   2   3   4
+
+\makeatletter
+\define@cmdkey[str]{ttpair}{above}{}
+\define@cmdkey[str]{ttpair}{bending}{}
+\define@cmdkey[str]{ttpair}{bulla}{}
+\define@cmdkey[str]{ttpair}{bullb}{}
+\define@cmdkey[str]{ttpair}{floor}{}
+\define@cmdkey[str]{ttpair}{font}{}
+\define@cmdkey[str]{ttpair}{height}{}
+\define@cmdkey[str]{ttpair}{norma}{}
+\define@cmdkey[str]{ttpair}{normb}{}
+\define@cmdkey[str]{ttpair}{nstr}{}
+\define@cmdkey[str]{ttpair}{strwidth}{}
+\define@cmdkey[str]{ttpair}{type}{}
+\define@cmdkey[str]{ttpair}{width}{}
+
+\presetkeys[str]{ttpair}{
+	above=1, % use 1 to put the ties above, otherwise 0.
+	bending=\bending, % use left or right to change the bending of tangles.
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor.
+	font=\tiny, % size of font for labels (does it work?).
+	height=\height, % height of the strands.
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	nstr=\nstr, % number of dots.
+	strwidth=\strwidth, % set the width of the strands.
+	type=-1, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
+	width=\width % width between strands.
+}{}
+
+\newcommand{\ttiedpair}[3][
+	above=1,
+	bending=\bending,
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\tiny,
+	height=\height,
+	norma=\norma,
+	normb=\normb,
+	nstr=\nstr,
+	strwidth=\strwidth,
+	type=-1,
+	width=\width
+]{
+	\setkeys[str]{ttpair}{#1}
+	\ppermutation[
+		bulla=\cmdstr@ttpair@bulla,
+		bullb=\cmdstr@ttpair@bullb,
+		floor=\cmdstr@ttpair@floor,
+		font=\cmdstr@ttpair@font,
+		height=\cmdstr@ttpair@height,
+		norma=\cmdstr@ttpair@norma,
+		normb=\cmdstr@ttpair@normb,
+		nstr=\cmdstr@ttpair@nstr,
+		strwidth=\cmdstr@ttpair@strwidth,
+		type=\cmdstr@ttpair@type,
+		width=\cmdstr@ttpair@width
+	]{#2}
+	\aarcpartition[
+		bending=\cmdstr@ttpair@bending,
+		bull=0, % no bullets.
+		floor=\fpeval{\cmdstr@ttpair@floor+\cmdstr@ttpair@above*\cmdstr@ttpair@height},
+		type=0, % no labels.
+		strwidth=\cmdstr@ttpair@strwidth,
+		width=\cmdstr@ttpair@width
+	]{#3}
+}
+
+% \tiedpair  - macro to draw a tied permutation as a pair (with no tikz environment).
+
+% Example: the permutation ({2,4},2134) of [4] is drawn as follows:
+
+% \tiedpair[<options>]{{2,4}}{2,1,3,4}
+
+%      2       4
+%      ---------
+%  1   |   3   |
+%  |   |   |   |
+%   - -    |   |
+%    -     |   |
+%   - -    |   |
+%  |   |   |   |
+%  1   2   3   4
+
+\makeatletter
+\define@cmdkey[str]{tpair}{above}{}
+\define@cmdkey[str]{tpair}{bending}{}
+\define@cmdkey[str]{tpair}{bulla}{}
+\define@cmdkey[str]{tpair}{bullb}{}
+\define@cmdkey[str]{tpair}{floor}{}
+\define@cmdkey[str]{tpair}{font}{}
+\define@cmdkey[str]{tpair}{height}{}
+\define@cmdkey[str]{tpair}{norma}{}
+\define@cmdkey[str]{tpair}{normb}{}
+\define@cmdkey[str]{tpair}{nstr}{}
+\define@cmdkey[str]{tpair}{scale}{}
+\define@cmdkey[str]{tpair}{rotate}{}
+\define@cmdkey[str]{tpair}{strwidth}{}
+\define@cmdkey[str]{tpair}{type}{}
+\define@cmdkey[str]{tpair}{width}{}
+
+\presetkeys[str]{tpair}{
+	above=1, % use 1 to put the ties above, otherwise 0.
+	bending=\bending, % use left or right to change the bending of tangles.
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor.
+	font=\tiny, % size of font for labels (does it work?).
+	height=\height, % height of the strands.
+	norma=\norma, % point above to normalize height.
+	normb=\normb, % point below to normalize height.
+	nstr=\nstr, % number of dots.
+	rotate=\rotate, % to rotate the picture.
+	scale=\scale, % positive number to scale the picture (do not work for labels).
+	strwidth=\strwidth, % set the width of the strands.
+	type=-1, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
+	width=\width % width between strands.
+}{}
+
+\newcommand{\tiedpair}[3][
+	above=1,
+	bending=\bending,
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\tiny,
+	height=\height,
+	norma=\norma,
+	normb=\normb,
+	nstr=\nstr,
+	rotate=\rotate,
+	scale=\scale,
+	strwidth=\strwidth,
+	type=-1,
+	width=\width
+]{
+	\setkeys[str]{tpair}{#1}
+	\begin{tikzpicture}[
+		rotate=\cmdstr@tpair@rotate,
+		scale=\cmdstr@tpair@scale
+	]
+		\ttiedpair[
+			above=\cmdstr@tpair@above,
+			bending=\cmdstr@tpair@bending,
+			bulla=\cmdstr@tpair@bulla,
+			bullb=\cmdstr@tpair@bullb,
+			floor=\cmdstr@tpair@floor,
+			font=\cmdstr@tpair@font,
+			height=\cmdstr@tpair@height,
+			norma=\cmdstr@tpair@norma,
+			normb=\cmdstr@tpair@normb,
+			nstr=\cmdstr@tpair@nstr,
+			strwidth=\cmdstr@tpair@strwidth,
+			type=\cmdstr@tpair@type,
+			width=\cmdstr@tpair@width
+		]{#2}{#3}
+	\end{tikzpicture}
+}
+
+% \ttie  - macro to draw a tie (with tikz environment).
+
+% \begin{tikzpicture} \tie[height=1.5]{{1,0.8},{3,0.7},{4,0.8}} \end{tikzpicture}
+% \begin{tikzpicture} \tie[height=1.5]{1,2,5} \end{tikzpicture}
+
+\makeatletter
+\define@cmdkey[str]{ttie}{bull}{}
+\define@cmdkey[str]{ttie}{floor}{}
+\define@cmdkey[str]{ttie}{height}{}
+\define@cmdkey[str]{ttie}{tiebend}{}
+\define@cmdkey[str]{ttie}{tiecolor}{}
+\define@cmdkey[str]{ttie}{tieheight}{}
+\define@cmdkey[str]{ttie}{tietype}{}
+\define@cmdkey[str]{ttie}{tiewidth}{}
+\define@cmdkey[str]{ttie}{width}{}
+
+\presetkeys[str]{ttie}{
+	bull=1, % use 1 to use bullets, 0 otherwise.
+	floor=0, % the picture starts at floor*height.
+	height=\height, % height of the strands.
+	tiebend=\tiebend, % bending of the ties.
+	tiecolor=\tiecolor, % color of the ties.
+	tieheight=\tieheight, % height of the tie.
+	tietype=\tietype, % type of the tie (dashed, dotted, etc).
+	tiewidth=\tiewidth, % width of the tie line.
+	width=\width % width between strands.
+}{}
+
+\newcommand{\tie}[2][
+	bull=1,
+	floor=0,
+	height=\height,
+	tiebend=\tiebend,
+	tiecolor=\tiecolor,
+	tieheight=\tieheight,
+	tietype=\tietype,
+	tiewidth=\tiewidth,
+	width=\width,
+]{
+	\setkeys[str]{ttie}{#1}
+	\foreach\elem[count=\ind]in{#2}{
+		\StrRemoveBraces{\elem}[\nobrace]
+		\getelem{\nobrace}{1}{\elemwidth} % get width of elem.
+		\getelem{\nobrace}{2}{\elemheight} % get height of elem.
+		\StrCount{\nobrace}{,}[\elemcoms]
+		\ifnum\elemcoms=0 \renewcommand{\elemheight}{\cmdstr@ttie@tieheight}\fi % update height of elem.
+		\ifnum \cmdstr@ttie@bull=1
+			\filldraw[\cmdstr@ttie@tiecolor](\fpeval{(\elemwidth-1)*\cmdstr@ttie@width},
+				\fpeval{\elemheight*\cmdstr@ttie@height+\cmdstr@ttie@floor*\cmdstr@ttie@height})
+				circle(\bulletsize);
+		\fi
+		\ifnum\ind>1
+			\getelem{#2}{\fpeval{\ind-1}}{\prevelem}
+			\StrRemoveBraces{\prevelem}[\prevnobrace]
+			\getelem{\prevnobrace}{1}{\prevelemwidth}
+			\getelem{\prevnobrace}{2}{\prevelemheight}
+			\StrCount{\prevnobrace}{,}[\prevelemcoms]
+			\ifnum\prevelemcoms=0 \renewcommand{\prevelemheight}{\cmdstr@ttie@tieheight}\fi
+			\draw[
+				\cmdstr@ttie@tiecolor,
+				\cmdstr@ttie@tietype,
+				line width=\cmdstr@ttie@tiewidth,
+				bend right=\cmdstr@ttie@tiebend,
+				%snake=snake,
+				%segment amplitude=1,
+				%segment length=5,
+				%line after snake=0.5
+			]
+				(\fpeval{(\elemwidth-1)*\cmdstr@ttie@width},
+				\fpeval{\elemheight*\cmdstr@ttie@height+\cmdstr@ttie@floor*\cmdstr@ttie@height})to
+				(\fpeval{(\prevelemwidth-1)*\cmdstr@ttie@width},
+				\fpeval{\prevelemheight*\cmdstr@ttie@height+\cmdstr@ttie@floor*\cmdstr@ttie@height});
+		\fi
+	}
+}
