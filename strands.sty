@@ -128,26 +128,11 @@
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\vvpartition}[2][
-	bending=\cmdstr@strands@bending,
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\tiny,
-	height=\cmdstr@strands@height,
-	negt=0,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	nstr=\cmdstr@strands@nstr,
-	permut=0,
-	strwidth=\cmdstr@strands@strwidth,
-	type=3,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\vvpartition}[2][]{
 	\setkeys[str]{vvpart}{#1}
-	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol};
-	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol};
-	\StrRemoveBraces{#2}[\nobracespart] % remove braces.
+	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol}; % norm vertically.
+	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol}; % norm vertically.
+	\StrRemoveBraces{#2}[\nobracespart] % remove braces to compute number of strands.
 	\let\oldnumstrands\cmdstr@vvpart@nstr
 	\renewcommand{\cmdstr@vvpart@nstr} % compute number of strands.
 	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
@@ -299,24 +284,7 @@
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\vpartition}[2][
-	bending=\cmdstr@strands@bending,
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\tiny,
-	height=\cmdstr@strands@height,
-	negt=0,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	nstr=\cmdstr@strands@nstr,
-	permut=0,
-	rotate=\cmdstr@strands@rotate,
-	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth,
-	type=3,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\vpartition}[2][]{
 	\setkeys[str]{vpart}{#1}
 	\begin{tikzpicture}[
 		rotate=\cmdstr@vpart@rotate,
@@ -380,18 +348,7 @@
 	width=\cmdstr@strands@width % width between dots.
 }{}
 
-\newcommand{\aarcpartition}[2][
-	bending=\cmdstr@strands@bending,
-	bull=1,
-	floor=0,
-	font=\tiny,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	num=\cmdstr@strands@num,
-	strwidth=\cmdstr@strands@strwidth,
-	type=1,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\aarcpartition}[2][]{
 	\setkeys[str]{aapart}{#1}
 	\vvpartition[
 		bending=\cmdstr@aapart@bending,
@@ -452,20 +409,7 @@
 	width=\cmdstr@strands@width % width between dots.
 }{}
 
-\newcommand{\arcpartition}[2][
-	bending=\cmdstr@strands@bending,
-	bull=1,
-	floor=0,
-	font=\tiny,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	num=\cmdstr@strands@num,
-	rotate=\cmdstr@strands@rotate,
-	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth,
-	type=1,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\arcpartition}[2][]{
 	\setkeys[str]{apart}{#1}
 	\vpartition[
 		bending=\cmdstr@apart@bending,
@@ -526,19 +470,7 @@
 	width=\cmdstr@strands@width % width between dots.
 }{}
 
-\newcommand{\ppermutation}[2][
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\tiny,
-	height=\cmdstr@strands@height,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	nstr=\cmdstr@strands@nstr,
-	strwidth=\cmdstr@strands@strwidth,
-	type=2,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\ppermutation}[2][]{
 	\setkeys[str]{pperm}{#1}
 	\ifnum\cmdstr@pperm@type>2 \renewcommand{\cmdstr@pperm@type}{5}\fi % renumerate type.
 	\vvpartition[
@@ -600,20 +532,7 @@
 	width=\cmdstr@strands@width % width between dots.
 }{}
 
-\newcommand{\permutation}[2][
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\tiny,
-	height=\cmdstr@strands@height,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	nstr=\cmdstr@strands@nstr,
-	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth,
-	type=2,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\permutation}[2][]{
 	\setkeys[str]{perm}{#1}
 	\ifnum\cmdstr@perm@type>2 \renewcommand{\cmdstr@perm@type}{5}\fi % renumerate type.
 	\vpartition[
@@ -680,21 +599,7 @@
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\ttiedpair}[3][
-	above=1,
-	bending=\cmdstr@strands@bending,
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\tiny,
-	height=\cmdstr@strands@height,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	nstr=\cmdstr@strands@nstr,
-	strwidth=\cmdstr@strands@strwidth,
-	type=-1,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\ttiedpair}[3][]{
 	\setkeys[str]{ttpair}{#1}
 	\ppermutation[
 		bulla=\cmdstr@ttpair@bulla,
@@ -770,23 +675,7 @@
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\tiedpair}[3][
-	above=1,
-	bending=\cmdstr@strands@bending,
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\tiny,
-	height=\cmdstr@strands@height,
-	norma=\cmdstr@strands@norma,
-	normb=\cmdstr@strands@normb,
-	nstr=\cmdstr@strands@nstr,
-	rotate=\cmdstr@strands@rotate,
-	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth,
-	type=-1,
-	width=\cmdstr@strands@width
-]{
+\newcommand{\tiedpair}[3][]{
 	\setkeys[str]{tpair}{#1}
 	\begin{tikzpicture}[
 		rotate=\cmdstr@tpair@rotate,
@@ -838,17 +727,7 @@
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\tie}[2][
-	bull=1,
-	floor=0,
-	height=\cmdstr@strands@height,
-	tiebend=\cmdstr@strands@tiebend,
-	tiecolor=\cmdstr@strands@tiecolor,
-	tieheight=\cmdstr@strands@tieheight,
-	tietype=\cmdstr@strands@tietype,
-	tiewidth=\cmdstr@strands@tiewidth,
-	width=\cmdstr@strands@width,
-]{
+\newcommand{\tie}[2][]{
 	\setkeys[str]{ttie}{#1}
 	\foreach\elem[count=\ind]in{#2}{
 		\StrRemoveBraces{\elem}[\nobrace]
@@ -888,9 +767,7 @@
 
 % \ttiedpartition  - macro to draw a partition with ties (with tikz environment).
 
-\newcommand{\ttiedpartition}[3][
-
-]{
+\newcommand{\ttiedpartition}[3][]{
 	\ppermutation{1,2,3,4,5}
 	\tie{1,2,5}
 }
