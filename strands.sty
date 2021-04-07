@@ -15,11 +15,12 @@
 
 % global variables:
 \makeatletter
-\define@cmdkey[str]{strands}{bending}{}
+\define@cmdkey[str]{strands}{bend}{}
 \define@cmdkey[str]{strands}{bulletsize}{}
-\define@cmdkey[str]{strands}{curve}{}
 \define@cmdkey[str]{strands}{font}{}
 \define@cmdkey[str]{strands}{height}{}
+\define@cmdkey[str]{strands}{labelver}{}
+\define@cmdkey[str]{strands}{labelhor}{}
 \define@cmdkey[str]{strands}{norma}{}
 \define@cmdkey[str]{strands}{normb}{}
 \define@cmdkey[str]{strands}{normcolor}{}
@@ -38,11 +39,12 @@
 
 % default options:
 \presetkeys[str]{strands}{
-	bending=right, % left or right curvature of tangles.
+	bend=45,
 	bulletsize=0.5mm,
-	curve=45,
 	font=0.7, % size of the fonts for labels.
 	height=1, % to set the height of strands.
+	labelver=0.2,
+	labelhor=0.03,
 	norma=0, % to normalize the height above.
 	normb=0, % to normalize the height below.
 	normcolor=transparent,
@@ -52,7 +54,7 @@
 	rotate=0, % to rotate all pictures.
 	scale=1, % to scale all pictures.
 	strwidth=0.7, % to set the width of the strands.
-	tiebend=0, % to set bending of ties.
+	tiebend=0, % to set bend of ties.
 	tiecolor=red, % to set color of the ties.
 	tieheight=0.5, % height of ties respect to the global height.
 	tietype=dashed, % to set the type of the tie lines.
@@ -63,11 +65,12 @@
 \setkeys[str]{strands}{}
 
 % declare custom options:
-\DeclareOptionX{bending}{\renewcommand{\cmdstr@strands@bending}{#1}}
+\DeclareOptionX{bend}{\renewcommand{\cmdstr@strands@bend}{#1}}
 \DeclareOptionX{bulletsize}{\renewcommand{\cmdstr@strands@bulletsize}{#1}}
-\DeclareOptionX{curve}{\renewcommand{\cmdstr@strands@curve}{#1}}
 \DeclareOptionX{font}{\renewcommand{\cmdstr@strands@font}{#1}}
 \DeclareOptionX{height}{\renewcommand{\cmdstr@strands@height}{#1}}
+\DeclareOptionX{labelver}{\renewcommand{\cmdstr@strands@labelver}{#1}}
+\DeclareOptionX{labelhor}{\renewcommand{\cmdstr@strands@labelhor}{#1}}
 \DeclareOptionX{norma}{\renewcommand{\cmdstr@strands@norma}{#1}}
 \DeclareOptionX{normb}{\renewcommand{\cmdstr@strands@normb}{#1}}
 \DeclareOptionX{normcolor}{\renewcommand{\cmdstr@strands@normcolor}{#1}}
@@ -99,33 +102,37 @@
 %  5   6   7   8
 
 \makeatletter
-\define@cmdkey[str]{vvpart}{bending}{}
+\define@cmdkey[str]{vvpart}{bend}{}
 \define@cmdkey[str]{vvpart}{bulla}{}
 \define@cmdkey[str]{vvpart}{bullb}{}
 \define@cmdkey[str]{vvpart}{floor}{}
 \define@cmdkey[str]{vvpart}{font}{}
 \define@cmdkey[str]{vvpart}{height}{}
-\define@cmdkey[str]{vvpart}{negt}{}
+\define@cmdkey[str]{vvpart}{labelver}{}
+\define@cmdkey[str]{vvpart}{labelhor}{}
 \define@cmdkey[str]{vvpart}{norma}{}
 \define@cmdkey[str]{vvpart}{normb}{}
 \define@cmdkey[str]{vvpart}{nstr}{}
 \define@cmdkey[str]{vvpart}{permut}{}
+\define@cmdkey[str]{vvpart}{reflect}{}
 \define@cmdkey[str]{vvpart}{strwidth}{}
 \define@cmdkey[str]{vvpart}{type}{}
 \define@cmdkey[str]{vvpart}{width}{}
 
 \presetkeys[str]{vvpart}{
-	bending=\cmdstr@strands@bending, % use left or right to change the bending of the tangles.
+	bend=\cmdstr@strands@bend,
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor*height.
 	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
-	negt=0, % use 1 to reflect the connections vertically (to use with \aarcpartition).
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of strands.
 	permut=0, % use 1 to draw permutations (to use with \ppermutation).
+	reflect=0, % use 1 to reflect the tangle connections vertically.
 	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
 	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
 	width=\cmdstr@strands@width % width between strands.
@@ -133,15 +140,15 @@
 
 \newcommand{\vvpartition}[2][]{
 	\setkeys[str]{vvpart}{#1} % set variables.
-	% to normalize size vertically.
+	% normalize vertical size.
 	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol};
 	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol};
-	% to set the number of strands.
+	% number of strands.
 	\StrRemoveBraces{#2}[\nobracespart]
 	\let\oldnumstrands\cmdstr@vvpart@nstr
 	\renewcommand{\cmdstr@vvpart@nstr}
 	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
-	% to draw bullets and fix their labels.
+	% bullets and labels.
 	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{
 		\ifnum \cmdstr@vvpart@bulla=1 % bullets above.
 			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
@@ -149,92 +156,101 @@
 		\fi
 		\ifnum \cmdstr@vvpart@bullb=1 % bullets below.
 			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
-			\cmdstr@vvpart@floor*\cmdstr@vvpart@height)circle(\cmdstr@strands@bulletsize);
+			\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height})circle(\cmdstr@strands@bulletsize);
 		\fi
-		\ifnum \cmdstr@vvpart@type<5; % classic labels.
-			\ifnum \cmdstr@vvpart@type=-1 % to label bullets below from 1 to n.
+		% classic labels.
+		\ifnum \cmdstr@vvpart@type<5;
+			\ifnum \cmdstr@vvpart@type>0 % labels above from 1 to n.
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height+\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+1}$};
 			\fi
-			\ifnum \cmdstr@vvpart@type>0 % to label bullets above from 1 to n.
+			\ifnum \fpeval{(\cmdstr@vvpart@type+1)*(\cmdstr@vvpart@type-2)}=0 % labels below from 1 to n.
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+1}$};
 			\fi
-			\ifnum \cmdstr@vvpart@type=2 % to label bullets below from 1 to n.
+			\ifnum \cmdstr@vvpart@type=3 % labels below from n+1 to 2n.
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
-					{$\fpeval{\ind+1}$};
-			\fi
-			\ifnum \cmdstr@vvpart@type=3 % to label bullets below from n+1 to 2n.
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+\cmdstr@vvpart@nstr+1}$};
 			\fi
-			\ifnum \cmdstr@vvpart@type=4 % to label bullets below from 1' to n'.
+			\ifnum \cmdstr@vvpart@type=4 % labels below from 1' to n'.
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*height-0.2})
+					\fpeval{\cmdstr@vvpart@floor*height-\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+1}'$};
 			\fi
 		\fi
-		\ifnum \cmdstr@vvpart@type=5 % to label signed partitions from -n/2 to n/2 (n must be even).
-			\ifnum\ind<\fpeval{\cmdstr@vvpart@nstr/2}
+		% signed labels (n must be even).
+		\ifnum \cmdstr@vvpart@type=5
+			\ifnum\ind<\fpeval{\cmdstr@vvpart@nstr/2} % labels from -2n to 2n.
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
+					\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height+\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+1}$};
 				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width-0.03},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
+					(\fpeval{\ind*\cmdstr@vvpart@width-\cmdstr@vvpart@labelhor},
+					\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height+\cmdstr@vvpart@labelver})
 					{-$\fpeval{\cmdstr@vvpart@nstr/2-\ind}$};
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+\cmdstr@vvpart@nstr/2+1}$};
 				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width-0.03},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
+					(\fpeval{\ind*\cmdstr@vvpart@width-\cmdstr@vvpart@labelhor},
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
 					{-$\fpeval{\cmdstr@vvpart@nstr-\ind}$};
 			\fi
 		\fi
-		\ifnum\cmdstr@vvpart@permut=1 % draw connection of a permutation.
+		% connections: permutation case.
+		\ifnum\cmdstr@vvpart@permut=1
 			\getelem{#2}{\fpeval{\ind+1}}{\index} 
 			\draw[line width=\cmdstr@vvpart@strwidth](\fpeval{\ind*\cmdstr@vvpart@width},
-			\fpeval{\cmdstr@vvpart@height+\cmdstr@vvpart@floor*\cmdstr@vvpart@height})to
-			(\fpeval{(\ifnum\fpeval{\index+0}>0 \index\else\fpeval{\ind+1}\fi-1)*
-			\cmdstr@vvpart@width},\cmdstr@vvpart@floor*\cmdstr@vvpart@height);
+				\fpeval{\cmdstr@vvpart@height+\cmdstr@vvpart@floor*\cmdstr@vvpart@height})to
+				(\fpeval{(\ifnum\fpeval{\index+0}>0 \index\else\fpeval{\ind+1}\fi-1)*
+				\cmdstr@vvpart@width},\cmdstr@vvpart@floor*\cmdstr@vvpart@height);
 		\fi
 	}
-	% to draw connections.
+	% connections: general case.
 	\ifnum\cmdstr@vvpart@permut=0 \foreach\block in{#2}{
-		\StrCount{\block}{,}[\numcom] % number of commas.
+		\StrCount{\block}{,}[\numcom]
 		\ifnum\numcom>0\foreach\ind in {2,...,\fpeval{\numcom+1}}{
 			\getelem{\block}{\fpeval{\ind-1}}{\firbul}
 			\getelem{\block}{\ind}{\secbul}
-			\ifnum \cmdstr@vvpart@negt=1 % to reflect the connections vertically.
+			\ifnum \cmdstr@vvpart@reflect=1 % reflect connections vertically.
 				\let\oldfirbul\firbul
 				\renewcommand{\firbul}{-\oldfirbul}
 				\let\oldsecbul\secbul
 				\renewcommand{\secbul}{-\oldsecbul}
 			\fi
 			\draw[line width=\cmdstr@vvpart@strwidth]
-				(\fpeval{(abs(\firbul)-1)*\cmdstr@vvpart@width},\ifnum\firbul>0 
-				\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height}
-				\else\cmdstr@vvpart@floor*\cmdstr@vvpart@height
-			\fi)to[
-				bend \cmdstr@vvpart@bending=\ifnum \fpeval{\firbul*\secbul}>0
-				\fpeval{(\firbul/abs(\firbul))*((abs(\secbul)-abs(\firbul))/
-				abs(abs(\secbul)-abs(\firbul)))*\cmdstr@strands@curve}\else0\fi
-			](\fpeval{(abs(\secbul)-1)*\cmdstr@vvpart@width},\ifnum\secbul>0
-				\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height}
-				\else\cmdstr@vvpart@floor*\cmdstr@vvpart@height
-			\fi);
+				% from.
+				(\fpeval{(abs(\firbul)-1)*\cmdstr@vvpart@width},
+					\ifnum\firbul>0 
+						\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height}
+					\else
+						\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height}
+					\fi
+				)
+					% bending.
+					to[bend right=\ifnum \fpeval{\firbul*\secbul}>0
+						\fpeval{(\firbul/abs(\firbul))*((abs(\secbul)-abs(\firbul))/
+						abs(abs(\secbul)-abs(\firbul)))*\cmdstr@vvpart@bend}
+					\else
+						0
+					\fi]
+				% to.
+				(\fpeval{(abs(\secbul)-1)*\cmdstr@vvpart@width},
+					\ifnum\secbul>0
+						\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height}
+					\else
+						\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height}
+					\fi
+				);
 		}\fi
 	}\fi
 }
@@ -254,35 +270,39 @@
 %  5   6   7   8
 
 \makeatletter
-\define@cmdkey[str]{vpart}{bending}{}
+\define@cmdkey[str]{vpart}{bend}{}
 \define@cmdkey[str]{vpart}{bulla}{}
 \define@cmdkey[str]{vpart}{bullb}{}
 \define@cmdkey[str]{vpart}{floor}{}
 \define@cmdkey[str]{vpart}{font}{}
 \define@cmdkey[str]{vpart}{height}{}
-\define@cmdkey[str]{vpart}{negt}{}
+\define@cmdkey[str]{vpart}{labelver}{}
+\define@cmdkey[str]{vpart}{labelhor}{}
 \define@cmdkey[str]{vpart}{norma}{}
 \define@cmdkey[str]{vpart}{normb}{}
 \define@cmdkey[str]{vpart}{scale}{}
 \define@cmdkey[str]{vpart}{nstr}{}
 \define@cmdkey[str]{vpart}{permut}{}
+\define@cmdkey[str]{vpart}{reflect}{}
 \define@cmdkey[str]{vpart}{rotate}{}
 \define@cmdkey[str]{vpart}{strwidth}{}
 \define@cmdkey[str]{vpart}{type}{}
 \define@cmdkey[str]{vpart}{width}{}
 
 \presetkeys[str]{vpart}{
-	bending=\cmdstr@strands@bending, % use left or right to change the bending of the tangles.
+	bend=\cmdstr@strands@bend,
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor*height.
 	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
-	negt=0, % use 1 to reflect the connections vertically (to use with \arcpartition).
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of strands.
 	permut=0, % use 1 to draw permutations (to use with \permutation).
+	reflect=0, % use 1 to reflect the connections vertically.
 	rotate=\cmdstr@strands@rotate, % to rotate the picture.
 	scale=\cmdstr@strands@scale, % positive number to scale the picture (do not work for labels).
 	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
@@ -297,17 +317,19 @@
 		scale=\cmdstr@vpart@scale
 	]
 		\vvpartition[
-			bending=\cmdstr@vpart@bending,
+			bend=\cmdstr@vpart@bend,
 			bulla=\cmdstr@vpart@bulla,
 			bullb=\cmdstr@vpart@bullb,
 			floor=\cmdstr@vpart@floor,
 			font=\cmdstr@vpart@font,
 			height=\cmdstr@vpart@height,
-			negt=\cmdstr@vpart@negt,
+			labelver=\cmdstr@vpart@labelver,
+			labelhor=\cmdstr@vpart@labelhor,
 			norma=\cmdstr@vpart@norma,
 			normb=\cmdstr@vpart@normb,
 			nstr=\cmdstr@vpart@nstr,
 			permut=\cmdstr@vpart@permut,
+			reflect=\cmdstr@vpart@reflect,
 			strwidth=\cmdstr@vpart@strwidth,
 			type=\cmdstr@vpart@type,
 			width=\cmdstr@vpart@width
@@ -330,10 +352,12 @@
 %  1   2   3   4   5   6   7
 
 \makeatletter
-\define@cmdkey[str]{aapart}{bending}{}
+\define@cmdkey[str]{aapart}{bend}{}
 \define@cmdkey[str]{aapart}{bull}{}
 \define@cmdkey[str]{aapart}{floor}{}
 \define@cmdkey[str]{aapart}{font}{}
+\define@cmdkey[str]{aapart}{labelver}{}
+\define@cmdkey[str]{aapart}{labelhor}{}
 \define@cmdkey[str]{aapart}{norma}{}
 \define@cmdkey[str]{aapart}{normb}{}
 \define@cmdkey[str]{aapart}{num}{}
@@ -342,10 +366,12 @@
 \define@cmdkey[str]{aapart}{width}{}
 
 \presetkeys[str]{aapart}{
-	bending=\cmdstr@strands@bending, % use left or right to change the bending of tangles.
+	bend=\cmdstr@strands@bend,
 	bull=1, % use 1 to draw bullets, otherwise 0.
 	floor=0, % the picture starts at floor.
 	font=\cmdstr@strands@font, % size of font for labels.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	num=\cmdstr@strands@num, % number of dots.
@@ -357,15 +383,17 @@
 \newcommand{\aarcpartition}[2][]{
 	\setkeys[str]{aapart}{#1}
 	\vvpartition[
-		bending=\cmdstr@aapart@bending,
+		bend=\cmdstr@aapart@bend,
 		bulla=0, % no bullets above.
 		bullb=\cmdstr@aapart@bull,
 		floor=\cmdstr@aapart@floor,
 		font=\cmdstr@aapart@font,
-		negt=1, % put connections below.
+		labelver=\cmdstr@aapart@labelver,
+		labelhor=\cmdstr@aapart@labelhor,
 		norma=\cmdstr@aapart@norma,
 		normb=\cmdstr@aapart@normb,
 		nstr=\cmdstr@aapart@num,
+		reflect=1, % put connections below.
 		strwidth=\cmdstr@aapart@strwidth,
 		type=-\cmdstr@aapart@type,
 		width=\cmdstr@aapart@width
@@ -387,10 +415,12 @@
 %  1   2   3   4   5   6   7
 
 \makeatletter
-\define@cmdkey[str]{apart}{bending}{}
+\define@cmdkey[str]{apart}{bend}{}
 \define@cmdkey[str]{apart}{bull}{}
 \define@cmdkey[str]{apart}{floor}{}
 \define@cmdkey[str]{apart}{font}{}
+\define@cmdkey[str]{apart}{labelver}{}
+\define@cmdkey[str]{apart}{labelhor}{}
 \define@cmdkey[str]{apart}{norma}{}
 \define@cmdkey[str]{apart}{normb}{}
 \define@cmdkey[str]{apart}{num}{}
@@ -401,10 +431,12 @@
 \define@cmdkey[str]{apart}{width}{}
 
 \presetkeys[str]{apart}{
-	bending=\cmdstr@strands@bending, % use left or right to change the bending of tangles.
+	bend=\cmdstr@strands@bend,
 	bull=1, % use 1 to draw bullets, otherwise 0.
 	floor=0, % the picture starts at floor.
 	font=\cmdstr@strands@font, % size of font for labels.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	num=\cmdstr@strands@num, % number of dots.
@@ -418,15 +450,17 @@
 \newcommand{\arcpartition}[2][]{
 	\setkeys[str]{apart}{#1}
 	\vpartition[
-		bending=\cmdstr@apart@bending,
+		bend=\cmdstr@apart@bend,
 		bulla=0, % no bullets above.
 		bullb=\cmdstr@apart@bull,
 		floor=\cmdstr@apart@floor,
 		font=\cmdstr@apart@font,
-		negt=1, % put connections below.
+		labelver=\cmdstr@apart@labelver,
+		labelhor=\cmdstr@apart@labelhor,
 		norma=\cmdstr@apart@norma,
 		normb=\cmdstr@apart@normb,
 		nstr=\cmdstr@apart@num,
+		reflect=1, % put connections below.
 		rotate=\cmdstr@apart@rotate,
 		scale=\cmdstr@apart@scale,
 		strwidth=\cmdstr@apart@strwidth,
@@ -455,6 +489,8 @@
 \define@cmdkey[str]{pperm}{floor}{}
 \define@cmdkey[str]{pperm}{font}{}
 \define@cmdkey[str]{pperm}{height}{}
+\define@cmdkey[str]{pperm}{labelver}{}
+\define@cmdkey[str]{pperm}{labelhor}{}
 \define@cmdkey[str]{pperm}{norma}{}
 \define@cmdkey[str]{pperm}{normb}{}
 \define@cmdkey[str]{pperm}{nstr}{}
@@ -468,6 +504,8 @@
 	floor=0, % the picture starts at floor.
 	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of dots.
@@ -485,6 +523,8 @@
 		floor=\cmdstr@pperm@floor,
 		font=\cmdstr@pperm@font,
 		height=\cmdstr@pperm@height,
+		labelver=\cmdstr@pperm@labelver,
+		labelhor=\cmdstr@pperm@labelhor,
 		norma=\cmdstr@pperm@norma,
 		normb=\cmdstr@pperm@normb,
 		nstr=\cmdstr@pperm@nstr,
@@ -515,6 +555,8 @@
 \define@cmdkey[str]{perm}{floor}{}
 \define@cmdkey[str]{perm}{font}{}
 \define@cmdkey[str]{perm}{height}{}
+\define@cmdkey[str]{perm}{labelver}{}
+\define@cmdkey[str]{perm}{labelhor}{}
 \define@cmdkey[str]{perm}{norma}{}
 \define@cmdkey[str]{perm}{normb}{}
 \define@cmdkey[str]{perm}{nstr}{}
@@ -529,6 +571,8 @@
 	floor=0, % the picture starts at floor.
 	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of dots.
@@ -547,6 +591,8 @@
 		floor=\cmdstr@perm@floor,
 		font=\cmdstr@perm@font,
 		height=\cmdstr@perm@height,
+		labelver=\cmdstr@perm@labelver,
+		labelhor=\cmdstr@perm@labelhor,
 		norma=\cmdstr@perm@norma,
 		normb=\cmdstr@perm@normb,
 		nstr=\cmdstr@perm@nstr,
@@ -576,12 +622,14 @@
 
 \makeatletter
 \define@cmdkey[str]{ttpair}{above}{}
-\define@cmdkey[str]{ttpair}{bending}{}
+\define@cmdkey[str]{ttpair}{bend}{}
 \define@cmdkey[str]{ttpair}{bulla}{}
 \define@cmdkey[str]{ttpair}{bullb}{}
 \define@cmdkey[str]{ttpair}{floor}{}
 \define@cmdkey[str]{ttpair}{font}{}
 \define@cmdkey[str]{ttpair}{height}{}
+\define@cmdkey[str]{ttpair}{labelver}{}
+\define@cmdkey[str]{ttpair}{labelhor}{}
 \define@cmdkey[str]{ttpair}{norma}{}
 \define@cmdkey[str]{ttpair}{normb}{}
 \define@cmdkey[str]{ttpair}{nstr}{}
@@ -591,12 +639,14 @@
 
 \presetkeys[str]{ttpair}{
 	above=1, % use 1 to put the ties above, otherwise 0.
-	bending=\cmdstr@strands@bending, % use left or right to change the bending of tangles.
+	bend=\cmdstr@strands@bend,
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor.
 	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of dots.
@@ -613,6 +663,8 @@
 		floor=\cmdstr@ttpair@floor,
 		font=\cmdstr@ttpair@font,
 		height=\cmdstr@ttpair@height,
+		labelver=\cmdstr@ttpair@labelver,
+		labelhor=\cmdstr@ttpair@labelhor,
 		norma=\cmdstr@ttpair@norma,
 		normb=\cmdstr@ttpair@normb,
 		nstr=\cmdstr@ttpair@nstr,
@@ -621,7 +673,7 @@
 		width=\cmdstr@ttpair@width
 	]{#2}
 	\aarcpartition[
-		bending=\cmdstr@ttpair@bending,
+		bend=\cmdstr@ttpair@bend,
 		bull=0, % no bullets.
 		floor=\fpeval{\cmdstr@ttpair@floor+\cmdstr@ttpair@above*\cmdstr@ttpair@height},
 		type=0, % no labels.
@@ -648,12 +700,15 @@
 
 \makeatletter
 \define@cmdkey[str]{tpair}{above}{}
-\define@cmdkey[str]{tpair}{bending}{}
+\define@cmdkey[str]{tpair}{bend}{}
 \define@cmdkey[str]{tpair}{bulla}{}
+\define@cmdkey[str]{tpair}{bullb}{}
 \define@cmdkey[str]{tpair}{bullb}{}
 \define@cmdkey[str]{tpair}{floor}{}
 \define@cmdkey[str]{tpair}{font}{}
 \define@cmdkey[str]{tpair}{height}{}
+\define@cmdkey[str]{tpair}{labelver}{}
+\define@cmdkey[str]{tpair}{labelhor}{}
 \define@cmdkey[str]{tpair}{norma}{}
 \define@cmdkey[str]{tpair}{normb}{}
 \define@cmdkey[str]{tpair}{nstr}{}
@@ -665,12 +720,14 @@
 
 \presetkeys[str]{tpair}{
 	above=1, % use 1 to put the ties above, otherwise 0.
-	bending=\cmdstr@strands@bending, % use left or right to change the bending of tangles.
+	bend=\cmdstr@strands@bend,
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor.
 	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of dots.
@@ -689,12 +746,14 @@
 	]
 		\ttiedpair[
 			above=\cmdstr@tpair@above,
-			bending=\cmdstr@tpair@bending,
+			bend=\cmdstr@tpair@bend,
 			bulla=\cmdstr@tpair@bulla,
 			bullb=\cmdstr@tpair@bullb,
 			floor=\cmdstr@tpair@floor,
 			font=\cmdstr@tpair@font,
 			height=\cmdstr@tpair@height,
+			labelver=\cmdstr@tpair@labelver,
+			labelhor=\cmdstr@tpair@labelhor,
 			norma=\cmdstr@tpair@norma,
 			normb=\cmdstr@tpair@normb,
 			nstr=\cmdstr@tpair@nstr,
@@ -725,13 +784,18 @@
 	bull=1, % use 1 to use bullets, 0 otherwise.
 	floor=0, % the picture starts at floor*height.
 	height=\cmdstr@strands@height, % height of the strands.
-	tiebend=\cmdstr@strands@tiebend, % bending of the ties.
+	tiebend=\cmdstr@strands@tiebend, % bend of the ties.
 	tiecolor=\cmdstr@strands@tiecolor, % color of the ties.
 	tieheight=\cmdstr@strands@tieheight, % height of the tie.
 	tietype=\cmdstr@strands@tietype, % type of the tie (dashed, dotted, etc).
 	tiewidth=\cmdstr@strands@tiewidth, % width of the tie line.
 	width=\cmdstr@strands@width % width between strands.
 }{}
+
+% \tie  - macro to draw a tie (with no tikz environment).
+
+% \tie[height=1.5]{{1,0.8},{3,0.7},{4,0.8}}
+% \tie[height=1.5]{1,2,5}
 
 \newcommand{\tie}[2][]{
 	\setkeys[str]{ttie}{#1}
