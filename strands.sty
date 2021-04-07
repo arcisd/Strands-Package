@@ -9,7 +9,7 @@
 
 \usetikzlibrary{snakes}
 
-\newcommand{\getelem}[3]{ % \getelem{list}{num}{\name} % get the "num"th element from "list" to "\name".
+\newcommand{\getelem}[3]{ % \getelem{list}{index}{\name}
 	\StrBetween[#2,\fpeval{#2+1}]{,#1,}{,}{,}[#3]
 }
 
@@ -18,6 +18,7 @@
 \define@cmdkey[str]{strands}{bending}{}
 \define@cmdkey[str]{strands}{bulletsize}{}
 \define@cmdkey[str]{strands}{curve}{}
+\define@cmdkey[str]{strands}{font}{}
 \define@cmdkey[str]{strands}{height}{}
 \define@cmdkey[str]{strands}{norma}{}
 \define@cmdkey[str]{strands}{normb}{}
@@ -40,6 +41,7 @@
 	bending=right, % left or right curvature of tangles.
 	bulletsize=0.5mm,
 	curve=45,
+	font=0.7, % size of the fonts for labels.
 	height=1, % to set the height of strands.
 	norma=0, % to normalize the height above.
 	normb=0, % to normalize the height below.
@@ -64,6 +66,7 @@
 \DeclareOptionX{bending}{\renewcommand{\cmdstr@strands@bending}{#1}}
 \DeclareOptionX{bulletsize}{\renewcommand{\cmdstr@strands@bulletsize}{#1}}
 \DeclareOptionX{curve}{\renewcommand{\cmdstr@strands@curve}{#1}}
+\DeclareOptionX{font}{\renewcommand{\cmdstr@strands@font}{#1}}
 \DeclareOptionX{height}{\renewcommand{\cmdstr@strands@height}{#1}}
 \DeclareOptionX{norma}{\renewcommand{\cmdstr@strands@norma}{#1}}
 \DeclareOptionX{normb}{\renewcommand{\cmdstr@strands@normb}{#1}}
@@ -116,7 +119,7 @@
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor*height.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
 	negt=0, % use 1 to reflect the connections vertically (to use with \aarcpartition).
 	norma=\cmdstr@strands@norma, % point above to normalize height.
@@ -129,50 +132,52 @@
 }{}
 
 \newcommand{\vvpartition}[2][]{
-	\setkeys[str]{vvpart}{#1}
-	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol}; % norm vertically.
-	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol}; % norm vertically.
-	\StrRemoveBraces{#2}[\nobracespart] % remove braces to compute number of strands.
+	\setkeys[str]{vvpart}{#1} % set variables.
+	% to normalize size vertically.
+	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol};
+	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol};
+	% to set the number of strands.
+	\StrRemoveBraces{#2}[\nobracespart]
 	\let\oldnumstrands\cmdstr@vvpart@nstr
-	\renewcommand{\cmdstr@vvpart@nstr} % compute number of strands.
+	\renewcommand{\cmdstr@vvpart@nstr}
 	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
-	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{ % to draw bullets and their labels.
-		\ifnum \cmdstr@vvpart@bulla=1 % to draw bullets above.
+	% to draw bullets and fix their labels.
+	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{
+		\ifnum \cmdstr@vvpart@bulla=1 % bullets above.
 			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
-			\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height})
-			circle(\cmdstr@strands@bulletsize);
+			\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height})circle(\cmdstr@strands@bulletsize);
 		\fi
-		\ifnum \cmdstr@vvpart@bullb=1 % to draw bullets below.
+		\ifnum \cmdstr@vvpart@bullb=1 % bullets below.
 			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
 			\cmdstr@vvpart@floor*\cmdstr@vvpart@height)circle(\cmdstr@strands@bulletsize);
 		\fi
-		\ifnum \cmdstr@vvpart@type<5; % to label classic bullets.
+		\ifnum \cmdstr@vvpart@type<5; % classic labels.
 			\ifnum \cmdstr@vvpart@type=-1 % to label bullets below from 1 to n.
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
 					{$\fpeval{\ind+1}$};
 			\fi
 			\ifnum \cmdstr@vvpart@type>0 % to label bullets above from 1 to n.
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
 					{$\fpeval{\ind+1}$};
 			\fi
 			\ifnum \cmdstr@vvpart@type=2 % to label bullets below from 1 to n.
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
 					{$\fpeval{\ind+1}$};
 			\fi
 			\ifnum \cmdstr@vvpart@type=3 % to label bullets below from n+1 to 2n.
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
 					{$\fpeval{\ind+\cmdstr@vvpart@nstr+1}$};
 			\fi
 			\ifnum \cmdstr@vvpart@type=4 % to label bullets below from 1' to n'.
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*height-0.2})
 					{$\fpeval{\ind+1}'$};
@@ -180,19 +185,19 @@
 		\fi
 		\ifnum \cmdstr@vvpart@type=5 % to label signed partitions from -n/2 to n/2 (n must be even).
 			\ifnum\ind<\fpeval{\cmdstr@vvpart@nstr/2}
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
 					{$\fpeval{\ind+1}$};
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width-0.03},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height+\cmdstr@vvpart@height+0.2})
 					{-$\fpeval{\cmdstr@vvpart@nstr/2-\ind}$};
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
 					{$\fpeval{\ind+\cmdstr@vvpart@nstr/2+1}$};
-				\node[font=\cmdstr@vvpart@font]at
+				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width-0.03},
 					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-0.2})
 					{-$\fpeval{\cmdstr@vvpart@nstr-\ind}$};
@@ -206,7 +211,8 @@
 			\cmdstr@vvpart@width},\cmdstr@vvpart@floor*\cmdstr@vvpart@height);
 		\fi
 	}
-	\ifnum\cmdstr@vvpart@permut=0 \foreach\block in{#2}{ % to draw connections.
+	% to draw connections.
+	\ifnum\cmdstr@vvpart@permut=0 \foreach\block in{#2}{
 		\StrCount{\block}{,}[\numcom] % number of commas.
 		\ifnum\numcom>0\foreach\ind in {2,...,\fpeval{\numcom+1}}{
 			\getelem{\block}{\fpeval{\ind-1}}{\firbul}
@@ -270,7 +276,7 @@
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor*height.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
 	negt=0, % use 1 to reflect the connections vertically (to use with \arcpartition).
 	norma=\cmdstr@strands@norma, % point above to normalize height.
@@ -339,7 +345,7 @@
 	bending=\cmdstr@strands@bending, % use left or right to change the bending of tangles.
 	bull=1, % use 1 to draw bullets, otherwise 0.
 	floor=0, % the picture starts at floor.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	num=\cmdstr@strands@num, % number of dots.
@@ -398,7 +404,7 @@
 	bending=\cmdstr@strands@bending, % use left or right to change the bending of tangles.
 	bull=1, % use 1 to draw bullets, otherwise 0.
 	floor=0, % the picture starts at floor.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	num=\cmdstr@strands@num, % number of dots.
@@ -460,7 +466,7 @@
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
@@ -521,7 +527,7 @@
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
@@ -589,7 +595,7 @@
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
@@ -663,7 +669,7 @@
 	bulla=1, % use 1 to draw bullets above, otherwise 0.
 	bullb=1, % use 1 to draw bullets below, otherwise 0.
 	floor=0, % the picture starts at floor.
-	font=\tiny, % size of font for labels (does it work?).
+	font=\cmdstr@strands@font, % size of font for labels.
 	height=\cmdstr@strands@height, % height of the strands.
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
