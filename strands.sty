@@ -33,7 +33,11 @@
 \define@cmdkey[str]{strands}{tiebend}{}
 \define@cmdkey[str]{strands}{tiecolor}{}
 \define@cmdkey[str]{strands}{tieheight}{}
-\define@cmdkey[str]{strands}{tietype}{}
+\define@cmdkey[str]{strands}{tiesnake}{}
+\define@cmdkey[str]{strands}{tiesnakeamp}{}
+\define@cmdkey[str]{strands}{tiesnakends}{}
+\define@cmdkey[str]{strands}{tiesnakelen}{}
+\define@cmdkey[str]{strands}{tiestyle}{}
 \define@cmdkey[str]{strands}{tiewidth}{}
 \define@cmdkey[str]{strands}{width}{}
 
@@ -57,7 +61,11 @@
 	tiebend=0, % to set bend of ties.
 	tiecolor=red, % to set color of the ties.
 	tieheight=0.5, % height of ties respect to the global height.
-	tietype=dashed, % to set the type of the tie lines.
+	tiesnake=false,
+	tiesnakeamp=1,
+	tiesnakends=0,
+	tiesnakelen=3,
+	tiestyle=dashed, % to set the type of the tie lines.
 	tiewidth=0.5, % to set the width of tie lines.
 	width=0.6, % to set the width between strands.
 }{}
@@ -81,7 +89,8 @@
 \DeclareOptionX{strwidth}{\renewcommand{\cmdstr@strands@strwidth}{#1}}
 \DeclareOptionX{tiebend}{\renewcommand{\cmdstr@strands@tiebend}{#1}}
 \DeclareOptionX{tiecolor}{\renewcommand{\cmdstr@strands@tiecolor}{#1}}
-\DeclareOptionX{tietype}{\renewcommand{\cmdstr@strands@tietype}{#1}}
+\DeclareOptionX{tiesnake}{\renewcommand{\cmdstr@strands@tiesnake}{#1}}
+\DeclareOptionX{tiestyle}{\renewcommand{\cmdstr@strands@tiestyle}{#1}}
 \DeclareOptionX{tiewidth}{\renewcommand{\cmdstr@strands@tiewidth}{#1}}
 \DeclareOptionX{width}{\renewcommand{\cmdstr@strands@width}{#1}}
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
@@ -181,7 +190,7 @@
 			\ifnum \cmdstr@vvpart@type=4 % labels below from 1' to n'.
 				\node[scale=\cmdstr@vvpart@font]at
 					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*height-\cmdstr@vvpart@labelver})
+					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
 					{$\fpeval{\ind+1}'$};
 			\fi
 		\fi
@@ -770,32 +779,35 @@
 % \begin{tikzpicture} \tie[height=1.5]{1,2,5} \end{tikzpicture}
 
 \makeatletter
+\define@cmdkey[str]{ttie}{bend}{}
 \define@cmdkey[str]{ttie}{bull}{}
 \define@cmdkey[str]{ttie}{floor}{}
 \define@cmdkey[str]{ttie}{height}{}
-\define@cmdkey[str]{ttie}{tiebend}{}
-\define@cmdkey[str]{ttie}{tiecolor}{}
+\define@cmdkey[str]{ttie}{color}{}
+\define@cmdkey[str]{ttie}{snake}{}
+\define@cmdkey[str]{ttie}{snakeamp}{}
+\define@cmdkey[str]{ttie}{snakends}{}
+\define@cmdkey[str]{ttie}{snakelen}{}
+\define@cmdkey[str]{ttie}{style}{}
 \define@cmdkey[str]{ttie}{tieheight}{}
-\define@cmdkey[str]{ttie}{tietype}{}
 \define@cmdkey[str]{ttie}{tiewidth}{}
 \define@cmdkey[str]{ttie}{width}{}
 
 \presetkeys[str]{ttie}{
+	bend=\cmdstr@strands@tiebend, % bend of the ties.
 	bull=1, % use 1 to use bullets, 0 otherwise.
+	color=\cmdstr@strands@tiecolor, % color of the ties.
 	floor=0, % the picture starts at floor*height.
 	height=\cmdstr@strands@height, % height of the strands.
-	tiebend=\cmdstr@strands@tiebend, % bend of the ties.
-	tiecolor=\cmdstr@strands@tiecolor, % color of the ties.
-	tieheight=\cmdstr@strands@tieheight, % height of the tie.
-	tietype=\cmdstr@strands@tietype, % type of the tie (dashed, dotted, etc).
+	snake=\cmdstr@strands@tiesnake, % true or false to snake the tie line.
+	snakeamp=\cmdstr@strands@tiesnakeamp, % snake amplitude.
+	snakends=\cmdstr@strands@tiesnakends, % snake lengths of ends.
+	snakelen=\cmdstr@strands@tiesnakelen, % snake lengths.
+	style=\cmdstr@strands@tiestyle, % type of the tie (solid, dashed, dotted, etc).
+	tieheight=\cmdstr@strands@tieheight, % height of the tie respect to the global height.
 	tiewidth=\cmdstr@strands@tiewidth, % width of the tie line.
 	width=\cmdstr@strands@width % width between strands.
 }{}
-
-% \tie  - macro to draw a tie (with no tikz environment).
-
-% \tie[height=1.5]{{1,0.8},{3,0.7},{4,0.8}}
-% \tie[height=1.5]{1,2,5}
 
 \newcommand{\tie}[2][]{
 	\setkeys[str]{ttie}{#1}
@@ -806,7 +818,7 @@
 		\StrCount{\nobrace}{,}[\elemcoms]
 		\ifnum\elemcoms=0 \renewcommand{\elemheight}{\cmdstr@ttie@tieheight}\fi % update height of elem.
 		\ifnum \cmdstr@ttie@bull=1
-			\filldraw[\cmdstr@ttie@tiecolor](\fpeval{(\elemwidth-1)*\cmdstr@ttie@width},
+			\filldraw[\cmdstr@ttie@color](\fpeval{(\elemwidth-1)*\cmdstr@ttie@width},
 				\fpeval{\elemheight*\cmdstr@ttie@height+\cmdstr@ttie@floor*\cmdstr@ttie@height})
 				circle(\cmdstr@strands@bulletsize);
 		\fi
@@ -818,14 +830,18 @@
 			\StrCount{\prevnobrace}{,}[\prevelemcoms]
 			\ifnum\prevelemcoms=0 \renewcommand{\prevelemheight}{\cmdstr@ttie@tieheight}\fi
 			\draw[
-				\cmdstr@ttie@tiecolor,
-				\cmdstr@ttie@tietype,
+				bend right=\cmdstr@ttie@bend,
+				color=\cmdstr@ttie@color,
 				line width=\cmdstr@ttie@tiewidth,
-				bend right=\cmdstr@ttie@tiebend,
-				%snake=snake,
-				%segment amplitude=1,
-				%segment length=5,
-				%line after snake=0.5
+				decorate=\cmdstr@ttie@snake,
+				decoration={
+					snake,
+					amplitude=\cmdstr@ttie@snakeamp,
+					post length=\cmdstr@ttie@snakends,
+					pre length=\cmdstr@ttie@snakends,
+					segment length=\cmdstr@ttie@snakelen
+				},
+				style=\cmdstr@ttie@style
 			]
 				(\fpeval{(\elemwidth-1)*\cmdstr@ttie@width},
 				\fpeval{\elemheight*\cmdstr@ttie@height+\cmdstr@ttie@floor*\cmdstr@ttie@height})to
@@ -839,5 +855,5 @@
 
 \newcommand{\ttiedpartition}[3][]{
 	\ppermutation{1,2,3,4,5}
-	\tie{1,2,5}
+	\tie[style=solid,snake=true,snakeamp=0.5]{1,2,5}
 }
