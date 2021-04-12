@@ -96,6 +96,95 @@
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
 
+% \decoratestrands - macro to add bullets and labels to picture.
+
+\makeatletter
+\define@cmdkey[str]{decor}{bulla}{}
+\define@cmdkey[str]{decor}{bullb}{}
+\define@cmdkey[str]{decor}{floor}{}
+\define@cmdkey[str]{decor}{font}{}
+\define@cmdkey[str]{decor}{height}{}
+\define@cmdkey[str]{decor}{labelver}{}
+\define@cmdkey[str]{decor}{labelhor}{}
+\define@cmdkey[str]{decor}{nstr}{}
+\define@cmdkey[str]{decor}{type}{}
+\define@cmdkey[str]{decor}{width}{}
+
+\presetkeys[str]{decor}{
+	bulla=1, % use 1 to draw bullets above, otherwise 0.
+	bullb=1, % use 1 to draw bullets below, otherwise 0.
+	floor=0, % the picture starts at floor*height.
+	font=\cmdstr@strands@font, % size of font for labels.
+	height=\cmdstr@strands@height, % height of the strands.
+	labelver=\cmdstr@strands@labelver, % vertical space of labels.
+	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
+	nstr=\cmdstr@strands@nstr, % number of strands.
+	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
+	width=\cmdstr@strands@width % width between strands.
+}{}
+
+\newcommand{\decoratestrands}[1][]{
+	\setkeys[str]{decor}{#1} % set variables.
+	\foreach\ind in{0,...,\fpeval{\cmdstr@decor@nstr-1}}{
+		\ifnum \cmdstr@decor@bulla=1 % bullets above.
+			\filldraw(\fpeval{\ind*\cmdstr@decor@width},
+			\fpeval{(\cmdstr@decor@floor+1)*\cmdstr@decor@height})circle(\cmdstr@strands@bulletsize);
+		\fi
+		\ifnum \cmdstr@decor@bullb=1 % bullets below.
+			\filldraw(\fpeval{\ind*\cmdstr@decor@width},
+			\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height})circle(\cmdstr@strands@bulletsize);
+		\fi
+		% classic labels.
+		\ifnum \cmdstr@decor@type<5;
+			\ifnum \cmdstr@decor@type>0 % labels above from 1 to n.
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{\ind*\cmdstr@decor@width},
+					\fpeval{(\cmdstr@decor@floor+1)*\cmdstr@decor@height+\cmdstr@decor@labelver})
+					{$\fpeval{\ind+1}$};
+			\fi
+			\ifnum \fpeval{(\cmdstr@decor@type+1)*(\cmdstr@decor@type-2)}=0 % labels below from 1 to n.
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{\ind*\cmdstr@decor@width},
+					\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height-\cmdstr@decor@labelver})
+					{$\fpeval{\ind+1}$};
+			\fi
+			\ifnum \cmdstr@decor@type=3 % labels below from n+1 to 2n.
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{\ind*\cmdstr@decor@width},
+					\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height-\cmdstr@decor@labelver})
+					{$\fpeval{\ind+\cmdstr@decor@nstr+1}$};
+			\fi
+			\ifnum \cmdstr@decor@type=4 % labels below from 1' to n'.
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{\ind*\cmdstr@decor@width},
+					\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height-\cmdstr@decor@labelver})
+					{$\fpeval{\ind+1}'$};
+			\fi
+		\fi
+		% signed labels (n must be even).
+		\ifnum \cmdstr@decor@type=5
+			\ifnum\ind<\fpeval{\cmdstr@decor@nstr/2} % labels from -2n to 2n.
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{(\ind+\cmdstr@decor@nstr/2)*\cmdstr@decor@width},
+					\fpeval{(\cmdstr@decor@floor+1)*\cmdstr@decor@height+\cmdstr@decor@labelver})
+					{$\fpeval{\ind+1}$};
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{\ind*\cmdstr@decor@width-\cmdstr@decor@labelhor},
+					\fpeval{(\cmdstr@decor@floor+1)*\cmdstr@decor@height+\cmdstr@decor@labelver})
+					{-$\fpeval{\cmdstr@decor@nstr/2-\ind}$};
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{(\ind+\cmdstr@decor@nstr/2)*\cmdstr@decor@width},
+					\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height-\cmdstr@decor@labelver})
+					{$\fpeval{\ind+\cmdstr@decor@nstr/2+1}$};
+				\node[scale=\cmdstr@decor@font]at
+					(\fpeval{\ind*\cmdstr@decor@width-\cmdstr@decor@labelhor},
+					\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height-\cmdstr@decor@labelver})
+					{-$\fpeval{\cmdstr@decor@nstr-\ind}$};
+			\fi
+		\fi
+	}
+}
+
 % \vvpartition  - macro to draw set partitions in the partition monoid (with tikz environment).
 
 % Example: the set partition {1,2}{3,-4}{4,-3} of [2*4] is drawn as follows: 
@@ -158,64 +247,20 @@
 	\renewcommand{\cmdstr@vvpart@nstr}
 	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
 	% bullets and labels.
+	\decoratestrands[
+		bulla=\cmdstr@vvpart@bulla,
+		bullb=\cmdstr@vvpart@bullb,
+		floor=\cmdstr@vvpart@floor,
+		font=\cmdstr@vvpart@font,
+		height=\cmdstr@vvpart@height,
+		labelver=\cmdstr@vvpart@labelver,
+		labelhor=\cmdstr@vvpart@labelhor,
+		nstr=\cmdstr@vvpart@nstr,
+		type=\cmdstr@vvpart@type,
+		width=\cmdstr@vvpart@width
+	]
+	% connections: permutation case.
 	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{
-		\ifnum \cmdstr@vvpart@bulla=1 % bullets above.
-			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
-			\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height})circle(\cmdstr@strands@bulletsize);
-		\fi
-		\ifnum \cmdstr@vvpart@bullb=1 % bullets below.
-			\filldraw(\fpeval{\ind*\cmdstr@vvpart@width},
-			\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height})circle(\cmdstr@strands@bulletsize);
-		\fi
-		% classic labels.
-		\ifnum \cmdstr@vvpart@type<5;
-			\ifnum \cmdstr@vvpart@type>0 % labels above from 1 to n.
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height+\cmdstr@vvpart@labelver})
-					{$\fpeval{\ind+1}$};
-			\fi
-			\ifnum \fpeval{(\cmdstr@vvpart@type+1)*(\cmdstr@vvpart@type-2)}=0 % labels below from 1 to n.
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
-					{$\fpeval{\ind+1}$};
-			\fi
-			\ifnum \cmdstr@vvpart@type=3 % labels below from n+1 to 2n.
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
-					{$\fpeval{\ind+\cmdstr@vvpart@nstr+1}$};
-			\fi
-			\ifnum \cmdstr@vvpart@type=4 % labels below from 1' to n'.
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
-					{$\fpeval{\ind+1}'$};
-			\fi
-		\fi
-		% signed labels (n must be even).
-		\ifnum \cmdstr@vvpart@type=5
-			\ifnum\ind<\fpeval{\cmdstr@vvpart@nstr/2} % labels from -2n to 2n.
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
-					\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height+\cmdstr@vvpart@labelver})
-					{$\fpeval{\ind+1}$};
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width-\cmdstr@vvpart@labelhor},
-					\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height+\cmdstr@vvpart@labelver})
-					{-$\fpeval{\cmdstr@vvpart@nstr/2-\ind}$};
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{(\ind+\cmdstr@vvpart@nstr/2)*\cmdstr@vvpart@width},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
-					{$\fpeval{\ind+\cmdstr@vvpart@nstr/2+1}$};
-				\node[scale=\cmdstr@vvpart@font]at
-					(\fpeval{\ind*\cmdstr@vvpart@width-\cmdstr@vvpart@labelhor},
-					\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height-\cmdstr@vvpart@labelver})
-					{-$\fpeval{\cmdstr@vvpart@nstr-\ind}$};
-			\fi
-		\fi
-		% connections: permutation case.
 		\ifnum\cmdstr@vvpart@permut=1
 			\getelem{#2}{\fpeval{\ind+1}}{\index} 
 			\draw[line width=\cmdstr@vvpart@strwidth](\fpeval{\ind*\cmdstr@vvpart@width},
@@ -849,11 +894,4 @@
 				\fpeval{\prevelemheight*\cmdstr@ttie@height+\cmdstr@ttie@floor*\cmdstr@ttie@height});
 		\fi
 	}
-}
-
-% \ttiedpartition  - macro to draw a partition with ties (with tikz environment).
-
-\newcommand{\ttiedpartition}[3][]{
-	\ppermutation{1,2,3,4,5}
-	\tie[style=solid,snake=true,snakeamp=0.5]{1,2,5}
 }
