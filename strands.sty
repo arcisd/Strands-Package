@@ -1032,35 +1032,120 @@
 		\fpeval{\cmdstr@lleftstr@cdny-\cmdstr@lleftstr@height});
 }
 
-% \rightstrand - macro to...
+% \rrightstrand - macro to draw a strand starting from the right.
 
-\newcommand{\rightstrand}[3]{ % color / init-x-coordinate / init-y-coordinate.
-	% draws a strand starting from the right.
-	\draw[#1,line width=\cmdstr@strands@strwidth pt]
-	(\fpeval{#2+2*\midwidth},#3)
-	to[bend left=\cmdstr@strands@bendbraid]
-	(\fpeval{#2+\midwidth},\fpeval{#3-\midheight})
-	to[bend right=\cmdstr@strands@bendbraid]
-	(#2,\fpeval{#3-2*\midheight});
+\makeatletter
+\define@cmdkey[str]{rrightstr}{bend}{}
+\define@cmdkey[str]{rrightstr}{cdnx}{}
+\define@cmdkey[str]{rrightstr}{cdny}{}
+\define@cmdkey[str]{rrightstr}{color}{}
+\define@cmdkey[str]{rrightstr}{height}{}
+\define@cmdkey[str]{rrightstr}{strwidth}{}
+\define@cmdkey[str]{rrightstr}{width}{}
+
+\presetkeys[str]{rrightstr}{
+	bend=\cmdstr@strands@bendbraid,
+	cdnx=nothing,
+	cdny=nothing,
+	color=black,
+	height=\cmdstr@strands@height,
+	strwidth=\cmdstr@strands@strwidth,
+	width=\cmdstr@strands@width
+}{}
+
+\newcommand{\rrightstrand}[1][]{ % color / init-x-coordinate / init-y-coordinate.
+	\setkeys[str]{rrightstr}{#1}
+	\draw[
+		color=\cmdstr@rrightstr@color,
+		line width=\cmdstr@rrightstr@strwidth pt
+	](\fpeval{\cmdstr@rrightstr@cdnx+\cmdstr@rrightstr@width},\cmdstr@rrightstr@cdny)
+	to[bend left=\cmdstr@rrightstr@bend]
+		(\fpeval{\cmdstr@rrightstr@cdnx+\cmdstr@rrightstr@width/2},
+		\fpeval{\cmdstr@rrightstr@cdny-\cmdstr@rrightstr@height/2})
+	to[bend right=\cmdstr@rrightstr@bend]
+		(\cmdstr@rrightstr@cdnx,\fpeval{\cmdstr@rrightstr@cdny-\cmdstr@rrightstr@height});
 }
 
-\newcommand{\crossingback}[2]{ % init-x-coordinate / init-y-coordinate.
-	% draws a \backcolor filled circle to create an over-under / under-over crossing.
-	\filldraw[\cmdstr@strands@backcolor](\fpeval{#1+\midwidth},\fpeval{#2-\midheight})circle(\cmdstr@strands@braidcross pt);
+% \ccrossback - macro to draw a \backcolor filled circle to create an over-under / under-over crossing.
+
+\makeatletter
+\define@cmdkey[str]{ccrossback}{cdnx}{}
+\define@cmdkey[str]{ccrossback}{cdny}{}
+\define@cmdkey[str]{ccrossback}{height}{}
+\define@cmdkey[str]{ccrossback}{width}{}
+
+\presetkeys[str]{ccrossback}{
+	cdnx=nothing,
+	cdny=nothing,
+	height=\cmdstr@strands@height,
+	width=\cmdstr@strands@width
+}{}
+
+\newcommand{\ccrossback}[1][]{
+	\setkeys[str]{ccrossback}{#1}
+	\filldraw[\cmdstr@strands@backcolor]
+		(\fpeval{\cmdstr@ccrossback@cdnx+\cmdstr@ccrossback@width/2},
+		\fpeval{\cmdstr@ccrossback@cdny-\cmdstr@ccrossback@height/2})
+		circle(\cmdstr@strands@braidcross pt);
 }
 
-\newcommand{\virtualsymbol}[3]{ % color / init-x-coordinate / init-y-coordinate.
-	% draws the virtual symbol.
-	\node[circle,draw=#1,fill=white,cross,line width=\cmdstr@strands@strwidth pt,minimum width=\cmdstr@strands@braidvirtcross]
-	at(\fpeval{#2+\midwidth},\fpeval{#3-\midheight}){};
+% \vvirtualcross - macro to draw the virtual crossing.
+
+\makeatletter
+\define@cmdkey[str]{vvirtcross}{cdnx}{}
+\define@cmdkey[str]{vvirtcross}{cdny}{}
+\define@cmdkey[str]{vvirtcross}{color}{}
+\define@cmdkey[str]{vvirtcross}{height}{}
+\define@cmdkey[str]{vvirtcross}{strwidth}{}
+\define@cmdkey[str]{vvirtcross}{width}{}
+
+\presetkeys[str]{vvirtcross}{
+	cdnx=nothing,
+	cdny=nothing,
+	color=black,
+	height=\cmdstr@strands@height,
+	strwidth=\cmdstr@strands@strwidth,
+	width=\cmdstr@strands@width
+}{}
+
+\newcommand{\vvirtualcross}[1][]{
+	\setkeys[str]{vvirtcross}{#1}
+	\node[
+		circle,
+		cross,
+		draw=\cmdstr@vvirtcross@color,
+		fill=\cmdstr@strands@backcolor,
+		line width=\cmdstr@vvirtcross@strwidth pt,
+		minimum width=\cmdstr@strands@braidvirtcross
+	]
+	at(\fpeval{\cmdstr@vvirtcross@cdnx+\cmdstr@vvirtcross@width/2},
+		\fpeval{\cmdstr@vvirtcross@cdny-\cmdstr@vvirtcross@height/2}){};
 }
 
-\newcommand{\singularsymbol}[3]{ % color init-x-coordinate / init-y-coordinate.
-	% draws the singular bullet symbol.
-	\filldraw[#1](\fpeval{#2+\midwidth},\fpeval{#3-\midheight})circle(\cmdstr@strands@braidsingcross pt);
-}
+% \ssingularcross - macro to draw the singular crossing.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\define@cmdkey[str]{ssingcross}{cdnx}{}
+\define@cmdkey[str]{ssingcross}{cdny}{}
+\define@cmdkey[str]{ssingcross}{color}{}
+\define@cmdkey[str]{ssingcross}{height}{}
+\define@cmdkey[str]{ssingcross}{width}{}
+
+\presetkeys[str]{ssingcross}{
+	cdnx=nothing,
+	cdny=nothing,
+	color=black,
+	height=\cmdstr@strands@height,
+	width=\cmdstr@strands@width
+}{}
+
+\newcommand{\ssingularcross}[1][]{
+	\setkeys[str]{ssingcross}{#1}
+	\filldraw[\cmdstr@ssingcross@color]
+		(\fpeval{\cmdstr@ssingcross@cdnx+\cmdstr@ssingcross@width/2},
+		\fpeval{\cmdstr@ssingcross@cdny-\cmdstr@ssingcross@height/2})
+		circle(\cmdstr@strands@braidsingcross pt);
+}
 
 % \bbraidgen - macro to draw a braid crossing (classic, virtual or singular).
 
@@ -1070,6 +1155,8 @@
 \define@cmdkey[str]{bbraidgen}{cdny}{}
 \define@cmdkey[str]{bbraidgen}{colorleft}{}
 \define@cmdkey[str]{bbraidgen}{coloright}{}
+\define@cmdkey[str]{bbraidgen}{colorsingular}{}
+\define@cmdkey[str]{bbraidgen}{colorvirtual}{}
 \define@cmdkey[str]{bbraidgen}{height}{}
 \define@cmdkey[str]{bbraidgen}{strwidth}{}
 \define@cmdkey[str]{bbraidgen}{type}{}
@@ -1081,6 +1168,8 @@
 	cdny=0,
 	colorleft=black,
 	coloright=black,
+	colorsingular=black,
+	colorvirtual=black,
 	height=\cmdstr@strands@height,
 	strwidth=\cmdstr@strands@strwidth,
 	type=1, % negative-braid=-1 | positive-braid=1 | virtual-braid=2 | singular-braid=3
@@ -1097,9 +1186,22 @@
 		width=\cmdstr@bbraidgen@width
 	]
 	\ifnum\cmdstr@bbraidgen@type<1 % negative generator.
-		\rightstrand{\cmdstr@bbraidgen@coloright}{\cmdstr@bbraidgen@cdnx}{\cmdstr@bbraidgen@cdny}
+		\rrightstrand[
+			bend=\cmdstr@bbraidgen@bend,
+			cdnx=\cmdstr@bbraidgen@cdnx,
+			cdny=\cmdstr@bbraidgen@cdny,
+			color=\cmdstr@bbraidgen@coloright,
+			height=\cmdstr@bbraidgen@height,
+			strwidth=\cmdstr@bbraidgen@strwidth,
+			width=\cmdstr@bbraidgen@width
+		]
 		\ifnum\cmdstr@bbraidgen@type<2
-			\crossingback{\cmdstr@bbraidgen@cdnx}{\cmdstr@bbraidgen@cdny}
+			\ccrossback[
+				cdnx=\cmdstr@bbraidgen@cdnx,
+				cdny=\cmdstr@bbraidgen@cdny,
+				height=\cmdstr@bbraidgen@height,
+				width=\cmdstr@bbraidgen@width
+			]
 		\fi
 		\lleftstrand[
 			bend=\cmdstr@bbraidgen@bend,
@@ -1108,7 +1210,7 @@
 			color=\cmdstr@bbraidgen@colorleft,
 			height=\cmdstr@bbraidgen@height,
 			strwidth=\cmdstr@bbraidgen@strwidth,
-			width=\cmdstr@bbraidgen@width		
+			width=\cmdstr@bbraidgen@width
 		]
 	\else % positive generator.
 		\lleftstrand[
@@ -1118,18 +1220,44 @@
 			color=\cmdstr@bbraidgen@colorleft,
 			height=\cmdstr@bbraidgen@height,
 			strwidth=\cmdstr@bbraidgen@strwidth,
-			width=\cmdstr@bbraidgen@width		
+			width=\cmdstr@bbraidgen@width
 		]
 		\ifnum\cmdstr@bbraidgen@type<2 % over-under circle only if type is one.
-			\crossingback{\cmdstr@bbraidgen@cdnx}{\cmdstr@bbraidgen@cdny}
+			\ccrossback[
+				cdnx=\cmdstr@bbraidgen@cdnx,
+				cdny=\cmdstr@bbraidgen@cdny,
+				height=\cmdstr@bbraidgen@height,
+				width=\cmdstr@bbraidgen@width
+			]
 		\fi
-		\rightstrand{\cmdstr@bbraidgen@coloright}{\cmdstr@bbraidgen@cdnx}{\cmdstr@bbraidgen@cdny}
+		\rrightstrand[
+			bend=\cmdstr@bbraidgen@bend,
+			cdnx=\cmdstr@bbraidgen@cdnx,
+			cdny=\cmdstr@bbraidgen@cdny,
+			color=\cmdstr@bbraidgen@coloright,
+			height=\cmdstr@bbraidgen@height,
+			strwidth=\cmdstr@bbraidgen@strwidth,
+			width=\cmdstr@bbraidgen@width
+		]
 		\ifnum\cmdstr@bbraidgen@type=2
-			\virtualsymbol{black}{\cmdstr@bbraidgen@cdnx}{\cmdstr@bbraidgen@cdny}
-		\fi % virtual generator.
+			\vvirtualcross[ % virtual generator.
+				cdnx=\cmdstr@bbraidgen@cdnx,
+				cdny=\cmdstr@bbraidgen@cdny,
+				color=\cmdstr@bbraidgen@colorvirtual,
+				height=\cmdstr@bbraidgen@height,
+				strwidth=\cmdstr@bbraidgen@strwidth,
+				width=\cmdstr@bbraidgen@width
+			]
+		\fi
 		\ifnum\cmdstr@bbraidgen@type=3
-			\singularsymbol{black}{\cmdstr@bbraidgen@cdnx}{\cmdstr@bbraidgen@cdny}
-		\fi % singular generator.
+			\ssingularcross[ % singular generator.
+				cdnx=\cmdstr@bbraidgen@cdnx,
+				cdny=\cmdstr@bbraidgen@cdny,
+				color=\cmdstr@bbraidgen@colorsingular,
+				height=\cmdstr@bbraidgen@height,
+				width=\cmdstr@bbraidgen@width
+			]
+		\fi
 	\fi
 }
 
