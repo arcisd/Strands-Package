@@ -25,6 +25,7 @@
 \define@cmdkey[str]{strands}{braidcross}{}
 \define@cmdkey[str]{strands}{braidsingcross}{}
 \define@cmdkey[str]{strands}{braidvirtcross}{}
+\define@cmdkey[str]{strands}{coverunion}{}
 \define@cmdkey[str]{strands}{font}{}
 \define@cmdkey[str]{strands}{gencharposbraid}{}
 \define@cmdkey[str]{strands}{gencharnegbraid}{}
@@ -32,11 +33,10 @@
 \define@cmdkey[str]{strands}{gencharsingular}{}
 \define@cmdkey[str]{strands}{genchartangle}{}
 \define@cmdkey[str]{strands}{genchartie}{}
-\define@cmdkey[str]{strands}{gensep}{}
+\define@cmdkey[str]{strands}{genchartiedtangle}{}
 \define@cmdkey[str]{strands}{height}{}
 \define@cmdkey[str]{strands}{labelver}{}
 \define@cmdkey[str]{strands}{labelhor}{}
-\define@cmdkey[str]{strands}{levelsep}{}
 \define@cmdkey[str]{strands}{norma}{}
 \define@cmdkey[str]{strands}{normb}{}
 \define@cmdkey[str]{strands}{normcolor}{}
@@ -62,12 +62,13 @@
 \presetkeys[str]{strands}{
 	backcolor=white, % color of the paper.
 	bend=45, % bend of partitions.
-	bendbraid=38, % bend for braid crossings.
+	bendbraid=30, % bend for braid crossings.
 	bendtangle=45, % bend for tangles.
 	braidcross=3, % size of the braid crossing.
-	braidsingcross=2, % size of the singular braid crossing.
-	braidvirtcross=5, % size of the virtual braid crossing.
-	bulletsize=0.5mm,
+	braidsingcross=1.6, % size of the singular braid crossing.
+	braidvirtcross=5.5, % size of the virtual braid crossing.
+	bulletsize=0.05,
+	coverunion=0.001, % extra length to cover the union of strands.
 	font=0.7, % size of the fonts for labels.
 	gencharposbraid=p,
 	gencharnegbraid=n,
@@ -75,11 +76,10 @@
 	gencharsingular=s,
 	genchartangle=t,
 	genchartie=e,
-	gensep=-,
+	genchartiedtangle=f,
 	height=1, % to set the height of strands.
 	labelver=0.2,
 	labelhor=0.03,
-	levelsep=*,
 	norma=0, % to normalize the height above.
 	normb=0, % to normalize the height below.
 	normcolor=transparent,
@@ -113,6 +113,7 @@
 \DeclareOptionX{braidsingcross}{\renewcommand{\cmdstr@strands@braidsingcross}{#1}}
 \DeclareOptionX{braidvirtcross}{\renewcommand{\cmdstr@strands@braidvirtcross}{#1}}
 \DeclareOptionX{bulletsize}{\renewcommand{\cmdstr@strands@bulletsize}{#1}}
+\DeclareOptionX{coverunion}{\renewcommand{\cmdstr@strands@coverunion}{#1}}
 \DeclareOptionX{font}{\renewcommand{\cmdstr@strands@font}{#1}}
 \DeclareOptionX{gencharposbraid}{\renewcommand{\cmdstr@strands@gencharposbraid}{#1}}
 \DeclareOptionX{gencharnegbraid}{\renewcommand{\cmdstr@strands@gencharnegbraid}{#1}}
@@ -120,11 +121,10 @@
 \DeclareOptionX{gencharsingular}{\renewcommand{\cmdstr@strands@gencharsingular}{#1}}
 \DeclareOptionX{genchartangle}{\renewcommand{\cmdstr@strands@genchartangle}{#1}}
 \DeclareOptionX{genchartie}{\renewcommand{\cmdstr@strands@genchartie}{#1}}
-\DeclareOptionX{gensep}{\renewcommand{\cmdstr@strands@gensep}{#1}}
+\DeclareOptionX{genchartiedtangle}{\renewcommand{\cmdstr@strands@genchartiedtangle}{#1}}
 \DeclareOptionX{height}{\renewcommand{\cmdstr@strands@height}{#1}}
 \DeclareOptionX{labelver}{\renewcommand{\cmdstr@strands@labelver}{#1}}
 \DeclareOptionX{labelhor}{\renewcommand{\cmdstr@strands@labelhor}{#1}}
-\DeclareOptionX{levelsep}{\renewcommand{\cmdstr@strands@levelsep}{#1}}
 \DeclareOptionX{norma}{\renewcommand{\cmdstr@strands@norma}{#1}}
 \DeclareOptionX{normb}{\renewcommand{\cmdstr@strands@normb}{#1}}
 \DeclareOptionX{normcolor}{\renewcommand{\cmdstr@strands@normcolor}{#1}}
@@ -943,25 +943,6 @@
 	}
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\tikzset{
-	cross/.style={ % new style to draw x--crosses inside nodes (https://tex.stackexchange.com/questions/15160/).
-		path picture={
-  			\draw[black]
-				(path picture bounding box.south east)--
-				(path picture bounding box.north west)
-				(path picture bounding box.south west)--
-				(path picture bounding box.north east);
-		}
-	}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\midwidth}{\fpeval{\cmdstr@strands@width/2}} % strands are separated twice this value.
-\newcommand{\midheight}{\fpeval{\cmdstr@strands@height/2}} % the size of each level is twice this value.
-
 % \bbackstrands - macro to draws a trivial two-strands-braid of double strand width.
 
 \makeatletter
@@ -1023,13 +1004,13 @@
 	\draw[
 		color=\cmdstr@lleftstr@color,
 		line width=\cmdstr@lleftstr@strwidth pt
-	](\cmdstr@lleftstr@cdnx,\cmdstr@lleftstr@cdny)
+	](\cmdstr@lleftstr@cdnx,\fpeval{\cmdstr@lleftstr@cdny+\cmdstr@strands@coverunion})
 	to[bend right=\cmdstr@lleftstr@bend]
 		(\fpeval{\cmdstr@lleftstr@cdnx+\cmdstr@lleftstr@width/2},
 		\fpeval{\cmdstr@lleftstr@cdny-\cmdstr@lleftstr@height/2})
 	to[bend left=\cmdstr@lleftstr@bend]
 		(\fpeval{\cmdstr@lleftstr@cdnx+\cmdstr@lleftstr@width},
-		\fpeval{\cmdstr@lleftstr@cdny-\cmdstr@lleftstr@height});
+		\fpeval{\cmdstr@lleftstr@cdny-\cmdstr@lleftstr@height-\cmdstr@strands@coverunion});
 }
 
 % \rrightstrand - macro to draw a strand starting from the right.
@@ -1058,12 +1039,14 @@
 	\draw[
 		color=\cmdstr@rrightstr@color,
 		line width=\cmdstr@rrightstr@strwidth pt
-	](\fpeval{\cmdstr@rrightstr@cdnx+\cmdstr@rrightstr@width},\cmdstr@rrightstr@cdny)
+	](\fpeval{\cmdstr@rrightstr@cdnx+\cmdstr@rrightstr@width},
+		\fpeval{\cmdstr@rrightstr@cdny+\cmdstr@strands@coverunion})
 	to[bend left=\cmdstr@rrightstr@bend]
 		(\fpeval{\cmdstr@rrightstr@cdnx+\cmdstr@rrightstr@width/2},
 		\fpeval{\cmdstr@rrightstr@cdny-\cmdstr@rrightstr@height/2})
 	to[bend right=\cmdstr@rrightstr@bend]
-		(\cmdstr@rrightstr@cdnx,\fpeval{\cmdstr@rrightstr@cdny-\cmdstr@rrightstr@height});
+		(\cmdstr@rrightstr@cdnx,
+		\fpeval{\cmdstr@rrightstr@cdny-\cmdstr@rrightstr@height-\cmdstr@strands@coverunion});
 }
 
 % \ccrossback - macro to draw a \backcolor filled circle to create an over-under / under-over crossing.
@@ -1087,64 +1070,6 @@
 		(\fpeval{\cmdstr@ccrossback@cdnx+\cmdstr@ccrossback@width/2},
 		\fpeval{\cmdstr@ccrossback@cdny-\cmdstr@ccrossback@height/2})
 		circle(\cmdstr@strands@braidcross pt);
-}
-
-% \vvirtualcross - macro to draw the virtual crossing.
-
-\makeatletter
-\define@cmdkey[str]{vvirtcross}{cdnx}{}
-\define@cmdkey[str]{vvirtcross}{cdny}{}
-\define@cmdkey[str]{vvirtcross}{color}{}
-\define@cmdkey[str]{vvirtcross}{height}{}
-\define@cmdkey[str]{vvirtcross}{strwidth}{}
-\define@cmdkey[str]{vvirtcross}{width}{}
-
-\presetkeys[str]{vvirtcross}{
-	cdnx=nothing,
-	cdny=nothing,
-	color=black,
-	height=\cmdstr@strands@height,
-	strwidth=\cmdstr@strands@strwidth,
-	width=\cmdstr@strands@width
-}{}
-
-\newcommand{\vvirtualcross}[1][]{
-	\setkeys[str]{vvirtcross}{#1}
-	\node[
-		circle,
-		cross,
-		draw=\cmdstr@vvirtcross@color,
-		fill=\cmdstr@strands@backcolor,
-		line width=\cmdstr@vvirtcross@strwidth pt,
-		minimum width=\cmdstr@strands@braidvirtcross
-	]
-	at(\fpeval{\cmdstr@vvirtcross@cdnx+\cmdstr@vvirtcross@width/2},
-		\fpeval{\cmdstr@vvirtcross@cdny-\cmdstr@vvirtcross@height/2}){};
-}
-
-% \ssingularcross - macro to draw the singular crossing.
-
-\makeatletter
-\define@cmdkey[str]{ssingcross}{cdnx}{}
-\define@cmdkey[str]{ssingcross}{cdny}{}
-\define@cmdkey[str]{ssingcross}{color}{}
-\define@cmdkey[str]{ssingcross}{height}{}
-\define@cmdkey[str]{ssingcross}{width}{}
-
-\presetkeys[str]{ssingcross}{
-	cdnx=nothing,
-	cdny=nothing,
-	color=black,
-	height=\cmdstr@strands@height,
-	width=\cmdstr@strands@width
-}{}
-
-\newcommand{\ssingularcross}[1][]{
-	\setkeys[str]{ssingcross}{#1}
-	\filldraw[\cmdstr@ssingcross@color]
-		(\fpeval{\cmdstr@ssingcross@cdnx+\cmdstr@ssingcross@width/2},
-		\fpeval{\cmdstr@ssingcross@cdny-\cmdstr@ssingcross@height/2})
-		circle(\cmdstr@strands@braidsingcross pt);
 }
 
 % \bbraidgen - macro to draw a braid crossing (classic, virtual or singular).
@@ -1175,6 +1100,18 @@
 	type=1, % negative-braid=-1 | positive-braid=1 | virtual-braid=2 | singular-braid=3
 	width=\cmdstr@strands@width
 }{}
+
+\tikzset{
+	cross/.style={ % node style to draw x--crosses inside nodes.
+		path picture={
+  			\draw[black]
+				(path picture bounding box.south east)--
+				(path picture bounding box.north west)
+				(path picture bounding box.south west)--
+				(path picture bounding box.north east);
+		}
+	}
+}
 
 \newcommand{\bbraidgen}[1][]{
 	\setkeys[str]{bbraidgen}{#1}
@@ -1239,24 +1176,24 @@
 			strwidth=\cmdstr@bbraidgen@strwidth,
 			width=\cmdstr@bbraidgen@width
 		]
-		\ifnum\cmdstr@bbraidgen@type=2
-			\vvirtualcross[ % virtual generator.
-				cdnx=\cmdstr@bbraidgen@cdnx,
-				cdny=\cmdstr@bbraidgen@cdny,
-				color=\cmdstr@bbraidgen@colorvirtual,
-				height=\cmdstr@bbraidgen@height,
-				strwidth=\cmdstr@bbraidgen@strwidth,
-				width=\cmdstr@bbraidgen@width
+		\ifnum\cmdstr@bbraidgen@type=2 % virtual crossing.
+			\node[
+				circle,
+				cross,
+				draw=\cmdstr@bbraidgen@colorvirtual,
+				fill=\cmdstr@strands@backcolor,
+				inner sep=0,
+				line width=\cmdstr@bbraidgen@strwidth,
+				minimum width=\cmdstr@strands@braidvirtcross
 			]
+			at(\fpeval{\cmdstr@bbraidgen@cdnx+\cmdstr@bbraidgen@width/2},
+				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}){};
 		\fi
-		\ifnum\cmdstr@bbraidgen@type=3
-			\ssingularcross[ % singular generator.
-				cdnx=\cmdstr@bbraidgen@cdnx,
-				cdny=\cmdstr@bbraidgen@cdny,
-				color=\cmdstr@bbraidgen@colorsingular,
-				height=\cmdstr@bbraidgen@height,
-				width=\cmdstr@bbraidgen@width
-			]
+		\ifnum\cmdstr@bbraidgen@type=3 % singular crossing.
+			\filldraw[\cmdstr@bbraidgen@colorsingular]
+				(\fpeval{\cmdstr@bbraidgen@cdnx+\cmdstr@bbraidgen@width/2},
+				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2})
+				circle(\cmdstr@strands@braidsingcross pt);
 		\fi
 	\fi
 }
@@ -1270,6 +1207,14 @@
 \define@cmdkey[str]{ttanglegen}{color}{}
 \define@cmdkey[str]{ttanglegen}{height}{}
 \define@cmdkey[str]{ttanglegen}{strwidth}{}
+\define@cmdkey[str]{ttanglegen}{tiecolor}{}
+\define@cmdkey[str]{ttanglegen}{tied}{}
+\define@cmdkey[str]{ttanglegen}{tiesnake}{}
+\define@cmdkey[str]{ttanglegen}{tiesnakeamp}{}
+\define@cmdkey[str]{ttanglegen}{tiesnakelen}{}
+\define@cmdkey[str]{ttanglegen}{tiesnakends}{}
+\define@cmdkey[str]{ttanglegen}{tiestyle}{}
+\define@cmdkey[str]{ttanglegen}{tiewidth}{}
 \define@cmdkey[str]{ttanglegen}{width}{}
 
 \presetkeys[str]{ttanglegen}{
@@ -1279,7 +1224,15 @@
 	color=black,
 	height=\cmdstr@strands@height,
 	strwidth=\cmdstr@strands@strwidth,
-	width=\cmdstr@strands@width
+	tiecolor=\cmdstr@strands@tiecolor,
+	tied=0,
+	tiesnake=\cmdstr@strands@tiesnake,
+	tiesnakeamp=\cmdstr@strands@tiesnakeamp,
+	tiesnakelen=\cmdstr@strands@tiesnakelen,
+	tiesnakends=\cmdstr@strands@tiesnakends,
+	tiestyle=\cmdstr@strands@tiestyle,
+	tiewidth=\cmdstr@strands@tiewidth,
+	width=\cmdstr@strands@width		
 }{}
 
 \newcommand{\ttanglegen}[1][]{
@@ -1295,19 +1248,39 @@
 		bend right=\cmdstr@strands@bendtangle,
 		color=\cmdstr@ttanglegen@color,
 		line width=\cmdstr@strands@strwidth
-	](\cmdstr@ttanglegen@cdnx,\cmdstr@ttanglegen@cdny)
+	](\cmdstr@ttanglegen@cdnx,\fpeval{\cmdstr@ttanglegen@cdny+\cmdstr@strands@coverunion})
 	to(\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width/2},
-		\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height/3})
-	to(\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width},\cmdstr@ttanglegen@cdny);
+		\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height/3+0.03})
+	to(\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width},
+		\fpeval{\cmdstr@ttanglegen@cdny+\cmdstr@strands@coverunion});
 	\draw[
 		bend left=\cmdstr@strands@bendtangle,
 		color=\cmdstr@ttanglegen@color,
 		line width=\cmdstr@strands@strwidth
-	](\cmdstr@ttanglegen@cdnx,\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height})
+	](\cmdstr@ttanglegen@cdnx,
+		\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height-\cmdstr@strands@coverunion})
 	to(\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width/2},
-		\fpeval{\cmdstr@ttanglegen@cdny-(2*\cmdstr@ttanglegen@height)/3})
+		\fpeval{\cmdstr@ttanglegen@cdny-(2*\cmdstr@ttanglegen@height)/3-0.03})
 	to(\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width},
-		\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height});
+		\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height-\cmdstr@strands@coverunion});
+	\ifnum\cmdstr@ttanglegen@tied=1 % tied version.
+		\draw[
+				color=\cmdstr@ttanglegen@tiecolor,
+				line width=\cmdstr@ttanglegen@tiewidth,
+				decorate=\cmdstr@ttanglegen@tiesnake,
+				decoration={
+					snake,
+					amplitude=\cmdstr@ttanglegen@tiesnakeamp,
+					post length=\cmdstr@ttanglegen@tiesnakends,
+					pre length=\cmdstr@ttanglegen@tiesnakends,
+					segment length=\cmdstr@ttanglegen@tiesnakelen
+				},
+				style=\cmdstr@ttanglegen@tiestyle
+			](\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width/2},
+				\fpeval{\cmdstr@ttanglegen@cdny-\cmdstr@ttanglegen@height/3+0.03})
+			to(\fpeval{\cmdstr@ttanglegen@cdnx+\cmdstr@ttanglegen@width/2},
+				\fpeval{\cmdstr@ttanglegen@cdny-(2*\cmdstr@ttanglegen@height)/3-0.03});
+	\fi
 }
 
 % \aaddgen - macro to add a generator on a strand level.
@@ -1338,8 +1311,8 @@
 	generator=s1,
 	height=\cmdstr@strands@height,
 	level=0,
-	posx=nothing,
-	posy=nothing,
+	posx=nothing, % internal.
+	posy=nothing, % internal.
 	strwidth=\cmdstr@strands@strwidth,
 	tiebull=\cmdstr@strands@tiebull,
 	tiecolor=\cmdstr@strands@tiecolor,
@@ -1406,6 +1379,7 @@
 			cdny=\cmdstr@aaddgen@posy,
 			height=\cmdstr@aaddgen@height,
 			strwidth=\cmdstr@aaddgen@strwidth,
+			tied=0,
 			width=\cmdstr@aaddgen@width
 		]
 	}{\ifthenelse{\equal{\firstchar}{\cmdstr@strands@genchartie}}{
@@ -1416,19 +1390,38 @@
 			floor=\fpeval{\cmdstr@aaddgen@posy-1},
 			snake=\cmdstr@aaddgen@tiesnake,
 			snakeamp=\cmdstr@aaddgen@tiesnakeamp,
-			snakends=\cmdstr@aaddgen@tiesnakends,
 			snakelen=\cmdstr@aaddgen@tiesnakelen,
+			snakends=\cmdstr@aaddgen@tiesnakends,
 			style=\cmdstr@aaddgen@tiestyle,
 			tieheight=\cmdstr@aaddgen@tieheight,
 			tiewidth=\cmdstr@aaddgen@tiewidth,
 			width=\cmdstr@aaddgen@width
 		]{\numstrand,\fpeval{\numstrand+1}}
-	}{DO NOTHING!}}}}}} % \ifthenelse always use "else", so it will do nothing if other letter.
+	}{\ifthenelse{\equal{\firstchar}{\cmdstr@strands@genchartiedtangle}}{
+		\ttanglegen[
+			bend=\cmdstr@aaddgen@bendtangle,
+			cdnx=\cmdstr@aaddgen@posx,
+			cdny=\cmdstr@aaddgen@posy,
+			height=\cmdstr@aaddgen@height,
+			strwidth=\cmdstr@aaddgen@strwidth,
+			tiecolor=\cmdstr@aaddgen@tiecolor,
+			tied=1,
+			tiesnake=\cmdstr@aaddgen@tiesnake,
+			tiesnakeamp=\cmdstr@aaddgen@tiesnakeamp,
+			tiesnakelen=\cmdstr@aaddgen@tiesnakelen,
+			tiesnakends=\cmdstr@aaddgen@tiesnakends,
+			tiestyle=\cmdstr@aaddgen@tiestyle,
+			tiewidth=\cmdstr@aaddgen@tiewidth,
+			width=\cmdstr@aaddgen@width
+		]
+	}{DO NOTHING!}}}}}}} % \ifthenelse always use "else", so it will do nothing if other letter.
 }
-
+	
 % \sstrands  - macro to draw braid-like element via generators (with tikz environment).
 
 \makeatletter
+\define@cmdkey[str]{ggens}{bendbraid}{}
+\define@cmdkey[str]{ggens}{bendtangle}{}
 \define@cmdkey[str]{ggens}{bulla}{}
 \define@cmdkey[str]{ggens}{bullb}{}
 \define@cmdkey[str]{ggens}{floor}{}
@@ -1437,10 +1430,22 @@
 \define@cmdkey[str]{ggens}{labelver}{}
 \define@cmdkey[str]{ggens}{labelhor}{}
 \define@cmdkey[str]{ggens}{nstr}{}
+\define@cmdkey[str]{ggens}{strwidth}{}
+\define@cmdkey[str]{ggens}{tiebull}{}
+\define@cmdkey[str]{ggens}{tiecolor}{}
+\define@cmdkey[str]{ggens}{tieheight}{}
+\define@cmdkey[str]{ggens}{tiesnake}{}
+\define@cmdkey[str]{ggens}{tiesnakeamp}{}
+\define@cmdkey[str]{ggens}{tiesnakends}{}
+\define@cmdkey[str]{ggens}{tiesnakelen}{}
+\define@cmdkey[str]{ggens}{tiestyle}{}
+\define@cmdkey[str]{ggens}{tiewidth}{}
 \define@cmdkey[str]{ggens}{type}{}
 \define@cmdkey[str]{ggens}{width}{}
 
 \presetkeys[str]{ggens}{
+	bendbraid=\cmdstr@strands@bendbraid,
+	bendtangle=\cmdstr@strands@bendtangle,
 	bulla=1,
 	bullb=1,
 	floor=0,
@@ -1448,25 +1453,25 @@
 	height=\cmdstr@strands@height,
 	labelver=\cmdstr@strands@labelver,
 	labelhor=\cmdstr@strands@labelhor,
+	strwidth=\cmdstr@strands@strwidth,
+	tiebull=\cmdstr@strands@tiebull,
+	tiecolor=\cmdstr@strands@tiecolor,
+	tieheight=\cmdstr@strands@tieheight,	
+	tiesnake=\cmdstr@strands@tiesnake,
+	tiesnakeamp=\cmdstr@strands@tiesnakeamp,
+	tiesnakends=\cmdstr@strands@tiesnakends,
+	tiesnakelen=\cmdstr@strands@tiesnakelen,
+	tiestyle=\cmdstr@strands@tiestyle,
+	tiewidth=\cmdstr@strands@tiewidth,	
 	type=3,
 	width=\cmdstr@strands@width
 }{}
 
 \newcounter{levelscounter} % count levels.
 
-%\newcommand{\initstrands}[2]{ % number of strands / number of levels.
-%	% draws a initial trivial n-strands braid.
-%	\foreach\ind in{0,...,\fpeval{#1-1}}{
-%		\draw[line width=\cmdstr@strands@strwidth pt]
-%		(\fpeval{\ind*2*\midwidth},0)to
-%		(\fpeval{\ind*2*\midwidth},\fpeval{-#2*2*\midheight});
-%	}
-%}
-
 \newcommand{\sstrands}[3][]{
 	\setkeys[str]{ggens}{#1}
 	\StrCount{#3}{*}[\numlevs]
-	%\initstrands{#2}{\fpeval{\numlevs+1}} %%%
 	\ppermutation[
 		bulla=0,
 		bullb=0,
@@ -1478,10 +1483,22 @@
 	\ForEach{*}{ % for each level.
 		\stepcounter{levelscounter}
 		\ForEachSublevel{-}{ % for each generator in level.
-			\aaddgen[% add the generator.
+			\aaddgen[ % add the generator.
+				bendbraid=\cmdstr@strands@bendbraid,
+				bendtangle=\cmdstr@strands@bendtangle,
 				generator=\thislevelitem,
 				height=\cmdstr@ggens@height,
 				level=\thelevelscounter,
+				strwidth=\cmdstr@strands@strwidth,
+				tiebull=\cmdstr@strands@tiebull,
+				tiecolor=\cmdstr@strands@tiecolor,
+				tieheight=\cmdstr@strands@tieheight,	
+				tiesnake=\cmdstr@strands@tiesnake,
+				tiesnakeamp=\cmdstr@strands@tiesnakeamp,
+				tiesnakends=\cmdstr@strands@tiesnakends,
+				tiesnakelen=\cmdstr@strands@tiesnakelen,
+				tiestyle=\cmdstr@strands@tiestyle,
+				tiewidth=\cmdstr@strands@tiewidth,
 				width=\cmdstr@ggens@width
 			]
 		}
@@ -1498,4 +1515,90 @@
 		type=\cmdstr@ggens@type,
 		width=\cmdstr@ggens@width
 	]
+}
+
+% \strands  - macro to draw braid-like element via generators (with no tikz environment).
+
+\makeatletter
+\define@cmdkey[str]{gens}{bendbraid}{}
+\define@cmdkey[str]{gens}{bendtangle}{}
+\define@cmdkey[str]{gens}{bulla}{}
+\define@cmdkey[str]{gens}{bullb}{}
+\define@cmdkey[str]{gens}{floor}{}
+\define@cmdkey[str]{gens}{font}{}
+\define@cmdkey[str]{gens}{height}{}
+\define@cmdkey[str]{gens}{labelver}{}
+\define@cmdkey[str]{gens}{labelhor}{}
+\define@cmdkey[str]{gens}{nstr}{}
+\define@cmdkey[str]{gens}{rotate}{}
+\define@cmdkey[str]{gens}{scale}{}
+\define@cmdkey[str]{gens}{strwidth}{}
+\define@cmdkey[str]{gens}{tiebull}{}
+\define@cmdkey[str]{gens}{tiecolor}{}
+\define@cmdkey[str]{gens}{tieheight}{}
+\define@cmdkey[str]{gens}{tiesnake}{}
+\define@cmdkey[str]{gens}{tiesnakeamp}{}
+\define@cmdkey[str]{gens}{tiesnakends}{}
+\define@cmdkey[str]{gens}{tiesnakelen}{}
+\define@cmdkey[str]{gens}{tiestyle}{}
+\define@cmdkey[str]{gens}{tiewidth}{}
+\define@cmdkey[str]{gens}{type}{}
+\define@cmdkey[str]{gens}{width}{}
+
+\presetkeys[str]{gens}{
+	bendbraid=\cmdstr@strands@bendbraid,
+	bendtangle=\cmdstr@strands@bendtangle,
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	rotate=\cmdstr@strands@rotate,
+	scale=\cmdstr@strands@scale,
+	strwidth=\cmdstr@strands@strwidth,
+	tiebull=\cmdstr@strands@tiebull,
+	tiecolor=\cmdstr@strands@tiecolor,
+	tieheight=\cmdstr@strands@tieheight,	
+	tiesnake=\cmdstr@strands@tiesnake,
+	tiesnakeamp=\cmdstr@strands@tiesnakeamp,
+	tiesnakends=\cmdstr@strands@tiesnakends,
+	tiesnakelen=\cmdstr@strands@tiesnakelen,
+	tiestyle=\cmdstr@strands@tiestyle,
+	tiewidth=\cmdstr@strands@tiewidth,	
+	type=2,
+	width=\cmdstr@strands@width
+}{}
+
+\newcommand{\strands}[3][]{
+	\setkeys[str]{gens}{#1}
+	\begin{tikzpicture}[
+		rotate=\cmdstr@gens@rotate,
+		scale=\cmdstr@gens@scale
+	]
+		\sstrands[
+			bendbraid=\cmdstr@gens@bendbraid,
+			bendtangle=\cmdstr@gens@bendtangle,
+			bulla=\cmdstr@gens@bulla,
+			bullb=\cmdstr@gens@bullb,
+			floor=\cmdstr@gens@floor,
+			font=\cmdstr@gens@font,
+			height=\cmdstr@gens@height,
+			labelver=\cmdstr@gens@labelver,
+			labelhor=\cmdstr@gens@labelhor,
+			strwidth=\cmdstr@gens@strwidth,
+			tiebull=\cmdstr@gens@tiebull,
+			tiecolor=\cmdstr@gens@tiecolor,
+			tieheight=\cmdstr@gens@tieheight,	
+			tiesnake=\cmdstr@gens@tiesnake,
+			tiesnakeamp=\cmdstr@gens@tiesnakeamp,
+			tiesnakends=\cmdstr@gens@tiesnakends,
+			tiesnakelen=\cmdstr@gens@tiesnakelen,
+			tiestyle=\cmdstr@gens@tiestyle,
+			tiewidth=\cmdstr@gens@tiewidth,	
+			type=\cmdstr@gens@type,
+			width=\cmdstr@gens@width
+		]{#2}{#3}
+	\end{tikzpicture}
 }
