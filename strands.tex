@@ -1,0 +1,39 @@
+\documentclass[reqno]{../../../Projects/LaTeX/gtpart}
+
+% \kern-1em % negative \quad.
+% \kern-2em % negative \qquad.
+
+\usepackage{minted}
+\usepackage{StrandsPackage/strands}
+
+\title[Strands package]{Strands package}
+
+\author[D. Arcis]{Diego Arcis}
+\address{Facultad de Ciencias de la Salud, Universidad Aut\'onoma de Chile - Sede Talca, 5 Poniente 1670, Talca 3460000, Chile.}
+\email{diego.arcis@uautonoma.cl}
+
+%\subject{primary}{msc2010}{05A18}
+
+\numberwithin{equation}{section}
+
+\begin{document}
+
+\maketitle
+
+\begin{minted}{latex}
+\usepackage[<options>]{strands}
+\end{minted}
+
+\section{The \mintinline{latex}{\vpartition} macro}
+
+\subsection{The \mintinline{latex}{\arcpartition} macro}
+
+\section{The \mintinline{latex}{\strands} macro}
+
+\subsubsection*{Acknowledgements}
+The author was supported by the grant "Fondo de Apoyo a la Investigaci\'on" DIUA179-2020.
+
+\bibliographystyle{plainurl}
+\bibliography{../../../Projects/LaTeX/bibtex}
+
+\end{document}
