@@ -232,11 +232,11 @@
 	}
 }
 
-% \vvpartition  - macro to draw set partitions in the partition monoid (with tikz environment).
+% \vpartition  - macro to draw set partitions in the partition monoid.
 
 % Example: the set partition {1,2}{3,-4}{4,-3} of [2*4] is drawn as follows: 
 
-% \begin{tikzpicture} \vvpartition[<options>]{{1,2},{3,-4},{4,-3}} \end{\tikzpicture}
+% \vpartition[<options>]{{1,2},{3,-4},{4,-3}}
 
 %  1   2   3   4
 %  |   |   |   |
@@ -260,7 +260,10 @@
 \define@cmdkey[str]{vvpart}{nstr}{}
 \define@cmdkey[str]{vvpart}{permut}{}
 \define@cmdkey[str]{vvpart}{reflect}{}
+\define@cmdkey[str]{vvpart}{rotate}{}
+\define@cmdkey[str]{vvpart}{scale}{}
 \define@cmdkey[str]{vvpart}{strwidth}{}
+\define@cmdkey[str]{vvpart}{tkzpic}{}
 \define@cmdkey[str]{vvpart}{type}{}
 \define@cmdkey[str]{vvpart}{width}{}
 
@@ -276,15 +279,22 @@
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of strands.
-	permut=0, % use 1 to draw permutations (to use with \ppermutation).
+	permut=0, % use 1 to draw permutations (to use with \permutation).
 	reflect=0, % use 1 to reflect the tangle connections vertically.
+	rotate=\cmdstr@strands@rotate,
+	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
+	tkzpic=1,
 	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\vvpartition}[2][]{
+\newcommand{\vpartition}[2][]{
 	\setkeys[str]{vvpart}{#1} % set variables.
+	\ifthenelse{\equal{\cmdstr@vvpart@tkzpic}{1}}{\begin{tikzpicture}[
+		rotate=\cmdstr@vvpart@rotate,
+		scale=\cmdstr@vvpart@scale
+	]}{}
 	% normalize vertical size.
 	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol};
 	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol};
@@ -354,95 +364,14 @@
 				);
 		}\fi
 	}\fi
+	\ifthenelse{\equal{\cmdstr@vvpart@tkzpic}{1}}{\end{tikzpicture}}{}
 }
 
-% \vpartition  - macro to draw set partitions in the partition monoid (with no tikz environment).
-
-% Example: the set partition {1,2}{3,-4}{4,-3} of [2*4] is drawn as follows: 
-
-% \vvpartition[<options>]{{1,2},{3,-4},{4,-3}}
-
-%  1   2   3   4
-%  |   |   |   |
-%  -----    - -
-%            -
-%           - -
-%          |   |
-%  5   6   7   8
-
-\makeatletter
-\define@cmdkey[str]{vpart}{bend}{}
-\define@cmdkey[str]{vpart}{bulla}{}
-\define@cmdkey[str]{vpart}{bullb}{}
-\define@cmdkey[str]{vpart}{floor}{}
-\define@cmdkey[str]{vpart}{font}{}
-\define@cmdkey[str]{vpart}{height}{}
-\define@cmdkey[str]{vpart}{labelver}{}
-\define@cmdkey[str]{vpart}{labelhor}{}
-\define@cmdkey[str]{vpart}{norma}{}
-\define@cmdkey[str]{vpart}{normb}{}
-\define@cmdkey[str]{vpart}{scale}{}
-\define@cmdkey[str]{vpart}{nstr}{}
-\define@cmdkey[str]{vpart}{permut}{}
-\define@cmdkey[str]{vpart}{reflect}{}
-\define@cmdkey[str]{vpart}{rotate}{}
-\define@cmdkey[str]{vpart}{strwidth}{}
-\define@cmdkey[str]{vpart}{type}{}
-\define@cmdkey[str]{vpart}{width}{}
-
-\presetkeys[str]{vpart}{
-	bend=\cmdstr@strands@bend,
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor*height.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	nstr=\cmdstr@strands@nstr, % number of strands.
-	permut=0, % use 1 to draw permutations (to use with \permutation).
-	reflect=0, % use 1 to reflect the connections vertically.
-	rotate=\cmdstr@strands@rotate, % to rotate the picture.
-	scale=\cmdstr@strands@scale, % positive number to scale the picture (do not work for labels).
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
-	width=\cmdstr@strands@width % width between strands.
-}{}
-
-\newcommand{\vpartition}[2][]{
-	\setkeys[str]{vpart}{#1}
-	\begin{tikzpicture}[
-		rotate=\cmdstr@vpart@rotate,
-		scale=\cmdstr@vpart@scale
-	]
-		\vvpartition[
-			bend=\cmdstr@vpart@bend,
-			bulla=\cmdstr@vpart@bulla,
-			bullb=\cmdstr@vpart@bullb,
-			floor=\cmdstr@vpart@floor,
-			font=\cmdstr@vpart@font,
-			height=\cmdstr@vpart@height,
-			labelver=\cmdstr@vpart@labelver,
-			labelhor=\cmdstr@vpart@labelhor,
-			norma=\cmdstr@vpart@norma,
-			normb=\cmdstr@vpart@normb,
-			nstr=\cmdstr@vpart@nstr,
-			permut=\cmdstr@vpart@permut,
-			reflect=\cmdstr@vpart@reflect,
-			strwidth=\cmdstr@vpart@strwidth,
-			type=\cmdstr@vpart@type,
-			width=\cmdstr@vpart@width
-		]{#2}
-	\end{tikzpicture}
-}
-
-% \aarcpartition  - macro to draw set partitions via arcs (with tikz environment).
+% \arcpartition  - macro to draw set partitions via arcs.
 
 % Example: the set partition {1,4}{2,3,7} of [7] is drawn as follows: 
 
-% \begin{tikzpicture} \aarcpartition[<options>]{{1,4},{2,3,7}} \end{tikzpicture}
+% \arcpartition[<options>]{{1,4},{2,3,7}}
 
 %          -----------------
 %          |               |
@@ -462,7 +391,10 @@
 \define@cmdkey[str]{aapart}{norma}{}
 \define@cmdkey[str]{aapart}{normb}{}
 \define@cmdkey[str]{aapart}{num}{}
+\define@cmdkey[str]{aapart}{rotate}{}
+\define@cmdkey[str]{aapart}{scale}{}
 \define@cmdkey[str]{aapart}{strwidth}{}
+\define@cmdkey[str]{aapart}{tkzpic}{}
 \define@cmdkey[str]{aapart}{type}{}
 \define@cmdkey[str]{aapart}{width}{}
 
@@ -476,14 +408,21 @@
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	num=\cmdstr@strands@num, % number of dots.
+	rotate=\cmdstr@strands@rotate,
+	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
+	tkzpic=1,
 	type=1, % 0 with no labels | 1 with labels below.
 	width=\cmdstr@strands@width % width between dots.
 }{}
 
-\newcommand{\aarcpartition}[2][]{
+\newcommand{\arcpartition}[2][]{
 	\setkeys[str]{aapart}{#1}
-	\vvpartition[
+	\ifthenelse{\equal{\cmdstr@aapart@tkzpic}{1}}{\begin{tikzpicture}[
+		rotate=\cmdstr@aapart@rotate,
+		scale=\cmdstr@aapart@scale
+	]}{}
+	\vpartition[
 		bend=\cmdstr@aapart@bend,
 		bulla=0, % no bullets above.
 		bullb=\cmdstr@aapart@bull,
@@ -496,85 +435,18 @@
 		nstr=\cmdstr@aapart@num,
 		reflect=1, % put connections below.
 		strwidth=\cmdstr@aapart@strwidth,
+		tkzpic=0,
 		type=-\cmdstr@aapart@type,
 		width=\cmdstr@aapart@width
 	]{#2}
+	\ifthenelse{\equal{\cmdstr@aapart@tkzpic}{1}}{\end{tikzpicture}}{}
 }
 
-% \arcpartition  - macro to draw set partitions via arcs (with no tikz environment).
-
-% Example: the set partition {1,4}{2,3,7} of [7] is drawn as follows: 
-
-% \arcpartition[<options>]{{1,4},{2,3,7}}
-
-%          -----------------
-%          |               |
-%  -------------           |
-%  |       |   |           |
-%  |   -----   |           |
-%  |   |   |   |           |
-%  1   2   3   4   5   6   7
-
-\makeatletter
-\define@cmdkey[str]{apart}{bend}{}
-\define@cmdkey[str]{apart}{bull}{}
-\define@cmdkey[str]{apart}{floor}{}
-\define@cmdkey[str]{apart}{font}{}
-\define@cmdkey[str]{apart}{labelver}{}
-\define@cmdkey[str]{apart}{labelhor}{}
-\define@cmdkey[str]{apart}{norma}{}
-\define@cmdkey[str]{apart}{normb}{}
-\define@cmdkey[str]{apart}{num}{}
-\define@cmdkey[str]{apart}{rotate}{}
-\define@cmdkey[str]{apart}{scale}{}
-\define@cmdkey[str]{apart}{strwidth}{}
-\define@cmdkey[str]{apart}{type}{}
-\define@cmdkey[str]{apart}{width}{}
-
-\presetkeys[str]{apart}{
-	bend=\cmdstr@strands@bend,
-	bull=1, % use 1 to draw bullets, otherwise 0.
-	floor=0, % the picture starts at floor.
-	font=\cmdstr@strands@font, % size of font for labels.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	num=\cmdstr@strands@num, % number of dots.
-	rotate=\cmdstr@strands@rotate, % to rotate the picture.
-	scale=\cmdstr@strands@scale, % positive number to scale the picture (do not work for labels).
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	type=1, % 0 with no labels | 1 with labels below.
-	width=\cmdstr@strands@width % width between dots.
-}{}
-
-\newcommand{\arcpartition}[2][]{
-	\setkeys[str]{apart}{#1}
-	\vpartition[
-		bend=\cmdstr@apart@bend,
-		bulla=0, % no bullets above.
-		bullb=\cmdstr@apart@bull,
-		floor=\cmdstr@apart@floor,
-		font=\cmdstr@apart@font,
-		labelver=\cmdstr@apart@labelver,
-		labelhor=\cmdstr@apart@labelhor,
-		norma=\cmdstr@apart@norma,
-		normb=\cmdstr@apart@normb,
-		nstr=\cmdstr@apart@num,
-		reflect=1, % put connections below.
-		rotate=\cmdstr@apart@rotate,
-		scale=\cmdstr@apart@scale,
-		strwidth=\cmdstr@apart@strwidth,
-		type=-\cmdstr@apart@type,
-		width=\cmdstr@apart@width
-	]{#2}
-}
-
-% \ppermutation  - macro to draw permutations by lines (with tikz environment).
+% \permutation  - macro to draw permutations by lines.
 
 % Example: the permutation 2134 of [4] is drawn as follows: 
 
-% \begin{tikzpicture} \ppermutation[<options>]{2,1,3,4} \end{tikzpicture}
+% \permutation[<options>]{2,1,3,4}
 
 %  1   2   3   4
 %  |   |   |   |
@@ -595,7 +467,10 @@
 \define@cmdkey[str]{pperm}{norma}{}
 \define@cmdkey[str]{pperm}{normb}{}
 \define@cmdkey[str]{pperm}{nstr}{}
+\define@cmdkey[str]{pperm}{rotate}{}
+\define@cmdkey[str]{pperm}{scale}{}
 \define@cmdkey[str]{pperm}{strwidth}{}
+\define@cmdkey[str]{pperm}{tkzpic}{}
 \define@cmdkey[str]{pperm}{type}{}
 \define@cmdkey[str]{pperm}{width}{}
 
@@ -610,15 +485,22 @@
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of dots.
+	rotate=\cmdstr@strands@rotate,
+	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
+	tkzpic=1,
 	type=2, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
 	width=\cmdstr@strands@width % width between dots.
 }{}
 
-\newcommand{\ppermutation}[2][]{
+\newcommand{\permutation}[2][]{
 	\setkeys[str]{pperm}{#1}
+	\ifthenelse{\equal{\cmdstr@pperm@tkzpic}{1}}{\begin{tikzpicture}[
+		rotate=\cmdstr@pperm@rotate,
+		scale=\cmdstr@pperm@scale
+	]}{}
 	\ifnum\cmdstr@pperm@type>2 \renewcommand{\cmdstr@pperm@type}{5}\fi % renumerate type.
-	\vvpartition[
+	\vpartition[
 		bulla=\cmdstr@pperm@bulla,
 		bullb=\cmdstr@pperm@bullb,
 		floor=\cmdstr@pperm@floor,
@@ -631,85 +513,18 @@
 		nstr=\cmdstr@pperm@nstr,
 		permut=1, % permutation.
 		strwidth=\cmdstr@pperm@strwidth,
+		tkzpic=0,
 		type=\cmdstr@pperm@type, % renumerated labels.
 		width=\cmdstr@pperm@width
 	]{#2}
+	\ifthenelse{\equal{\cmdstr@pperm@tkzpic}{1}}{\end{tikzpicture}}{}
 }
 
-% \permutation  - macro to draw permutations by lines (with no tikz environment).
-
-% Example: the permutation 2134 of [4] is drawn as follows:
-
-% \permutation[<options>]{2,1,3,4}
-
-%  1   2   3   4
-%  |   |   |   |
-%   - -    |   |
-%    -     |   |
-%   - -    |   |
-%  |   |   |   |
-%  1   2   3   4
-
-\makeatletter
-\define@cmdkey[str]{perm}{bulla}{}
-\define@cmdkey[str]{perm}{bullb}{}
-\define@cmdkey[str]{perm}{floor}{}
-\define@cmdkey[str]{perm}{font}{}
-\define@cmdkey[str]{perm}{height}{}
-\define@cmdkey[str]{perm}{labelver}{}
-\define@cmdkey[str]{perm}{labelhor}{}
-\define@cmdkey[str]{perm}{norma}{}
-\define@cmdkey[str]{perm}{normb}{}
-\define@cmdkey[str]{perm}{nstr}{}
-\define@cmdkey[str]{perm}{scale}{}
-\define@cmdkey[str]{perm}{strwidth}{}
-\define@cmdkey[str]{perm}{type}{}
-\define@cmdkey[str]{perm}{width}{}
-
-\presetkeys[str]{perm}{
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	nstr=\cmdstr@strands@nstr, % number of dots.
-	scale=\cmdstr@strands@scale, % positive number to scale the picture (do not work for labels).
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	type=2, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
-	width=\cmdstr@strands@width % width between dots.
-}{}
-
-\newcommand{\permutation}[2][]{
-	\setkeys[str]{perm}{#1}
-	\ifnum\cmdstr@perm@type>2 \renewcommand{\cmdstr@perm@type}{5}\fi % renumerate type.
-	\vpartition[
-		bulla=\cmdstr@perm@bulla,
-		bullb=\cmdstr@perm@bullb,
-		floor=\cmdstr@perm@floor,
-		font=\cmdstr@perm@font,
-		height=\cmdstr@perm@height,
-		labelver=\cmdstr@perm@labelver,
-		labelhor=\cmdstr@perm@labelhor,
-		norma=\cmdstr@perm@norma,
-		normb=\cmdstr@perm@normb,
-		nstr=\cmdstr@perm@nstr,
-		permut=1, % permutation.
-		scale=\cmdstr@perm@scale,
-		strwidth=\cmdstr@perm@strwidth,
-		type=\cmdstr@perm@type,
-		width=\cmdstr@perm@width
-	]{#2}
-}
-
-% \ttiedpair  - macro to draw a tied permutation as a pair (with tikz environment).
+% \tiedpair  - macro to draw a tied permutation as a pair.
 
 % Example: the permutation ({2,4},2134) of [4] is drawn as follows:
 
-% \begin{tikzpicture} \tiedpair[<options>]{{2,4}}{2,1,3,4} \end{tikzpicture}
+% \tiedpair[<options>]{{2,4}}{2,1,3,4}
 
 %      2       4
 %      ---------
@@ -734,7 +549,10 @@
 \define@cmdkey[str]{ttpair}{norma}{}
 \define@cmdkey[str]{ttpair}{normb}{}
 \define@cmdkey[str]{ttpair}{nstr}{}
+\define@cmdkey[str]{ttpair}{rotate}{}
+\define@cmdkey[str]{ttpair}{scale}{}
 \define@cmdkey[str]{ttpair}{strwidth}{}
+\define@cmdkey[str]{ttpair}{tkzpic}{}
 \define@cmdkey[str]{ttpair}{type}{}
 \define@cmdkey[str]{ttpair}{width}{}
 
@@ -751,14 +569,21 @@
 	norma=\cmdstr@strands@norma, % point above to normalize height.
 	normb=\cmdstr@strands@normb, % point below to normalize height.
 	nstr=\cmdstr@strands@nstr, % number of dots.
+	rotate=\cmdstr@strands@rotate,
+	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
+	tkzpic=1,
 	type=-1, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
 	width=\cmdstr@strands@width % width between strands.
 }{}
 
-\newcommand{\ttiedpair}[3][]{
+\newcommand{\tiedpair}[3][]{
 	\setkeys[str]{ttpair}{#1}
-	\ppermutation[
+	\ifthenelse{\equal{\cmdstr@ttpair@tkzpic}{1}}{\begin{tikzpicture}[
+		rotate=\cmdstr@ttpair@rotate,
+		scale=\cmdstr@ttpair@scale
+	]}{}
+	\permutation[
 		bulla=\cmdstr@ttpair@bulla,
 		bullb=\cmdstr@ttpair@bullb,
 		floor=\cmdstr@ttpair@floor,
@@ -770,102 +595,23 @@
 		normb=\cmdstr@ttpair@normb,
 		nstr=\cmdstr@ttpair@nstr,
 		strwidth=\cmdstr@ttpair@strwidth,
+		tkzpic=0,
 		type=\cmdstr@ttpair@type,
 		width=\cmdstr@ttpair@width
 	]{#2}
-	\aarcpartition[
+	\arcpartition[
 		bend=\cmdstr@ttpair@bend,
 		bull=0, % no bullets.
 		floor=\fpeval{\cmdstr@ttpair@floor+\cmdstr@ttpair@above*\cmdstr@ttpair@height},
+		tkzpic=0,
 		type=0, % no labels.
 		strwidth=\cmdstr@ttpair@strwidth,
 		width=\cmdstr@ttpair@width
 	]{#3}
+	\ifthenelse{\equal{\cmdstr@ttpair@tkzpic}{1}}{\end{tikzpicture}}{}
 }
 
-% \tiedpair  - macro to draw a tied permutation as a pair (with no tikz environment).
-
-% Example: the permutation ({2,4},2134) of [4] is drawn as follows:
-
-% \tiedpair[<options>]{{2,4}}{2,1,3,4}
-
-%      2       4
-%      ---------
-%  1   |   3   |
-%  |   |   |   |
-%   - -    |   |
-%    -     |   |
-%   - -    |   |
-%  |   |   |   |
-%  1   2   3   4
-
-\makeatletter
-\define@cmdkey[str]{tpair}{above}{}
-\define@cmdkey[str]{tpair}{bend}{}
-\define@cmdkey[str]{tpair}{bulla}{}
-\define@cmdkey[str]{tpair}{bullb}{}
-\define@cmdkey[str]{tpair}{bullb}{}
-\define@cmdkey[str]{tpair}{floor}{}
-\define@cmdkey[str]{tpair}{font}{}
-\define@cmdkey[str]{tpair}{height}{}
-\define@cmdkey[str]{tpair}{labelver}{}
-\define@cmdkey[str]{tpair}{labelhor}{}
-\define@cmdkey[str]{tpair}{norma}{}
-\define@cmdkey[str]{tpair}{normb}{}
-\define@cmdkey[str]{tpair}{nstr}{}
-\define@cmdkey[str]{tpair}{scale}{}
-\define@cmdkey[str]{tpair}{rotate}{}
-\define@cmdkey[str]{tpair}{strwidth}{}
-\define@cmdkey[str]{tpair}{type}{}
-\define@cmdkey[str]{tpair}{width}{}
-
-\presetkeys[str]{tpair}{
-	above=1, % use 1 to put the ties above, otherwise 0.
-	bend=\cmdstr@strands@bend,
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	nstr=\cmdstr@strands@nstr, % number of dots.
-	rotate=\cmdstr@strands@rotate, % to rotate the picture.
-	scale=\cmdstr@strands@scale, % positive number to scale the picture (do not work for labels).
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	type=-1, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
-	width=\cmdstr@strands@width % width between strands.
-}{}
-
-\newcommand{\tiedpair}[3][]{
-	\setkeys[str]{tpair}{#1}
-	\begin{tikzpicture}[
-		rotate=\cmdstr@tpair@rotate,
-		scale=\cmdstr@tpair@scale
-	]
-		\ttiedpair[
-			above=\cmdstr@tpair@above,
-			bend=\cmdstr@tpair@bend,
-			bulla=\cmdstr@tpair@bulla,
-			bullb=\cmdstr@tpair@bullb,
-			floor=\cmdstr@tpair@floor,
-			font=\cmdstr@tpair@font,
-			height=\cmdstr@tpair@height,
-			labelver=\cmdstr@tpair@labelver,
-			labelhor=\cmdstr@tpair@labelhor,
-			norma=\cmdstr@tpair@norma,
-			normb=\cmdstr@tpair@normb,
-			nstr=\cmdstr@tpair@nstr,
-			strwidth=\cmdstr@tpair@strwidth,
-			type=\cmdstr@tpair@type,
-			width=\cmdstr@tpair@width
-		]{#2}{#3}
-	\end{tikzpicture}
-}
-
-% \ttie  - macro to draw a tie (with tikz environment).
+% \tie  - macro to draw a tie.
 
 % \begin{tikzpicture} \tie[height=1.5]{{1,0.8},{3,0.7},{4,0.8}} \end{tikzpicture}
 % \begin{tikzpicture} \tie[height=1.5]{1,2,5} \end{tikzpicture}
@@ -1417,7 +1163,7 @@
 	}{DO NOTHING!}}}}}}} % \ifthenelse always use "else", so it will do nothing if other letter.
 }
 	
-% \sstrands  - macro to draw braid-like element via generators (with tikz environment).
+% \strands  - macro to draw braid-like element via generators (with tikz environment).
 
 \makeatletter
 \define@cmdkey[str]{ggens}{bendbraid}{}
@@ -1430,6 +1176,8 @@
 \define@cmdkey[str]{ggens}{labelver}{}
 \define@cmdkey[str]{ggens}{labelhor}{}
 \define@cmdkey[str]{ggens}{nstr}{}
+\define@cmdkey[str]{ggens}{rotate}{}
+\define@cmdkey[str]{ggens}{scale}{}
 \define@cmdkey[str]{ggens}{strwidth}{}
 \define@cmdkey[str]{ggens}{tiebull}{}
 \define@cmdkey[str]{ggens}{tiecolor}{}
@@ -1440,6 +1188,7 @@
 \define@cmdkey[str]{ggens}{tiesnakelen}{}
 \define@cmdkey[str]{ggens}{tiestyle}{}
 \define@cmdkey[str]{ggens}{tiewidth}{}
+\define@cmdkey[str]{ggens}{tkzpic}{}
 \define@cmdkey[str]{ggens}{type}{}
 \define@cmdkey[str]{ggens}{width}{}
 
@@ -1453,6 +1202,8 @@
 	height=\cmdstr@strands@height,
 	labelver=\cmdstr@strands@labelver,
 	labelhor=\cmdstr@strands@labelhor,
+	rotate=\cmdstr@strands@rotate,
+	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth,
 	tiebull=\cmdstr@strands@tiebull,
 	tiecolor=\cmdstr@strands@tiecolor,
@@ -1462,21 +1213,27 @@
 	tiesnakends=\cmdstr@strands@tiesnakends,
 	tiesnakelen=\cmdstr@strands@tiesnakelen,
 	tiestyle=\cmdstr@strands@tiestyle,
-	tiewidth=\cmdstr@strands@tiewidth,	
+	tiewidth=\cmdstr@strands@tiewidth,
+	tkzpic=1,
 	type=3,
 	width=\cmdstr@strands@width
 }{}
 
 \newcounter{levelscounter} % count levels.
 
-\newcommand{\sstrands}[3][]{
+\newcommand{\strands}[3][]{
 	\setkeys[str]{ggens}{#1}
+	\ifthenelse{\equal{\cmdstr@ggens@tkzpic}{1}}{\begin{tikzpicture}[
+		rotate=\cmdstr@ggens@rotate,
+		scale=\cmdstr@ggens@scale
+	]}{}
 	\StrCount{#3}{*}[\numlevs]
-	\ppermutation[
+	\permutation[
 		bulla=0,
 		bullb=0,
 		height=\fpeval{(\numlevs+1)*\cmdstr@ggens@height},
 		nstr=#2,
+		tkzpic=0,
 		type=0
 	]{1}
 	\setcounter{levelscounter}{0}
@@ -1515,90 +1272,5 @@
 		type=\cmdstr@ggens@type,
 		width=\cmdstr@ggens@width
 	]
-}
-
-% \strands  - macro to draw braid-like element via generators (with no tikz environment).
-
-\makeatletter
-\define@cmdkey[str]{gens}{bendbraid}{}
-\define@cmdkey[str]{gens}{bendtangle}{}
-\define@cmdkey[str]{gens}{bulla}{}
-\define@cmdkey[str]{gens}{bullb}{}
-\define@cmdkey[str]{gens}{floor}{}
-\define@cmdkey[str]{gens}{font}{}
-\define@cmdkey[str]{gens}{height}{}
-\define@cmdkey[str]{gens}{labelver}{}
-\define@cmdkey[str]{gens}{labelhor}{}
-\define@cmdkey[str]{gens}{nstr}{}
-\define@cmdkey[str]{gens}{rotate}{}
-\define@cmdkey[str]{gens}{scale}{}
-\define@cmdkey[str]{gens}{strwidth}{}
-\define@cmdkey[str]{gens}{tiebull}{}
-\define@cmdkey[str]{gens}{tiecolor}{}
-\define@cmdkey[str]{gens}{tieheight}{}
-\define@cmdkey[str]{gens}{tiesnake}{}
-\define@cmdkey[str]{gens}{tiesnakeamp}{}
-\define@cmdkey[str]{gens}{tiesnakends}{}
-\define@cmdkey[str]{gens}{tiesnakelen}{}
-\define@cmdkey[str]{gens}{tiestyle}{}
-\define@cmdkey[str]{gens}{tiewidth}{}
-\define@cmdkey[str]{gens}{type}{}
-\define@cmdkey[str]{gens}{width}{}
-
-\presetkeys[str]{gens}{
-	bendbraid=\cmdstr@strands@bendbraid,
-	bendtangle=\cmdstr@strands@bendtangle,
-	bulla=1,
-	bullb=1,
-	floor=0,
-	font=\cmdstr@strands@font,
-	height=\cmdstr@strands@height,
-	labelver=\cmdstr@strands@labelver,
-	labelhor=\cmdstr@strands@labelhor,
-	rotate=\cmdstr@strands@rotate,
-	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth,
-	tiebull=\cmdstr@strands@tiebull,
-	tiecolor=\cmdstr@strands@tiecolor,
-	tieheight=\cmdstr@strands@tieheight,	
-	tiesnake=\cmdstr@strands@tiesnake,
-	tiesnakeamp=\cmdstr@strands@tiesnakeamp,
-	tiesnakends=\cmdstr@strands@tiesnakends,
-	tiesnakelen=\cmdstr@strands@tiesnakelen,
-	tiestyle=\cmdstr@strands@tiestyle,
-	tiewidth=\cmdstr@strands@tiewidth,	
-	type=2,
-	width=\cmdstr@strands@width
-}{}
-
-\newcommand{\strands}[3][]{
-	\setkeys[str]{gens}{#1}
-	\begin{tikzpicture}[
-		rotate=\cmdstr@gens@rotate,
-		scale=\cmdstr@gens@scale
-	]
-		\sstrands[
-			bendbraid=\cmdstr@gens@bendbraid,
-			bendtangle=\cmdstr@gens@bendtangle,
-			bulla=\cmdstr@gens@bulla,
-			bullb=\cmdstr@gens@bullb,
-			floor=\cmdstr@gens@floor,
-			font=\cmdstr@gens@font,
-			height=\cmdstr@gens@height,
-			labelver=\cmdstr@gens@labelver,
-			labelhor=\cmdstr@gens@labelhor,
-			strwidth=\cmdstr@gens@strwidth,
-			tiebull=\cmdstr@gens@tiebull,
-			tiecolor=\cmdstr@gens@tiecolor,
-			tieheight=\cmdstr@gens@tieheight,	
-			tiesnake=\cmdstr@gens@tiesnake,
-			tiesnakeamp=\cmdstr@gens@tiesnakeamp,
-			tiesnakends=\cmdstr@gens@tiesnakends,
-			tiesnakelen=\cmdstr@gens@tiesnakelen,
-			tiestyle=\cmdstr@gens@tiestyle,
-			tiewidth=\cmdstr@gens@tiewidth,	
-			type=\cmdstr@gens@type,
-			width=\cmdstr@gens@width
-		]{#2}{#3}
-	\end{tikzpicture}
+	\ifthenelse{\equal{\cmdstr@ggens@tkzpic}{1}}{\end{tikzpicture}}{}
 }
