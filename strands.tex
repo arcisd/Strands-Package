@@ -48,8 +48,14 @@ The options \mintinline{latex}{<options>} are entered as \mintinline{latex}{<opt
 \item \mintinline{latex}{rotate}: Integer number to rotate the picture. Default value is $0$.
 \item \mintinline{latex}{scale}: Positive float number to scale the picture. Default value is $1$.
 \item \mintinline{latex}{strwidth}: Positive float number to set the width of the strands. Default value is $0.7$.
-\item \mintinline{latex}{tkzpic}: Use $1$ to add the \mintinline{latex}{tikzpicture} environment automatically, otherwise use $0$. Default value is $1$. Note that options \mintinline{latex}{rotate} and \mintinline{latex}{scale} will not work if \mintinline{latex}{tkzpic} is $0$.
-\item \mintinline{latex}{type}: Value in $\{-1,1,2,3,4,5\}$ to set the labels of the dots. Use $-1$ to put only labels below from $1$ to $n$. Use $0$ to put no labels. Use $1$ to put only labels above from $1$ to $n$. Use $2$ to put labels above and below from $1$ to $n$. Use $3$ to put labels from $1$ to $n$ above and labels from $n+1$ to $2n$ below. Use $4$ to put labels from $1$ to $n$ above and labels from $1'$ to $n'$ below. Use $5$ to put signed labels, $n$ must be even in this case.
+\item \mintinline{latex}{tkzpic}: Use $1$ to add the \mintinline{latex}{tikzpicture} environment automatically, otherwise use $0$. Default value is $1$. Note that options \mintinline{latex}{rotate} and \mintinline{latex}{scale} will not work if \mintinline{latex}{tkzpic} is $0$ and they should be set with the environment.
+\item \mintinline{latex}{type}: Number in $\{0,\pm1,2,\pm3,\pm4,5\}$ to set the labels of the dots. Default value is $3$. Each number is defined as follows:\begin{enumerate}
+\item[(0)] Use $0$ to put no labels.
+\item[(2)] Use $2$ to put labels from $1$ to $n$ above and below and use $1$ or $-1$ to remove the labels below or above respectively.
+\item[(3)]Use $3$ to put labels from $1$ to $n$ above and labels from $n+1$ to $2n$ below. Use $-3$ to remove the labels above.
+\item[(4)]Use $4$ to put labels from $1$ to $n$ above and labels from $1'$ to $n'$ below. Use $-4$ to remove the labels above.
+\item[(5)]Use $5$ to put signed labels from $-n$ to $n$ with $n$ an even number.
+\end{enumerate}
 \item \mintinline{latex}{width}: Positive float number to set the width between horizontal dots. Default value is $0.6$.
 \end{itemize}
 Most of the options defined above can be set as global options in the \mintinline{latex}{\usepackage} macro.
@@ -92,7 +98,6 @@ Use the macro \mintinline{latex}{\arcpartition} to draw the graph of a set parti
 \end{array}\]
 
 The options \mintinline{latex}{<options>} come from \mintinline{latex}{\vpartition}, so most of them are defined in the same way, these are: \mintinline{latex}{bend}, \mintinline{latex}{floor}, \mintinline{latex}{font}, \mintinline{latex}{labelver}, \mintinline{latex}{lavelhor}, \mintinline{latex}{norma}, \mintinline{latex}{normb}, \mintinline{latex}{rotate}, \mintinline{latex}{scale}, \mintinline{latex}{strwidth}, \mintinline{latex}{tkzpic} and \mintinline{latex}{width}. However, the following options work different:
-
 \begin{itemize}
 \item \mintinline{latex}{bull}: Use $1$ to draw bullets from $1$ to $n$. Otherwise use $0$. Default value is $1$.
 \item \mintinline{latex}{num}: Positive integer defining the number of dots. This value is used only if it is bigger than the self computed value.
@@ -100,7 +105,126 @@ The options \mintinline{latex}{<options>} come from \mintinline{latex}{\vpartiti
 \end{itemize}
 Most of the options can be set as global options in the \mintinline{latex}{\usepackage} macro.
 
+\subsection{The \mintinline{latex}{\permutation} macro}
+
+Use the macro \mintinline{latex}{\permutation} to draw permutations in the partition monoid as\[\mintinline{latex}{\permutation[<options>]{<permutation images>}}\]where \mintinline{latex}{<permutation images>} is the list of images of $1$ to $n$ under the permutation, separated by commas. This macro is constructed from \mintinline{latex}{\vpartition}, so its behavior is similar. For instance:\[\begin{array}{c}
+\permutation{3,1,4,5,2}\\
+\mintinline{latex}{\permutation{3,1,4,5,2}}
+\end{array}\]
+
+The options \mintinline{latex}{<options>} come from \mintinline{latex}{\vpartition}, so they are defined in the same way, these are: \mintinline{latex}{bulla}, \mintinline{latex}{bullb}, \mintinline{latex}{floor}, \mintinline{latex}{font}, \mintinline{latex}{height}, \mintinline{latex}{labelver}, \mintinline{latex}{lavelhor}, \mintinline{latex}{norma}, \mintinline{latex}{normb}, \mintinline{latex}{nstr}, \mintinline{latex}{rotate}, \mintinline{latex}{scale}, \mintinline{latex}{strwidth}, \mintinline{latex}{tkzpic}, \mintinline{latex}{type} and \mintinline{latex}{width}.
+
+\subsection{The \mintinline{latex}{\tiedpair} macro}
+
+Use the macro \mintinline{latex}{\tiedpair} to draw a permutation with a set partition of $[n]$ above as\[\mintinline{latex}{\tiedpair{<permutation>}{<set partition>}}\]where \mintinline{latex}{<permutation>} works as in \mintinline{latex}{\permutation} and \mintinline{latex}{<set partition>} works as in \mintinline{latex}{\arcpartition} macro. This macro is constructed from the mentioned ones, so its behavior is similar. For instance:\[\begin{array}{c}
+\tiedpair{2,1,4,6,7,3,5}{{1,4,5},{3,6,7}}\\
+\mintinline{latex}{\tiedpair{2,1,4,6,7,3,5}{{1,4,5},{3,6,7}}}
+\end{array}\]
+
+The options \mintinline{latex}{<options>} come from \mintinline{latex}{\vpartition}, so they are defined in the same way, these are: \mintinline{latex}{bend}, \mintinline{latex}{bulla}, \mintinline{latex}{bullb}, \mintinline{latex}{floor}, \mintinline{latex}{font}, \mintinline{latex}{height}, \mintinline{latex}{labelver}, \mintinline{latex}{lavelhor}, \mintinline{latex}{norma}, \mintinline{latex}{normb}, \mintinline{latex}{nstr}, \mintinline{latex}{rotate}, \mintinline{latex}{scale}, \mintinline{latex}{strwidth}, \mintinline{latex}{tkzpic}, \mintinline{latex}{type} and \mintinline{latex}{width}. However, there is an additional option named \mintinline{latex}{above} which is $1$ by default and can be changed to $0$ to put the set partition below.
+
+\subsection{The \mintinline{latex}{\tie} macro}
+
+Use the macro \mintinline{latex}{\tie} inside a \mintinline{latex}{tikzpicture} environment to draw a tie with some other picture as\[\mintinline{latex}{\tie[<options>]{<dots>}}\]where \mintinline{latex}{<dots>} is the list of dots where this tie is connected. Each dot can be entered as a number $k$ defining the horizontal position inside the \mintinline{latex}{width} or as a pair $\{k,h\}$ where $h$ is its vertical position respect to \mintinline{latex}{height}. For instance:
+\[\begin{tikzpicture}[scale=1.5]
+	\permutation[tkzpic=0]{1,2,3,4,5,7,6}
+	\tie{1,2,4}
+	\tie{{5,0.7},{6.3,0.7}}
+	\tie{{5,0.3},{6.3,0.3}}
+\end{tikzpicture}\]
+\end{tikzpicture}\]
+\begin{minted}{latex}
+\begin{tikzpicture}[scale=1.5]
+	\permutation[tkzpic=0]{1,2,3,4,5,7,6}
+	\tie{1,2,4}
+	\tie{{5,0.7},{6.3,0.7}}
+	\tie{{5,0.3},{6.3,0.3}}
+\end{tikzpicture}
+\end{minted}
+
+The options \mintinline{latex}{<options>} are defined as follows:
+\begin{itemize}
+\item \mintinline{latex}{bend}: Integer number to manage the bend of the tie. Default value is $0$.
+\item \mintinline{latex}{bull}: Use $1$ to draw the connection bullets, otherwise use $0$. Default value is $1$.
+\item \mintinline{latex}{color}: Set the color of the ties. Default value is \mintinline{latex}{red}.
+\item \mintinline{latex}{floor}: Nonnegative float number setting where the main picture starts to be drawn. Default value is $0$.
+\item \mintinline{latex}{height}: Positive float number setting the height of the main picture. Default value is $1$.
+\item \mintinline{latex}{snake}: Use \mintinline{latex}{true} to set the snake style, otherwise use \mintinline{latex}{false}. Default value is \mintinline{latex}{false}.
+\item \mintinline{latex}{snakeamp}: Set the amplitude of the snakes. Use with \mintinline{latex}{snake} option. Default value is $1$.
+\item \mintinline{latex}{snakends}: Set the length of the snake ends. Use with \mintinline{latex}{snake} option. Default value is $0$.
+\item \mintinline{latex}{snakelen}: Set the snake of each snake cycle. Use with \mintinline{latex}{snake} option. Default value is $3$.
+\item \mintinline{latex}{style}: Set the style of the tie (\mintinline{latex}{solid}, \mintinline{latex}{dashed}, \mintinline{latex}{dotted}). Default value is \mintinline{latex}{dashed}.
+\item \mintinline{latex}{tieheight}: Positive float number setting the vertical position of dots if these were entered as a single number. Default value is $0.5$.
+\item \mintinline{latex}{tiewidth}: Positive float number setting the width of the line representing a tie. Default value is $0.5$.
+\item \mintinline{latex}{width}: Positive float number setting the width between horizontal dots of the main picture. Default value is $0.6$.
+\end{itemize}Most of the options can be set as global options in the \mintinline{latex}{\usepackage} macro.
+
 \section{The \mintinline{latex}{\strands} macro}
+
+Use the macro \mintinline{latex}{\strands} to draw braid-like objects as a product of generators as\[\mintinline{latex}{\strands[<options>]{<generators>}}\]where \mintinline{latex}{<generators>} is a list of generators \mintinline{latex}{ai} separated by elements in $\{*,-\}$. Use $*$ to put the next generator in the following floor and $-$ otherwise. For instance:\[\begin{array}{c}
+\strands{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}\\
+\mintinline{latex}{\strands{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}}
+\end{array}\]See a more complex picture at the end of this section. Note that it is similar to the known Braid Package with different options.
+
+The characters defining each type of generator can be changed in the \mintinline{latex}{\usepackage} macro:\begin{itemize}
+\item \mintinline{latex}{gencharposbraid}: Classic positive braid generator. Default value is p.
+\item \mintinline{latex}{gencharnegbraid}: Classic negative braid generator. Default value is n.
+\item \mintinline{latex}{gencharvirtual}: Virtual braid generator. Default value is v.
+\item \mintinline{latex}{gencharsingular}: Singular braid generator. Default value is s.
+\item \mintinline{latex}{genchartangle}: Tangle generator. Default value is t.
+\item \mintinline{latex}{genchartie}: Tie generator. Default value is e.
+\item \mintinline{latex}{genchartiedtangle}: Tied tangle generator. Default value is f.
+\end{itemize}
+
+The options \mintinline{latex}{<options>} for this macro are defined as follows:
+\begin{itemize}
+\item \mintinline{latex}{bendbraid}: Manage the bend of the braid generators.
+\item \mintinline{latex}{bendtangle}: Manage the bend of the tangle generators.
+\item \mintinline{latex}{bulla}: Use $1$ to draw the bullets above, otherwise use $0$.
+\item \mintinline{latex}{bullb}: Use $1$ to draw the bullets below, otherwise use $0$.
+\item \mintinline{latex}{direction}: Direction in which the generators appear. Default is $1$.
+\item \mintinline{latex}{floor}: Manage the floor where the picture starts.
+\item \mintinline{latex}{font}: Manage the font of the labels.
+\item \mintinline{latex}{height}: Height of the picture.
+\item \mintinline{latex}{labelver}: Vertical space between labels and bullets.
+\item \mintinline{latex}{labelhor}: Additional horizontal space between labels.
+\item \mintinline{latex}{rotate}: Rotate angle of the picture.
+\item \mintinline{latex}{nstr}: Number of strands.
+\item \mintinline{latex}{scale}: Scale the picture.
+\item \mintinline{latex}{strwidth}: Width of the strands.
+\item \mintinline{latex}{tiebull}: Use $1$ to put bullets on ties ends, otherwise use $0$. Default value is $0$.
+\item \mintinline{latex}{tiecolor}: Manage the color of the ties. Default value is \mintinline{latex}{red}.
+\item \mintinline{latex}{tieheight}: Manage the vertical position of ties respect to each generator.
+\item \mintinline{latex}{tiesnake}: Use \mintinline{latex}{true} to snake the ties, otherwise use \mintinline{latex}{false}. Default value is false.
+\item \mintinline{latex}{tiesnakeamp}: Manage the amplitude of the snakes.
+\item \mintinline{latex}{tiesnakends}: Length of the ends of snakes.
+\item \mintinline{latex}{tiesnakelen}: Length of snakes cycles.
+\item \mintinline{latex}{tiestyle}: Manage the style of ties (\mintinline{latex}{solid},\mintinline{latex}{dashed},\mintinline{latex}{dotted}). Default value is \mintinline{latex}{dashed}.
+\item \mintinline{latex}{tiewidth}: Width of the ties.
+\item \mintinline{latex}{tkzpic}: Use $1$ to add the \mintinline{latex}{tikzpicture} environment automatically, otherwise use $0$. Default value is $1$.
+\item \mintinline{latex}{type}: Manage the type of labels as in \mintinline{latex}{\vpartition}.
+\item \mintinline{latex}{width}: Width between dots.
+\end{itemize}Most of the options can be set as global options in the \mintinline{latex}{\usepackage} macro.
+
+Here another example:
+\[\strands[
+	rotate=90,
+	tiesnake=true,
+	tiesnakeamp=2,
+	tiesnakelen=4,
+	tiestyle=solid,
+	type=2
+]{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}\]
+\begin{minted}{latex}
+\strands[
+	rotate=90,
+	tiesnake=true,
+	tiesnakeamp=2,
+	tiesnakelen=4,
+	tiestyle=solid,
+	type=2
+]{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}
+\end{minted}
 
 \subsubsection*{Acknowledgements}
 The author was supported by the grant "Fondo de Apoyo a la Investigaci\'on" DIUA179-2020.

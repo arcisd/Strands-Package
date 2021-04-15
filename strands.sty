@@ -26,6 +26,7 @@
 \define@cmdkey[str]{strands}{braidsingcross}{}
 \define@cmdkey[str]{strands}{braidvirtcross}{}
 \define@cmdkey[str]{strands}{coverunion}{}
+\define@cmdkey[str]{strands}{direction}{}
 \define@cmdkey[str]{strands}{font}{}
 \define@cmdkey[str]{strands}{gencharposbraid}{}
 \define@cmdkey[str]{strands}{gencharnegbraid}{}
@@ -56,6 +57,7 @@
 \define@cmdkey[str]{strands}{tiesnakelen}{}
 \define@cmdkey[str]{strands}{tiestyle}{}
 \define@cmdkey[str]{strands}{tiewidth}{}
+\define@cmdkey[str]{strands}{tkzpic}{}
 \define@cmdkey[str]{strands}{width}{}
 
 % default options:
@@ -66,9 +68,10 @@
 	bendtangle=45, % bend for tangles.
 	braidcross=3, % size of the braid crossing.
 	braidsingcross=1.6, % size of the singular braid crossing.
-	braidvirtcross=5.5, % size of the virtual braid crossing.
+	braidvirtcross=8, % size of the virtual braid crossing.
 	bulletsize=0.05,
 	coverunion=0.001, % extra length to cover the union of strands.
+	direction=1,
 	font=0.7, % size of the fonts for labels.
 	gencharposbraid=p,
 	gencharnegbraid=n,
@@ -99,6 +102,7 @@
 	tiesnakelen=3,
 	tiestyle=dashed, % to set the type of the tie lines.
 	tiewidth=0.5, % to set the width of tie lines.
+	tkzpic=1,
 	width=0.6, % to set the width between strands.
 }{}
 
@@ -114,6 +118,7 @@
 \DeclareOptionX{braidvirtcross}{\renewcommand{\cmdstr@strands@braidvirtcross}{#1}}
 \DeclareOptionX{bulletsize}{\renewcommand{\cmdstr@strands@bulletsize}{#1}}
 \DeclareOptionX{coverunion}{\renewcommand{\cmdstr@strands@coverunion}{#1}}
+\DeclareOptionX{direction}{\renewcommand{\cmdstr@strands@direction}{#1}}
 \DeclareOptionX{font}{\renewcommand{\cmdstr@strands@font}{#1}}
 \DeclareOptionX{gencharposbraid}{\renewcommand{\cmdstr@strands@gencharposbraid}{#1}}
 \DeclareOptionX{gencharnegbraid}{\renewcommand{\cmdstr@strands@gencharnegbraid}{#1}}
@@ -139,6 +144,7 @@
 \DeclareOptionX{tiesnake}{\renewcommand{\cmdstr@strands@tiesnake}{#1}}
 \DeclareOptionX{tiestyle}{\renewcommand{\cmdstr@strands@tiestyle}{#1}}
 \DeclareOptionX{tiewidth}{\renewcommand{\cmdstr@strands@tiewidth}{#1}}
+\DeclareOptionX{tkzpic}{\renewcommand{\cmdstr@strands@tkzpic}{#1}}
 \DeclareOptionX{width}{\renewcommand{\cmdstr@strands@width}{#1}}
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
@@ -158,16 +164,16 @@
 \define@cmdkey[str]{decor}{width}{}
 
 \presetkeys[str]{decor}{
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor*height.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	nstr=\cmdstr@strands@nstr, % number of strands.
-	type=3, % set labels, number in {-4,-3,-1,0,1,2,3,4,5}.
-	width=\cmdstr@strands@width % width between strands.
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	nstr=\cmdstr@strands@nstr,
+	type=3,
+	width=\cmdstr@strands@width
 }{}
 
 \newcommand{\decoratestrands}[1][]{
@@ -261,24 +267,24 @@
 
 \presetkeys[str]{vpart}{
 	bend=\cmdstr@strands@bend,
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor*height.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	nstr=\cmdstr@strands@nstr, % number of strands.
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	norma=\cmdstr@strands@norma,
+	normb=\cmdstr@strands@normb,
+	nstr=\cmdstr@strands@nstr,
 	permut=0, % use 1 to draw permutations (to use with \permutation).
-	reflect=0, % use 1 to reflect the tangle connections vertically.
+	reflect=0,
 	rotate=\cmdstr@strands@rotate,
 	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	tkzpic=1,
-	type=3, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below in [n]-[n] | 3: labels above-below in [2n] | 4: labels above-below in [n]-[n'] | 5: labels above-below in [-n/2]-[n/2] (n must be even).
-	width=\cmdstr@strands@width % width between strands.
+	strwidth=\cmdstr@strands@strwidth,
+	tkzpic=\cmdstr@strands@tkzpic,
+	type=3,
+	width=\cmdstr@strands@width
 }{}
 
 \newcommand{\vpartition}[2][]{
@@ -392,20 +398,20 @@
 
 \presetkeys[str]{apart}{
 	bend=\cmdstr@strands@bend,
-	bull=1, % use 1 to draw bullets, otherwise 0.
-	floor=0, % the picture starts at floor.
-	font=\cmdstr@strands@font, % size of font for labels.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	num=\cmdstr@strands@num, % number of dots.
+	bull=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	norma=\cmdstr@strands@norma,
+	normb=\cmdstr@strands@normb,
+	num=\cmdstr@strands@num,
 	rotate=\cmdstr@strands@rotate,
 	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	tkzpic=1,
-	type=1, % 0 with no labels | 1 with labels below.
-	width=\cmdstr@strands@width % width between dots.
+	strwidth=\cmdstr@strands@strwidth,
+	tkzpic=\cmdstr@strands@tkzpic,
+	type=1,
+	width=\cmdstr@strands@width
 }{}
 
 \newcommand{\arcpartition}[2][]{
@@ -467,22 +473,22 @@
 \define@cmdkey[str]{perm}{width}{}
 
 \presetkeys[str]{perm}{
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	nstr=\cmdstr@strands@nstr, % number of dots.
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	norma=\cmdstr@strands@norma,
+	normb=\cmdstr@strands@normb,
+	nstr=\cmdstr@strands@nstr,
 	rotate=\cmdstr@strands@rotate,
 	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	tkzpic=1,
-	type=2, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
-	width=\cmdstr@strands@width % width between dots.
+	strwidth=\cmdstr@strands@strwidth,
+	tkzpic=\cmdstr@strands@tkzpic,
+	type=2,
+	width=\cmdstr@strands@width
 }{}
 
 \newcommand{\permutation}[2][]{
@@ -491,7 +497,6 @@
 		rotate=\cmdstr@perm@rotate,
 		scale=\cmdstr@perm@scale
 	]}{}
-	\ifnum\cmdstr@perm@type>2 \renewcommand{\cmdstr@perm@type}{5}\fi % renumerate type.
 	\vpartition[
 		bulla=\cmdstr@perm@bulla,
 		bullb=\cmdstr@perm@bullb,
@@ -506,7 +511,7 @@
 		permut=1, % permutation.
 		strwidth=\cmdstr@perm@strwidth,
 		tkzpic=0,
-		type=\cmdstr@perm@type, % renumerated labels.
+		type=\cmdstr@perm@type,
 		width=\cmdstr@perm@width
 	]{#2}
 	\ifthenelse{\equal{\cmdstr@perm@tkzpic}{1}}{\end{tikzpicture}}{}
@@ -549,24 +554,24 @@
 \define@cmdkey[str]{tpair}{width}{}
 
 \presetkeys[str]{tpair}{
-	above=1, % use 1 to put the ties above, otherwise 0.
+	above=1,
 	bend=\cmdstr@strands@bend,
-	bulla=1, % use 1 to draw bullets above, otherwise 0.
-	bullb=1, % use 1 to draw bullets below, otherwise 0.
-	floor=0, % the picture starts at floor.
-	font=\cmdstr@strands@font, % size of font for labels.
-	height=\cmdstr@strands@height, % height of the strands.
-	labelver=\cmdstr@strands@labelver, % vertical space of labels.
-	labelhor=\cmdstr@strands@labelhor, % horizontal space of labels for signed case.
-	norma=\cmdstr@strands@norma, % point above to normalize height.
-	normb=\cmdstr@strands@normb, % point below to normalize height.
-	nstr=\cmdstr@strands@nstr, % number of dots.
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	norma=\cmdstr@strands@norma,
+	normb=\cmdstr@strands@normb,
+	nstr=\cmdstr@strands@nstr,
 	rotate=\cmdstr@strands@rotate,
 	scale=\cmdstr@strands@scale,
-	strwidth=\cmdstr@strands@strwidth, % set the width of the strands.
-	tkzpic=1,
-	type=-1, % -1: labels below | 0: no labels | 1: labels above | 2: labels above-below | 3: labels signed.
-	width=\cmdstr@strands@width % width between strands.
+	strwidth=\cmdstr@strands@strwidth,
+	tkzpic=\cmdstr@strands@tkzpic,
+	type=-1,
+	width=\cmdstr@strands@width
 }{}
 
 \newcommand{\tiedpair}[3][]{
@@ -1026,9 +1031,11 @@
 \makeatletter
 \define@cmdkey[str]{aaddgen}{bendbraid}{}
 \define@cmdkey[str]{aaddgen}{bendtangle}{}
+\define@cmdkey[str]{aaddgen}{direction}{}
 \define@cmdkey[str]{aaddgen}{generator}{}
 \define@cmdkey[str]{aaddgen}{height}{}
 \define@cmdkey[str]{aaddgen}{level}{}
+\define@cmdkey[str]{aaddgen}{numlevs}{}
 \define@cmdkey[str]{aaddgen}{posx}{}
 \define@cmdkey[str]{aaddgen}{posy}{}
 \define@cmdkey[str]{aaddgen}{strwidth}{}
@@ -1046,9 +1053,11 @@
 \presetkeys[str]{aaddgen}{
 	bendbraid=\cmdstr@strands@bendbraid,
 	bendtangle=\cmdstr@strands@bendtangle,
+	direction=\cmdstr@strands@direction,
 	generator=s1,
 	height=\cmdstr@strands@height,
 	level=0,
+	numlevs=0,
 	posx=nothing, % internal.
 	posy=nothing, % internal.
 	strwidth=\cmdstr@strands@strwidth,
@@ -1069,7 +1078,12 @@
 	\StrChar{\cmdstr@aaddgen@generator}{1}[\firstchar]
 	\StrBehind{\cmdstr@aaddgen@generator}{\firstchar}[\numstrand]
 	\renewcommand{\cmdstr@aaddgen@posx}{\fpeval{(\numstrand-1)*\cmdstr@aaddgen@width}}
-	\renewcommand{\cmdstr@aaddgen@posy}{\fpeval{\cmdstr@aaddgen@level*\cmdstr@aaddgen@height}}
+	\ifnum\cmdstr@aaddgen@direction=1
+		\renewcommand{\cmdstr@aaddgen@posy}{\fpeval{(\cmdstr@aaddgen@numlevs+2-\cmdstr@aaddgen@level)*\cmdstr@aaddgen@height}}
+	\fi	
+	\ifnum\cmdstr@aaddgen@direction=0
+		\renewcommand{\cmdstr@aaddgen@posy}{\fpeval{\cmdstr@aaddgen@level*\cmdstr@aaddgen@height}}
+	\fi
 	\ifthenelse{\equal{\firstchar}{\cmdstr@strands@gencharnegbraid}}{
 		\bbraidgen[
 			bend=\cmdstr@aaddgen@bendbraid,
@@ -1162,12 +1176,14 @@
 \define@cmdkey[str]{gens}{bendtangle}{}
 \define@cmdkey[str]{gens}{bulla}{}
 \define@cmdkey[str]{gens}{bullb}{}
+\define@cmdkey[str]{gens}{direction}{}
 \define@cmdkey[str]{gens}{floor}{}
 \define@cmdkey[str]{gens}{font}{}
 \define@cmdkey[str]{gens}{height}{}
 \define@cmdkey[str]{gens}{labelver}{}
 \define@cmdkey[str]{gens}{labelhor}{}
 \define@cmdkey[str]{gens}{nstr}{}
+\define@cmdkey[str]{gens}{nstrsave}{}
 \define@cmdkey[str]{gens}{rotate}{}
 \define@cmdkey[str]{gens}{scale}{}
 \define@cmdkey[str]{gens}{strwidth}{}
@@ -1189,12 +1205,15 @@
 	bendtangle=\cmdstr@strands@bendtangle,
 	bulla=1,
 	bullb=1,
+	direction=\cmdstr@strands@direction,
 	floor=0,
 	font=\cmdstr@strands@font,
 	height=\cmdstr@strands@height,
 	labelver=\cmdstr@strands@labelver,
 	labelhor=\cmdstr@strands@labelhor,
 	rotate=\cmdstr@strands@rotate,
+	nstr=0,
+	nstrsave=0,
 	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth,
 	tiebull=\cmdstr@strands@tiebull,
@@ -1206,52 +1225,69 @@
 	tiesnakelen=\cmdstr@strands@tiesnakelen,
 	tiestyle=\cmdstr@strands@tiestyle,
 	tiewidth=\cmdstr@strands@tiewidth,
-	tkzpic=1,
+	tkzpic=\cmdstr@strands@tkzpic,
 	type=3,
 	width=\cmdstr@strands@width
 }{}
 
 \newcounter{levelscounter} % count levels.
 
-\newcommand{\strands}[3][]{
+\newcommand{\strands}[2][]{
 	\setkeys[str]{gens}{#1}
 	\ifthenelse{\equal{\cmdstr@gens@tkzpic}{1}}{\begin{tikzpicture}[
 		rotate=\cmdstr@gens@rotate,
 		scale=\cmdstr@gens@scale
 	]}{}
-	\StrCount{#3}{*}[\numlevs]
-	\permutation[
+	% number of strands.
+	\StrSubstitute{#2}{ }{}[\cmdstr@gens@nstrsave] % remove whitespaces.
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharposbraid}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharnegbraid}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharvirtual}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharsingular}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@genchartangle}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@genchartie}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@genchartiedtangle}{}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{*}{,}[\cmdstr@gens@nstrsave]
+	\StrSubstitute{\cmdstr@gens@nstrsave}{-}{,}[\cmdstr@gens@nstrsave]
+	\let\oldnstr\cmdstr@gens@nstr
+	\renewcommand{\cmdstr@gens@nstr}{\fpeval{max(max(\cmdstr@gens@nstrsave)+1,\oldnstr)}}
+	% backstrands.
+	\StrCount{#2}{*}[\numlevs]
+	\permutation[ % backstrands.
 		bulla=0,
 		bullb=0,
 		height=\fpeval{(\numlevs+1)*\cmdstr@gens@height},
-		nstr=#2,
+		nstr=\cmdstr@gens@nstr,
 		tkzpic=0,
 		type=0
 	]{1}
+	% generators.
 	\setcounter{levelscounter}{0}
 	\ForEach{*}{ % for each level.
 		\stepcounter{levelscounter}
 		\ForEachSublevel{-}{ % for each generator in level.
 			\aaddgen[ % add the generator.
-				bendbraid=\cmdstr@strands@bendbraid,
-				bendtangle=\cmdstr@strands@bendtangle,
+				bendbraid=\cmdstr@gens@bendbraid,
+				bendtangle=\cmdstr@gens@bendtangle,
+				direction=\cmdstr@gens@direction,
 				generator=\thislevelitem,
 				height=\cmdstr@gens@height,
 				level=\thelevelscounter,
-				strwidth=\cmdstr@strands@strwidth,
-				tiebull=\cmdstr@strands@tiebull,
-				tiecolor=\cmdstr@strands@tiecolor,
-				tieheight=\cmdstr@strands@tieheight,	
-				tiesnake=\cmdstr@strands@tiesnake,
-				tiesnakeamp=\cmdstr@strands@tiesnakeamp,
-				tiesnakends=\cmdstr@strands@tiesnakends,
-				tiesnakelen=\cmdstr@strands@tiesnakelen,
-				tiestyle=\cmdstr@strands@tiestyle,
-				tiewidth=\cmdstr@strands@tiewidth,
+				numlevs=\numlevs,
+				strwidth=\cmdstr@gens@strwidth,
+				tiebull=\cmdstr@gens@tiebull,
+				tiecolor=\cmdstr@gens@tiecolor,
+				tieheight=\cmdstr@gens@tieheight,	
+				tiesnake=\cmdstr@gens@tiesnake,
+				tiesnakeamp=\cmdstr@gens@tiesnakeamp,
+				tiesnakends=\cmdstr@gens@tiesnakends,
+				tiesnakelen=\cmdstr@gens@tiesnakelen,
+				tiestyle=\cmdstr@gens@tiestyle,
+				tiewidth=\cmdstr@gens@tiewidth,
 				width=\cmdstr@gens@width
 			]
 		}
-	}{#3}
+	}{#2}
 	\decoratestrands[
 		bulla=\cmdstr@gens@bulla,
 		bullb=\cmdstr@gens@bullb,
@@ -1260,7 +1296,7 @@
 		height=\fpeval{(\numlevs+1)*\cmdstr@gens@height},
 		labelver=\cmdstr@gens@labelver,
 		labelhor=\cmdstr@gens@labelhor,
-		nstr=#2,
+		nstr=\cmdstr@gens@nstr,
 		type=\cmdstr@gens@type,
 		width=\cmdstr@gens@width
 	]
