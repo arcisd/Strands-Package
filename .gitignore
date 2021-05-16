@@ -1,6 +1,8 @@
 *.aux
+*.auxlock
 *.log
 *.out
 *.synctex.gz
-StrandsPackage
 _minted-strands
+StrandsPackage
+tests.tex

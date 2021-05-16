@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{strands}[2021/04/04 Strands v1.0]
+\ProvidesPackage{strands}[2021/05/16 Strands v1.0]
 
 % packages:
 \RequirePackage{forarray}
@@ -149,6 +149,9 @@
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
 
+%\usetikzlibrary{external}
+%\tikzexternalize[optimize=false,prefix=PREFIX]
+
 % \decoratestrands - macro to add bullets and labels to picture.
 
 \makeatletter
@@ -245,6 +248,116 @@
 %  5   6   7   8
 
 \makeatletter
+\define@cmdkey[str]{vvpart}{bend}{}
+\define@cmdkey[str]{vvpart}{bulla}{}
+\define@cmdkey[str]{vvpart}{bullb}{}
+\define@cmdkey[str]{vvpart}{floor}{}
+\define@cmdkey[str]{vvpart}{font}{}
+\define@cmdkey[str]{vvpart}{height}{}
+\define@cmdkey[str]{vvpart}{labelver}{}
+\define@cmdkey[str]{vvpart}{labelhor}{}
+\define@cmdkey[str]{vvpart}{norma}{}
+\define@cmdkey[str]{vvpart}{normb}{}
+\define@cmdkey[str]{vvpart}{nstr}{}
+\define@cmdkey[str]{vvpart}{permut}{}
+\define@cmdkey[str]{vvpart}{reflect}{}
+\define@cmdkey[str]{vvpart}{strwidth}{}
+\define@cmdkey[str]{vvpart}{type}{}
+\define@cmdkey[str]{vvpart}{width}{}
+
+\presetkeys[str]{vvpart}{
+	bend=\cmdstr@strands@bend,
+	bulla=1,
+	bullb=1,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	norma=\cmdstr@strands@norma,
+	normb=\cmdstr@strands@normb,
+	nstr=\cmdstr@strands@nstr,
+	permut=0, % use 1 to draw permutations (to use with \permutation).
+	reflect=0,
+	strwidth=\cmdstr@strands@strwidth,
+	type=3,
+	width=\cmdstr@strands@width
+}{}
+
+\newcommand{\vvpartition}[2][]{
+	\setkeys[str]{vvpart}{#1} % set variables.
+	% normalize vertical size.
+	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol};
+	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol};
+	% number of strands.
+	\StrRemoveBraces{#2}[\nobracespart]
+	\let\oldnumstrands\cmdstr@vvpart@nstr
+	\renewcommand{\cmdstr@vvpart@nstr}
+	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
+	% bullets and labels.
+	\decoratestrands[
+		bulla=\cmdstr@vvpart@bulla,
+		bullb=\cmdstr@vvpart@bullb,
+		floor=\cmdstr@vvpart@floor,
+		font=\cmdstr@vvpart@font,
+		height=\cmdstr@vvpart@height,
+		labelver=\cmdstr@vvpart@labelver,
+		labelhor=\cmdstr@vvpart@labelhor,
+		nstr=\cmdstr@vvpart@nstr,
+		type=\cmdstr@vvpart@type,
+		width=\cmdstr@vvpart@width
+	]
+	% connections: permutation case.
+	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{
+		\ifnum\cmdstr@vvpart@permut=1
+			\getelem{#2}{\fpeval{\ind+1}}{\index} 
+			\draw[line width=\cmdstr@vvpart@strwidth](\fpeval{\ind*\cmdstr@vvpart@width},
+				\fpeval{\cmdstr@vvpart@height+\cmdstr@vvpart@floor*\cmdstr@vvpart@height})to
+				(\fpeval{(\ifnum\fpeval{\index+0}>0 \index\else\fpeval{\ind+1}\fi-1)*
+				\cmdstr@vvpart@width},\cmdstr@vvpart@floor*\cmdstr@vvpart@height);
+		\fi
+	}
+	% connections: general case.
+	\ifnum\cmdstr@vvpart@permut=0 \foreach\block in{#2}{
+		\StrCount{\block}{,}[\numcom]
+		\ifnum\numcom>0\foreach\ind in {2,...,\fpeval{\numcom+1}}{
+			\getelem{\block}{\fpeval{\ind-1}}{\firbul}
+			\getelem{\block}{\ind}{\secbul}
+			\ifnum \cmdstr@vvpart@reflect=1 % reflect connections vertically.
+				\let\oldfirbul\firbul
+				\renewcommand{\firbul}{-\oldfirbul}
+				\let\oldsecbul\secbul
+				\renewcommand{\secbul}{-\oldsecbul}
+			\fi
+			\draw[line width=\cmdstr@vvpart@strwidth]
+				% from.
+				(\fpeval{(abs(\firbul)-1)*\cmdstr@vvpart@width},
+					\ifnum\firbul>0 
+						\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height}
+					\else
+						\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height}
+					\fi
+				)
+					% bending.
+					to[bend right=\ifnum \fpeval{\firbul*\secbul}>0
+						\fpeval{(\firbul/abs(\firbul))*((abs(\secbul)-abs(\firbul))/
+						abs(abs(\secbul)-abs(\firbul)))*\cmdstr@vvpart@bend}
+					\else
+						0
+					\fi]
+				% to.
+				(\fpeval{(abs(\secbul)-1)*\cmdstr@vvpart@width},
+					\ifnum\secbul>0
+						\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height}
+					\else
+						\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height}
+					\fi
+				);
+		}\fi
+	}\fi
+}
+
+\makeatletter
 \define@cmdkey[str]{vpart}{bend}{}
 \define@cmdkey[str]{vpart}{bulla}{}
 \define@cmdkey[str]{vpart}{bullb}{}
@@ -289,81 +402,49 @@
 
 \newcommand{\vpartition}[2][]{
 	\setkeys[str]{vpart}{#1} % set variables.
-	\ifthenelse{\equal{\cmdstr@vpart@tkzpic}{1}}{\begin{tikzpicture}[
-		rotate=\cmdstr@vpart@rotate,
-		scale=\cmdstr@vpart@scale
-	]}{}
-	% normalize vertical size.
-	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vpart@norma){\cmdstr@strands@normsymbol};
-	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vpart@normb){\cmdstr@strands@normsymbol};
-	% number of strands.
-	\StrRemoveBraces{#2}[\nobracespart]
-	\let\oldnumstrands\cmdstr@vpart@nstr
-	\renewcommand{\cmdstr@vpart@nstr}
-	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
-	% bullets and labels.
-	\decoratestrands[
-		bulla=\cmdstr@vpart@bulla,
-		bullb=\cmdstr@vpart@bullb,
-		floor=\cmdstr@vpart@floor,
-		font=\cmdstr@vpart@font,
-		height=\cmdstr@vpart@height,
-		labelver=\cmdstr@vpart@labelver,
-		labelhor=\cmdstr@vpart@labelhor,
-		nstr=\cmdstr@vpart@nstr,
-		type=\cmdstr@vpart@type,
-		width=\cmdstr@vpart@width
-	]
-	% connections: permutation case.
-	\foreach\ind in{0,...,\fpeval{\cmdstr@vpart@nstr-1}}{
-		\ifnum\cmdstr@vpart@permut=1
-			\getelem{#2}{\fpeval{\ind+1}}{\index} 
-			\draw[line width=\cmdstr@vpart@strwidth](\fpeval{\ind*\cmdstr@vpart@width},
-				\fpeval{\cmdstr@vpart@height+\cmdstr@vpart@floor*\cmdstr@vpart@height})to
-				(\fpeval{(\ifnum\fpeval{\index+0}>0 \index\else\fpeval{\ind+1}\fi-1)*
-				\cmdstr@vpart@width},\cmdstr@vpart@floor*\cmdstr@vpart@height);
-		\fi
+	\ifthenelse{\equal{\cmdstr@vpart@tkzpic}{1}}{
+		\begin{tikzpicture}[rotate=\cmdstr@vpart@rotate,scale=\cmdstr@vpart@scale]
+			\vvpartition[
+				bend=\cmdstr@vpart@bend,
+				bulla=\cmdstr@vpart@bulla,
+				bullb=\cmdstr@vpart@bullb,
+				floor=\cmdstr@vpart@floor,
+				font=\cmdstr@vpart@font,
+				height=\cmdstr@vpart@height,
+				labelver=\cmdstr@vpart@labelver,
+				labelhor=\cmdstr@vpart@labelhor,
+				norma=\cmdstr@vpart@norma,
+				normb=\cmdstr@vpart@normb,
+				nstr=\cmdstr@vpart@nstr,
+				permut=\cmdstr@vpart@permut,
+				reflect=\cmdstr@vpart@reflect,
+				strwidth=\cmdstr@vpart@strwidth,
+				type=\cmdstr@vpart@type,
+				width=\cmdstr@vpart@width
+			]{#2}
+		\end{tikzpicture}
+	}{
+		\vvpartition[
+			bend=\cmdstr@vpart@bend,
+			bulla=\cmdstr@vpart@bulla,
+			bullb=\cmdstr@vpart@bullb,
+			floor=\cmdstr@vpart@floor,
+			font=\cmdstr@vpart@font,
+			height=\cmdstr@vpart@height,
+			labelver=\cmdstr@vpart@labelver,
+			labelhor=\cmdstr@vpart@labelhor,
+			norma=\cmdstr@vpart@norma,
+			normb=\cmdstr@vpart@normb,
+			nstr=\cmdstr@vpart@nstr,
+			permut=\cmdstr@vpart@permut,
+			reflect=\cmdstr@vpart@reflect,
+			strwidth=\cmdstr@vpart@strwidth,
+			type=\cmdstr@vpart@type,
+			width=\cmdstr@vpart@width
+		]{#2}
 	}
-	% connections: general case.
-	\ifnum\cmdstr@vpart@permut=0 \foreach\block in{#2}{
-		\StrCount{\block}{,}[\numcom]
-		\ifnum\numcom>0\foreach\ind in {2,...,\fpeval{\numcom+1}}{
-			\getelem{\block}{\fpeval{\ind-1}}{\firbul}
-			\getelem{\block}{\ind}{\secbul}
-			\ifnum \cmdstr@vpart@reflect=1 % reflect connections vertically.
-				\let\oldfirbul\firbul
-				\renewcommand{\firbul}{-\oldfirbul}
-				\let\oldsecbul\secbul
-				\renewcommand{\secbul}{-\oldsecbul}
-			\fi
-			\draw[line width=\cmdstr@vpart@strwidth]
-				% from.
-				(\fpeval{(abs(\firbul)-1)*\cmdstr@vpart@width},
-					\ifnum\firbul>0 
-						\fpeval{(\cmdstr@vpart@floor+1)*\cmdstr@vpart@height}
-					\else
-						\fpeval{\cmdstr@vpart@floor*\cmdstr@vpart@height}
-					\fi
-				)
-					% bending.
-					to[bend right=\ifnum \fpeval{\firbul*\secbul}>0
-						\fpeval{(\firbul/abs(\firbul))*((abs(\secbul)-abs(\firbul))/
-						abs(abs(\secbul)-abs(\firbul)))*\cmdstr@vpart@bend}
-					\else
-						0
-					\fi]
-				% to.
-				(\fpeval{(abs(\secbul)-1)*\cmdstr@vpart@width},
-					\ifnum\secbul>0
-						\fpeval{(\cmdstr@vpart@floor+1)*\cmdstr@vpart@height}
-					\else
-						\fpeval{\cmdstr@vpart@floor*\cmdstr@vpart@height}
-					\fi
-				);
-		}\fi
-	}\fi
-	\ifthenelse{\equal{\cmdstr@vpart@tkzpic}{1}}{\end{tikzpicture}}{}
 }
+
 
 % \arcpartition  - macro to draw set partitions via arcs.
 
@@ -416,10 +497,6 @@
 
 \newcommand{\arcpartition}[2][]{
 	\setkeys[str]{apart}{#1}
-	\ifthenelse{\equal{\cmdstr@apart@tkzpic}{1}}{\begin{tikzpicture}[
-		rotate=\cmdstr@apart@rotate,
-		scale=\cmdstr@apart@scale
-	]}{}
 	\vpartition[
 		bend=\cmdstr@apart@bend,
 		bulla=0, % no bullets above.
@@ -432,12 +509,13 @@
 		normb=\cmdstr@apart@normb,
 		nstr=\cmdstr@apart@num,
 		reflect=1, % put connections below.
+		rotate=\cmdstr@apart@rotate,
+		scale=\cmdstr@apart@scale,
 		strwidth=\cmdstr@apart@strwidth,
-		tkzpic=0,
+		tkzpic=\cmdstr@apart@tkzpic,
 		type=-\cmdstr@apart@type,
 		width=\cmdstr@apart@width
 	]{#2}
-	\ifthenelse{\equal{\cmdstr@apart@tkzpic}{1}}{\end{tikzpicture}}{}
 }
 
 % \permutation  - macro to draw permutations by lines.
@@ -493,10 +571,6 @@
 
 \newcommand{\permutation}[2][]{
 	\setkeys[str]{perm}{#1}
-	\ifthenelse{\equal{\cmdstr@perm@tkzpic}{1}}{\begin{tikzpicture}[
-		rotate=\cmdstr@perm@rotate,
-		scale=\cmdstr@perm@scale
-	]}{}
 	\vpartition[
 		bulla=\cmdstr@perm@bulla,
 		bullb=\cmdstr@perm@bullb,
@@ -509,12 +583,13 @@
 		normb=\cmdstr@perm@normb,
 		nstr=\cmdstr@perm@nstr,
 		permut=1, % permutation.
+		rotate=\cmdstr@perm@rotate,
+		scale=\cmdstr@perm@scale,
 		strwidth=\cmdstr@perm@strwidth,
-		tkzpic=0,
+		tkzpic=\cmdstr@perm@tkzpic,
 		type=\cmdstr@perm@type,
 		width=\cmdstr@perm@width
 	]{#2}
-	\ifthenelse{\equal{\cmdstr@perm@tkzpic}{1}}{\end{tikzpicture}}{}
 }
 
 % \tiedpair  - macro to draw a tied permutation as a pair.
@@ -576,36 +651,61 @@
 
 \newcommand{\tiedpair}[3][]{
 	\setkeys[str]{tpair}{#1}
-	\ifthenelse{\equal{\cmdstr@tpair@tkzpic}{1}}{\begin{tikzpicture}[
-		rotate=\cmdstr@tpair@rotate,
-		scale=\cmdstr@tpair@scale
-	]}{}
-	\permutation[
-		bulla=\cmdstr@tpair@bulla,
-		bullb=\cmdstr@tpair@bullb,
-		floor=\cmdstr@tpair@floor,
-		font=\cmdstr@tpair@font,
-		height=\cmdstr@tpair@height,
-		labelver=\cmdstr@tpair@labelver,
-		labelhor=\cmdstr@tpair@labelhor,
-		norma=\cmdstr@tpair@norma,
-		normb=\cmdstr@tpair@normb,
-		nstr=\cmdstr@tpair@nstr,
-		strwidth=\cmdstr@tpair@strwidth,
-		tkzpic=0,
-		type=\cmdstr@tpair@type,
-		width=\cmdstr@tpair@width
-	]{#2}
-	\arcpartition[
-		bend=\cmdstr@tpair@bend,
-		bull=0, % no bullets.
-		floor=\fpeval{\cmdstr@tpair@floor+\cmdstr@tpair@above*\cmdstr@tpair@height},
-		tkzpic=0,
-		type=0, % no labels.
-		strwidth=\cmdstr@tpair@strwidth,
-		width=\cmdstr@tpair@width
-	]{#3}
-	\ifthenelse{\equal{\cmdstr@tpair@tkzpic}{1}}{\end{tikzpicture}}{}
+	\ifthenelse{\equal{\cmdstr@tpair@tkzpic}{1}}{
+		\begin{tikzpicture}[rotate=\cmdstr@tpair@rotate,scale=\cmdstr@tpair@scale]
+			\permutation[
+				bulla=\cmdstr@tpair@bulla,
+				bullb=\cmdstr@tpair@bullb,
+				floor=\cmdstr@tpair@floor,
+				font=\cmdstr@tpair@font,
+				height=\cmdstr@tpair@height,
+				labelver=\cmdstr@tpair@labelver,
+				labelhor=\cmdstr@tpair@labelhor,
+				norma=\cmdstr@tpair@norma,
+				normb=\cmdstr@tpair@normb,
+				nstr=\cmdstr@tpair@nstr,
+				strwidth=\cmdstr@tpair@strwidth,
+				tkzpic=0,
+				type=\cmdstr@tpair@type,
+				width=\cmdstr@tpair@width
+			]{#2}
+			\arcpartition[
+				bend=\cmdstr@tpair@bend,
+				bull=0, % no bullets.
+				floor=\fpeval{\cmdstr@tpair@floor+\cmdstr@tpair@above*\cmdstr@tpair@height},
+				tkzpic=0,
+				type=0, % no labels.
+				strwidth=\cmdstr@tpair@strwidth,
+				width=\cmdstr@tpair@width
+			]{#3}
+		\end{tikzpicture}
+	}{
+		\permutation[
+			bulla=\cmdstr@tpair@bulla,
+			bullb=\cmdstr@tpair@bullb,
+			floor=\cmdstr@tpair@floor,
+			font=\cmdstr@tpair@font,
+			height=\cmdstr@tpair@height,
+			labelver=\cmdstr@tpair@labelver,
+			labelhor=\cmdstr@tpair@labelhor,
+			norma=\cmdstr@tpair@norma,
+			normb=\cmdstr@tpair@normb,
+			nstr=\cmdstr@tpair@nstr,
+			strwidth=\cmdstr@tpair@strwidth,
+			tkzpic=0,
+			type=\cmdstr@tpair@type,
+			width=\cmdstr@tpair@width
+		]{#2}
+		\arcpartition[
+			bend=\cmdstr@tpair@bend,
+			bull=0, % no bullets.
+			floor=\fpeval{\cmdstr@tpair@floor+\cmdstr@tpair@above*\cmdstr@tpair@height},
+			tkzpic=0,
+			type=0, % no labels.
+			strwidth=\cmdstr@tpair@strwidth,
+			width=\cmdstr@tpair@width
+		]{#3}
+	}
 }
 
 % \tie  - macro to draw a tie.
@@ -1172,6 +1272,127 @@
 % \strands  - macro to draw braid-like element via generators (with tikz environment).
 
 \makeatletter
+\define@cmdkey[str]{ggens}{bendbraid}{}
+\define@cmdkey[str]{ggens}{bendtangle}{}
+\define@cmdkey[str]{ggens}{bulla}{}
+\define@cmdkey[str]{ggens}{bullb}{}
+\define@cmdkey[str]{ggens}{direction}{}
+\define@cmdkey[str]{ggens}{floor}{}
+\define@cmdkey[str]{ggens}{font}{}
+\define@cmdkey[str]{ggens}{height}{}
+\define@cmdkey[str]{ggens}{labelver}{}
+\define@cmdkey[str]{ggens}{labelhor}{}
+\define@cmdkey[str]{ggens}{nstr}{}
+\define@cmdkey[str]{ggens}{nstrsave}{}
+\define@cmdkey[str]{ggens}{strwidth}{}
+\define@cmdkey[str]{ggens}{tiebull}{}
+\define@cmdkey[str]{ggens}{tiecolor}{}
+\define@cmdkey[str]{ggens}{tieheight}{}
+\define@cmdkey[str]{ggens}{tiesnake}{}
+\define@cmdkey[str]{ggens}{tiesnakeamp}{}
+\define@cmdkey[str]{ggens}{tiesnakends}{}
+\define@cmdkey[str]{ggens}{tiesnakelen}{}
+\define@cmdkey[str]{ggens}{tiestyle}{}
+\define@cmdkey[str]{ggens}{tiewidth}{}
+\define@cmdkey[str]{ggens}{type}{}
+\define@cmdkey[str]{ggens}{width}{}
+
+\presetkeys[str]{ggens}{
+	bendbraid=\cmdstr@strands@bendbraid,
+	bendtangle=\cmdstr@strands@bendtangle,
+	bulla=1,
+	bullb=1,
+	direction=\cmdstr@strands@direction,
+	floor=0,
+	font=\cmdstr@strands@font,
+	height=\cmdstr@strands@height,
+	labelver=\cmdstr@strands@labelver,
+	labelhor=\cmdstr@strands@labelhor,
+	nstr=0,
+	nstrsave=0,
+	strwidth=\cmdstr@strands@strwidth,
+	tiebull=\cmdstr@strands@tiebull,
+	tiecolor=\cmdstr@strands@tiecolor,
+	tieheight=\cmdstr@strands@tieheight,	
+	tiesnake=\cmdstr@strands@tiesnake,
+	tiesnakeamp=\cmdstr@strands@tiesnakeamp,
+	tiesnakends=\cmdstr@strands@tiesnakends,
+	tiesnakelen=\cmdstr@strands@tiesnakelen,
+	tiestyle=\cmdstr@strands@tiestyle,
+	tiewidth=\cmdstr@strands@tiewidth,
+	type=3,
+	width=\cmdstr@strands@width
+}{}
+
+\newcounter{levelscounter} % count levels.
+
+\newcommand{\sstrands}[2][]{
+	\setkeys[str]{ggens}{#1}
+	% number of strands.
+	\StrSubstitute{#2}{ }{}[\cmdstr@ggens@nstrsave] % remove whitespaces.
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharposbraid}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharnegbraid}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharvirtual}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharsingular}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartangle}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartie}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartiedtangle}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{*}{,}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{-}{,}[\cmdstr@ggens@nstrsave]
+	\let\oldnstr\cmdstr@ggens@nstr
+	\renewcommand{\cmdstr@ggens@nstr}{\fpeval{max(max(\cmdstr@ggens@nstrsave)+1,\oldnstr)}}
+	% backstrands.
+	\StrCount{#2}{*}[\numlevs]
+	\permutation[ % backstrands.
+		bulla=0,
+		bullb=0,
+		height=\fpeval{(\numlevs+1)*\cmdstr@ggens@height},
+		nstr=\cmdstr@ggens@nstr,
+		tkzpic=0,
+		type=0
+	]{1}
+	% generators.
+	\setcounter{levelscounter}{0}
+	\ForEach{*}{ % for each level.
+		\stepcounter{levelscounter}
+		\ForEachSublevel{-}{ % for each generator in level.
+			\aaddgen[ % add the generator.
+				bendbraid=\cmdstr@ggens@bendbraid,
+				bendtangle=\cmdstr@ggens@bendtangle,
+				direction=\cmdstr@ggens@direction,
+				generator=\thislevelitem,
+				height=\cmdstr@ggens@height,
+				level=\thelevelscounter,
+				numlevs=\numlevs,
+				strwidth=\cmdstr@ggens@strwidth,
+				tiebull=\cmdstr@ggens@tiebull,
+				tiecolor=\cmdstr@ggens@tiecolor,
+				tieheight=\cmdstr@ggens@tieheight,	
+				tiesnake=\cmdstr@ggens@tiesnake,
+				tiesnakeamp=\cmdstr@ggens@tiesnakeamp,
+				tiesnakends=\cmdstr@ggens@tiesnakends,
+				tiesnakelen=\cmdstr@ggens@tiesnakelen,
+				tiestyle=\cmdstr@ggens@tiestyle,
+				tiewidth=\cmdstr@ggens@tiewidth,
+				width=\cmdstr@ggens@width
+			]
+		}
+	}{#2}
+	\decoratestrands[
+		bulla=\cmdstr@ggens@bulla,
+		bullb=\cmdstr@ggens@bullb,
+		floor=\cmdstr@ggens@floor,
+		font=\cmdstr@ggens@font,
+		height=\fpeval{(\numlevs+1)*\cmdstr@ggens@height},
+		labelver=\cmdstr@ggens@labelver,
+		labelhor=\cmdstr@ggens@labelhor,
+		nstr=\cmdstr@ggens@nstr,
+		type=\cmdstr@ggens@type,
+		width=\cmdstr@ggens@width
+	]
+}
+
+\makeatletter
 \define@cmdkey[str]{gens}{bendbraid}{}
 \define@cmdkey[str]{gens}{bendtangle}{}
 \define@cmdkey[str]{gens}{bulla}{}
@@ -1211,9 +1432,9 @@
 	height=\cmdstr@strands@height,
 	labelver=\cmdstr@strands@labelver,
 	labelhor=\cmdstr@strands@labelhor,
-	rotate=\cmdstr@strands@rotate,
 	nstr=0,
 	nstrsave=0,
+	rotate=\cmdstr@strands@rotate,
 	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth,
 	tiebull=\cmdstr@strands@tiebull,
@@ -1230,75 +1451,63 @@
 	width=\cmdstr@strands@width
 }{}
 
-\newcounter{levelscounter} % count levels.
-
 \newcommand{\strands}[2][]{
 	\setkeys[str]{gens}{#1}
-	\ifthenelse{\equal{\cmdstr@gens@tkzpic}{1}}{\begin{tikzpicture}[
-		rotate=\cmdstr@gens@rotate,
-		scale=\cmdstr@gens@scale
-	]}{}
-	% number of strands.
-	\StrSubstitute{#2}{ }{}[\cmdstr@gens@nstrsave] % remove whitespaces.
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharposbraid}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharnegbraid}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharvirtual}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@gencharsingular}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@genchartangle}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@genchartie}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{\cmdstr@strands@genchartiedtangle}{}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{*}{,}[\cmdstr@gens@nstrsave]
-	\StrSubstitute{\cmdstr@gens@nstrsave}{-}{,}[\cmdstr@gens@nstrsave]
-	\let\oldnstr\cmdstr@gens@nstr
-	\renewcommand{\cmdstr@gens@nstr}{\fpeval{max(max(\cmdstr@gens@nstrsave)+1,\oldnstr)}}
-	% backstrands.
-	\StrCount{#2}{*}[\numlevs]
-	\permutation[ % backstrands.
-		bulla=0,
-		bullb=0,
-		height=\fpeval{(\numlevs+1)*\cmdstr@gens@height},
-		nstr=\cmdstr@gens@nstr,
-		tkzpic=0,
-		type=0
-	]{1}
-	% generators.
-	\setcounter{levelscounter}{0}
-	\ForEach{*}{ % for each level.
-		\stepcounter{levelscounter}
-		\ForEachSublevel{-}{ % for each generator in level.
-			\aaddgen[ % add the generator.
+	\ifthenelse{\equal{\cmdstr@gens@tkzpic}{1}}{
+		\begin{tikzpicture}[rotate=\cmdstr@gens@rotate,scale=\cmdstr@gens@scale]
+			\sstrands[
 				bendbraid=\cmdstr@gens@bendbraid,
 				bendtangle=\cmdstr@gens@bendtangle,
+				bulla=\cmdstr@gens@bulla,
+				bullb=\cmdstr@gens@bullb,
 				direction=\cmdstr@gens@direction,
-				generator=\thislevelitem,
+				floor=\cmdstr@gens@floor,
+				font=\cmdstr@gens@font,
 				height=\cmdstr@gens@height,
-				level=\thelevelscounter,
-				numlevs=\numlevs,
+				labelver=\cmdstr@gens@labelver,
+				labelhor=\cmdstr@gens@labelhor,
+				nstr=\cmdstr@gens@nstr,
+				nstrsave=\cmdstr@gens@nstrsave,
 				strwidth=\cmdstr@gens@strwidth,
 				tiebull=\cmdstr@gens@tiebull,
 				tiecolor=\cmdstr@gens@tiecolor,
-				tieheight=\cmdstr@gens@tieheight,	
+				tieheight=\cmdstr@gens@tieheight,
 				tiesnake=\cmdstr@gens@tiesnake,
 				tiesnakeamp=\cmdstr@gens@tiesnakeamp,
 				tiesnakends=\cmdstr@gens@tiesnakends,
 				tiesnakelen=\cmdstr@gens@tiesnakelen,
 				tiestyle=\cmdstr@gens@tiestyle,
 				tiewidth=\cmdstr@gens@tiewidth,
+				type=\cmdstr@gens@type,
 				width=\cmdstr@gens@width
-			]
-		}
-	}{#2}
-	\decoratestrands[
-		bulla=\cmdstr@gens@bulla,
-		bullb=\cmdstr@gens@bullb,
-		floor=\cmdstr@gens@floor,
-		font=\cmdstr@gens@font,
-		height=\fpeval{(\numlevs+1)*\cmdstr@gens@height},
-		labelver=\cmdstr@gens@labelver,
-		labelhor=\cmdstr@gens@labelhor,
-		nstr=\cmdstr@gens@nstr,
-		type=\cmdstr@gens@type,
-		width=\cmdstr@gens@width
-	]
-	\ifthenelse{\equal{\cmdstr@gens@tkzpic}{1}}{\end{tikzpicture}}{}
+			]{#2}
+		\end{tikzpicture}
+	}{
+		\sstrands[
+			bendbraid=\cmdstr@gens@bendbraid,
+			bendtangle=\cmdstr@gens@bendtangle,
+			bulla=\cmdstr@gens@bulla,
+			bullb=\cmdstr@gens@bullb,
+			direction=\cmdstr@gens@direction,
+			floor=\cmdstr@gens@floor,
+			font=\cmdstr@gens@font,
+			height=\cmdstr@gens@height,
+			labelver=\cmdstr@gens@labelver,
+			labelhor=\cmdstr@gens@labelhor,
+			nstr=\cmdstr@gens@nstr,
+			nstrsave=\cmdstr@gens@nstrsave,
+			strwidth=\cmdstr@gens@strwidth,
+			tiebull=\cmdstr@gens@tiebull,
+			tiecolor=\cmdstr@gens@tiecolor,
+			tieheight=\cmdstr@gens@tieheight,
+			tiesnake=\cmdstr@gens@tiesnake,
+			tiesnakeamp=\cmdstr@gens@tiesnakeamp,
+			tiesnakends=\cmdstr@gens@tiesnakends,
+			tiesnakelen=\cmdstr@gens@tiesnakelen,
+			tiestyle=\cmdstr@gens@tiestyle,
+			tiewidth=\cmdstr@gens@tiewidth,
+			type=\cmdstr@gens@type,
+			width=\cmdstr@gens@width
+		]{#2}
+	}
 }
