@@ -57,6 +57,7 @@
 \define@cmdkey[str]{strands}{tiesnakelen}{}
 \define@cmdkey[str]{strands}{tiestyle}{}
 \define@cmdkey[str]{strands}{tiewidth}{}
+\define@cmdkey[str]{strands}{timeswidth}{}
 \define@cmdkey[str]{strands}{tkzpic}{}
 \define@cmdkey[str]{strands}{width}{}
 
@@ -102,6 +103,7 @@
 	tiesnakelen=3,
 	tiestyle=dashed, % to set the type of the tie lines.
 	tiewidth=0.5, % to set the width of tie lines.
+	timeswidth=3,
 	tkzpic=1,
 	width=0.6, % to set the width between strands.
 }{}
@@ -144,13 +146,14 @@
 \DeclareOptionX{tiesnake}{\renewcommand{\cmdstr@strands@tiesnake}{#1}}
 \DeclareOptionX{tiestyle}{\renewcommand{\cmdstr@strands@tiestyle}{#1}}
 \DeclareOptionX{tiewidth}{\renewcommand{\cmdstr@strands@tiewidth}{#1}}
+\DeclareOptionX{timeswidth}{\renewcommand{\cmdstr@strands@timeswidth}{#1}}
 \DeclareOptionX{tkzpic}{\renewcommand{\cmdstr@strands@tkzpic}{#1}}
 \DeclareOptionX{width}{\renewcommand{\cmdstr@strands@width}{#1}}
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
 
 %\usetikzlibrary{external}
-%\tikzexternalize[optimize=false,prefix=PREFIX]
+%\tikzexternalize[optimize=false,prefix=strpack]
 
 % \decoratestrands - macro to add bullets and labels to picture.
 
@@ -802,7 +805,7 @@
 	cdny=nothing,
 	height=\cmdstr@strands@height,
 	strwidth=\cmdstr@strands@strwidth,
-	timeswidth=2, % times the width of the back line is bigger.
+	timeswidth=\cmdstr@strands@timeswidth, % times the width of the back line is bigger.
 	width=\cmdstr@strands@width
 }{}
 
