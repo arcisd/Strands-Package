@@ -157,8 +157,8 @@
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
 
-\usetikzlibrary{external}
-\tikzexternalize[optimize=false,prefix=strpack]
+%\usetikzlibrary{external}
+%\tikzexternalize[optimize=false,prefix=strpack]
 
 % \decoratestrands - macro to add bullets and labels to picture.
 
@@ -681,7 +681,7 @@
 			\permutation[
 				bulla=\cmdstr@tpair@bulla,
 				bullb=\cmdstr@tpair@bullb,
-				bulletends=\cmdstr@tpair@bulletsize,
+				bulletends=\cmdstr@tpair@bulletends,
 				floor=\cmdstr@tpair@floor,
 				font=\cmdstr@tpair@font,
 				height=\cmdstr@tpair@height,
@@ -710,6 +710,7 @@
 		\permutation[
 			bulla=\cmdstr@tpair@bulla,
 			bullb=\cmdstr@tpair@bullb,
+			bulletends=\cmdstr@tpair@bulletends,
 			floor=\cmdstr@tpair@floor,
 			font=\cmdstr@tpair@font,
 			height=\cmdstr@tpair@height,
@@ -892,6 +893,7 @@
 \define@cmdkey[str]{rrightstr}{cdnx}{}
 \define@cmdkey[str]{rrightstr}{cdny}{}
 \define@cmdkey[str]{rrightstr}{color}{}
+\define@cmdkey[str]{rrightstr}{floor}{}
 \define@cmdkey[str]{rrightstr}{height}{}
 \define@cmdkey[str]{rrightstr}{strwidth}{}
 \define@cmdkey[str]{rrightstr}{width}{}
@@ -901,6 +903,7 @@
 	cdnx=nothing,
 	cdny=nothing,
 	color=black,
+	floor=0,
 	height=\cmdstr@strands@height,
 	strwidth=\cmdstr@strands@strwidth,
 	width=\cmdstr@strands@width
@@ -1059,12 +1062,12 @@
 				minimum width=\cmdstr@strands@braidvirtcross
 			]
 			at(\fpeval{\cmdstr@bbraidgen@cdnx+\cmdstr@bbraidgen@width/2},
-				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}){};
+				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}){}; %ddddddd
 		\fi
 		\ifnum\cmdstr@bbraidgen@type=3 % singular crossing.
 			\filldraw[\cmdstr@bbraidgen@colorsingular]
 				(\fpeval{\cmdstr@bbraidgen@cdnx+\cmdstr@bbraidgen@width/2},
-				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2})
+				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}) %ddddddd
 				circle(\cmdstr@strands@braidsingcross pt);
 		\fi
 	\fi
@@ -1161,6 +1164,7 @@
 \define@cmdkey[str]{aaddgen}{bendbraid}{}
 \define@cmdkey[str]{aaddgen}{bendtangle}{}
 \define@cmdkey[str]{aaddgen}{direction}{}
+\define@cmdkey[str]{aaddgen}{floor}{}
 \define@cmdkey[str]{aaddgen}{generator}{}
 \define@cmdkey[str]{aaddgen}{height}{}
 \define@cmdkey[str]{aaddgen}{level}{}
@@ -1184,6 +1188,7 @@
 	bendbraid=\cmdstr@strands@bendbraid,
 	bendtangle=\cmdstr@strands@bendtangle,
 	direction=\cmdstr@strands@direction,
+	floor=0,
 	generator=s1,
 	height=\cmdstr@strands@height,
 	level=0,
@@ -1210,7 +1215,7 @@
 	\StrBehind{\cmdstr@aaddgen@generator}{\firstchar}[\numstrand]
 	\renewcommand{\cmdstr@aaddgen@posx}{\fpeval{(\numstrand-1)*\cmdstr@aaddgen@width}}
 	\ifnum\cmdstr@aaddgen@direction=1
-		\renewcommand{\cmdstr@aaddgen@posy}{\fpeval{(\cmdstr@aaddgen@numlevs+2-\cmdstr@aaddgen@level)*\cmdstr@aaddgen@height}}
+		\renewcommand{\cmdstr@aaddgen@posy}{\fpeval{(\cmdstr@aaddgen@numlevs+2+\cmdstr@aaddgen@floor-\cmdstr@aaddgen@level)*\cmdstr@aaddgen@height}}
 	\fi	
 	\ifnum\cmdstr@aaddgen@direction=0
 		\renewcommand{\cmdstr@aaddgen@posy}{\fpeval{\cmdstr@aaddgen@level*\cmdstr@aaddgen@height}}
@@ -1383,6 +1388,7 @@
 	\permutation[ % backstrands.
 		bulla=0,
 		bullb=0,
+		floor=\fpeval{\cmdstr@ggens@floor/((\numlevs+1)*\cmdstr@ggens@height)}, % ??????????????
 		height=\fpeval{(\numlevs+1)*\cmdstr@ggens@height},
 		nstr=\cmdstr@ggens@nstr,
 		tkzpic=0,
@@ -1397,6 +1403,7 @@
 				bendbraid=\cmdstr@ggens@bendbraid,
 				bendtangle=\cmdstr@ggens@bendtangle,
 				direction=\cmdstr@ggens@direction,
+				floor=\cmdstr@ggens@floor,
 				generator=\thislevelitem,
 				height=\cmdstr@ggens@height,
 				level=\thelevelscounter,
@@ -1420,7 +1427,7 @@
 		bulla=\cmdstr@ggens@bulla,
 		bullb=\cmdstr@ggens@bullb,
 		bulletends=\cmdstr@ggens@bulletends,
-		floor=\cmdstr@ggens@floor,
+		floor=\fpeval{\cmdstr@ggens@floor/((\numlevs+1)*\cmdstr@ggens@height)},
 		font=\cmdstr@ggens@font,
 		height=\fpeval{(\numlevs+1)*\cmdstr@ggens@height},
 		labelver=\cmdstr@ggens@labelver,
