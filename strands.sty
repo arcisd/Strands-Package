@@ -27,6 +27,7 @@
 \define@cmdkey[str]{strands}{braidvirtcross}{}
 \define@cmdkey[str]{strands}{coverunion}{}
 \define@cmdkey[str]{strands}{direction}{}
+\define@cmdkey[str]{strands}{externalize}{}
 \define@cmdkey[str]{strands}{font}{}
 \define@cmdkey[str]{strands}{gencharposbraid}{}
 \define@cmdkey[str]{strands}{gencharnegbraid}{}
@@ -75,6 +76,7 @@
 	bulletsize=0.04,
 	coverunion=0.001, % extra length to cover the union of strands.
 	direction=1,
+	externalize=0, % use 1 to transform images to PDF.
 	font=0.7, % size of the fonts for labels.
 	gencharposbraid=p,
 	gencharnegbraid=n,
@@ -125,6 +127,7 @@
 \DeclareOptionX{bulletsize}{\renewcommand{\cmdstr@strands@bulletsize}{#1}}
 \DeclareOptionX{coverunion}{\renewcommand{\cmdstr@strands@coverunion}{#1}}
 \DeclareOptionX{direction}{\renewcommand{\cmdstr@strands@direction}{#1}}
+\DeclareOptionX{externalize}{\renewcommand{\cmdstr@strands@externalize}{#1}}
 \DeclareOptionX{font}{\renewcommand{\cmdstr@strands@font}{#1}}
 \DeclareOptionX{gencharposbraid}{\renewcommand{\cmdstr@strands@gencharposbraid}{#1}}
 \DeclareOptionX{gencharnegbraid}{\renewcommand{\cmdstr@strands@gencharnegbraid}{#1}}
@@ -157,8 +160,10 @@
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
 
-%\usetikzlibrary{external}
-%\tikzexternalize[optimize=false,prefix=strpack]
+\ifnum\cmdstr@strands@externalize=1
+	\usetikzlibrary{external}
+	\tikzexternalize[optimize=false,prefix=strpack]
+\fi
 
 % \decoratestrands - macro to add bullets and labels to picture.
 
@@ -1062,12 +1067,12 @@
 				minimum width=\cmdstr@strands@braidvirtcross
 			]
 			at(\fpeval{\cmdstr@bbraidgen@cdnx+\cmdstr@bbraidgen@width/2},
-				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}){}; %ddddddd
+				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}){};
 		\fi
 		\ifnum\cmdstr@bbraidgen@type=3 % singular crossing.
 			\filldraw[\cmdstr@bbraidgen@colorsingular]
 				(\fpeval{\cmdstr@bbraidgen@cdnx+\cmdstr@bbraidgen@width/2},
-				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2}) %ddddddd
+				\fpeval{\cmdstr@bbraidgen@cdny-\cmdstr@bbraidgen@height/2})
 				circle(\cmdstr@strands@braidsingcross pt);
 		\fi
 	\fi

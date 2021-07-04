@@ -1,6 +1,8 @@
 *.aux
 *.auxlock
+*.dpth
 *.log
+*.md5
 *.out
 *.synctex.gz
 _minted-strands
