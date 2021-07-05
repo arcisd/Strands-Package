@@ -5,5 +5,7 @@
 *.md5
 *.out
 *.synctex.gz
+*.zip
+README.md
 _minted-strands
-sty2dtx.zip
+tests
