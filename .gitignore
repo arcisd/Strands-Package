@@ -6,5 +6,4 @@
 *.out
 *.synctex.gz
 _minted-strands
-StrandsPackage
-tests.tex
+sty2dtx.zip

@@ -1,21 +1,173 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2021 by Diego Arcis <arcisd@gmail.com>
+% ---------------------------------------------------------------------------
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Diego Arcis.
+%
+% This work consists of the files strands.dtx and strands.ins
+% and the derived filebase strands.sty.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{strands.dtx}
+%</driver>
+%<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%<package>\ProvidesPackage{strands}
+%<*package>
+    [<+date+> <+version+> <+description+>]
+%</package>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage{strands}[<+date+>]
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{strands.dtx}
+  \PrintChanges
+  \PrintIndex
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{1713}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+%
+% \changes{<+version+>}{<+date+>}{Converted to DTX file}
+%
+% \DoNotIndex{\newcommand,\newenvironment}
+%
+% \providecommand*{\url}{\texttt}
+% \GetFileInfo{strands.dtx}
+% \title{The \textsf{strands} package}
+% \author{Diego Arcis \\ \url{arcisd@gmail.com}}
+% \date{\fileversion~from \filedate}
+%
+% \maketitle
+%
+% \section{Introduction}
+%
+% Put text here.
+%
+% \section{Usage}
+%
+% Put text here.
+%
+%
+% \DescribeMacro{\getelem}
+%
+%
+% \DescribeMacro{\decoratestrands}
+%
+%
+% \DescribeMacro{\vvpartition}
+%
+%
+% \DescribeMacro{\vpartition}
+%
+%
+% \DescribeMacro{\arcpartition}
+%
+%
+% \DescribeMacro{\permutation}
+%
+%
+% \DescribeMacro{\tiedpair}
+%
+%
+% \DescribeMacro{\tie}
+%
+%
+% \DescribeMacro{\bbackstrands}
+%
+%
+% \DescribeMacro{\lleftstrand}
+%
+%
+% \DescribeMacro{\rrightstrand}
+%
+%
+% \DescribeMacro{\ccrossback}
+%
+%
+% \DescribeMacro{\bbraidgen}
+%
+%
+% \DescribeMacro{\ttanglegen}
+%
+%
+% \DescribeMacro{\aaddgen}
+%
+%
+% \DescribeMacro{\sstrands}
+%
+%
+% \DescribeMacro{\strands}
+%
+
+%
+% \StopEventually{}
+%
+% \section{Implementation}
+%
+% \iffalse
+%<*package>
+% \fi
+%
+%    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{strands}[Diego Arcis 2021/07/05 Strands v1.0]
-
+%    \end{macrocode}
 % packages:
+%    \begin{macrocode}
 \RequirePackage{forarray}
 \RequirePackage{ifthen}
 \RequirePackage{tikz}
 \RequirePackage{xfp}
 \RequirePackage{xstring}
 \RequirePackage{xkeyval}
-
 \usetikzlibrary{snakes}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\getelem}
+%    \begin{macrocode}
 \newcommand{\getelem}[3]{ % \getelem{list}{index}{\name}
 	\StrBetween[#2,\fpeval{#2+1}]{,#1,}{,}{,}[#3]
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % global variables:
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{strands}{backcolor}{}
 \define@cmdkey[str]{strands}{bend}{}
@@ -63,8 +215,9 @@
 \define@cmdkey[str]{strands}{timeswidth}{}
 \define@cmdkey[str]{strands}{tkzpic}{}
 \define@cmdkey[str]{strands}{width}{}
-
+%    \end{macrocode}
 % default options:
+%    \begin{macrocode}
 \presetkeys[str]{strands}{
 	backcolor=white, % color of the paper.
 	bend=45, % bend of partitions.
@@ -113,10 +266,10 @@
 	tkzpic=1,
 	width=0.6, % to set the width between strands.
 }{}
-
 \setkeys[str]{strands}{}
-
+%    \end{macrocode}
 % declare custom options:
+%    \begin{macrocode}
 \DeclareOptionX{backcolor}{\renewcommand{\cmdstr@strands@backcolor}{#1}}
 \DeclareOptionX{bend}{\renewcommand{\cmdstr@strands@bend}{#1}}
 \DeclareOptionX{bendbraid}{\renewcommand{\cmdstr@strands@bendbraid}{#1}}
@@ -159,14 +312,14 @@
 \DeclareOptionX{width}{\renewcommand{\cmdstr@strands@width}{#1}}
 \DeclareOptionX*{\PackageWarning{strands}{`\CurrentOption' ignored}} % ignore unknown options.
 \ProcessOptionsX\relax
-
 \ifnum\cmdstr@strands@externalize=1
 	\usetikzlibrary{external}
 	\tikzexternalize[optimize=false,prefix=strpack]
 \fi
-
+%    \end{macrocode}
 % \decoratestrands - macro to add bullets and labels to picture.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{decor}{bulla}{}
 \define@cmdkey[str]{decor}{bullb}{}
@@ -179,7 +332,6 @@
 \define@cmdkey[str]{decor}{nstr}{}
 \define@cmdkey[str]{decor}{type}{}
 \define@cmdkey[str]{decor}{width}{}
-
 \presetkeys[str]{decor}{
 	bulla=1,
 	bullb=1,
@@ -193,7 +345,10 @@
 	type=3,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\decoratestrands}
+%    \begin{macrocode}
 \newcommand{\decoratestrands}[1][]{
 	\setkeys[str]{decor}{#1} % set variables.
 	\foreach\ind in{0,...,\fpeval{\cmdstr@decor@nstr-1}}{
@@ -205,7 +360,9 @@
 			\filldraw(\fpeval{\ind*\cmdstr@decor@width},
 			\fpeval{\cmdstr@decor@floor*\cmdstr@decor@height})circle(\cmdstr@decor@bulletends);
 		\fi
-		% classic labels.
+%    \end{macrocode}
+% classic labels.
+%    \begin{macrocode}
 		\ifnum \cmdstr@decor@type<5;
 			\ifnum \cmdstr@decor@type>0 % labels above from 1 to n.
 				\node[scale=\cmdstr@decor@font]at
@@ -224,7 +381,9 @@
 					\fpeval{\ind+1}'
 				}\fi}\fi}\fi$};
 		\fi
-		% signed labels (n must be even).
+%    \end{macrocode}
+% signed labels (n must be even).
+%    \begin{macrocode}
 		\ifnum \cmdstr@decor@type=5
 			\ifnum\ind<\fpeval{\cmdstr@decor@nstr/2} % labels from -2n to 2n.
 				\node[scale=\cmdstr@decor@font]at
@@ -247,13 +406,15 @@
 		\fi
 	}
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \vpartition  - macro to draw set partitions in the partition monoid.
-
+%
 % Example: the set partition {1,2}{3,-4}{4,-3} of [2*4] is drawn as follows: 
-
+%
 % \vpartition[<options>]{{1,2},{3,-4},{4,-3}}
-
+%
 %  1   2   3   4
 %  |   |   |   |
 %  -----    - -
@@ -261,7 +422,8 @@
 %           - -
 %          |   |
 %  5   6   7   8
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{vvpart}{bend}{}
 \define@cmdkey[str]{vvpart}{bulla}{}
@@ -280,7 +442,6 @@
 \define@cmdkey[str]{vvpart}{strwidth}{}
 \define@cmdkey[str]{vvpart}{type}{}
 \define@cmdkey[str]{vvpart}{width}{}
-
 \presetkeys[str]{vvpart}{
 	bend=\cmdstr@strands@bend,
 	bulla=1,
@@ -300,18 +461,27 @@
 	type=3,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\vvpartition}
+%    \begin{macrocode}
 \newcommand{\vvpartition}[2][]{
 	\setkeys[str]{vvpart}{#1} % set variables.
-	% normalize vertical size.
+%    \end{macrocode}
+% normalize vertical size.
+%    \begin{macrocode}
 	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@norma){\cmdstr@strands@normsymbol};
 	\node[\cmdstr@strands@normcolor]at(0,\cmdstr@vvpart@normb){\cmdstr@strands@normsymbol};
-	% number of strands.
+%    \end{macrocode}
+% number of strands.
+%    \begin{macrocode}
 	\StrRemoveBraces{#2}[\nobracespart]
 	\let\oldnumstrands\cmdstr@vvpart@nstr
 	\renewcommand{\cmdstr@vvpart@nstr}
 	{\fpeval{max(abs(min(\nobracespart)),abs(max(\nobracespart)),\fpeval{abs(\oldnumstrands)})}}
-	% bullets and labels.
+%    \end{macrocode}
+% bullets and labels.
+%    \begin{macrocode}
 	\decoratestrands[
 		bulla=\cmdstr@vvpart@bulla,
 		bullb=\cmdstr@vvpart@bullb,
@@ -325,7 +495,9 @@
 		type=\cmdstr@vvpart@type,
 		width=\cmdstr@vvpart@width
 	]
-	% connections: permutation case.
+%    \end{macrocode}
+% connections: permutation case.
+%    \begin{macrocode}
 	\foreach\ind in{0,...,\fpeval{\cmdstr@vvpart@nstr-1}}{
 		\ifnum\cmdstr@vvpart@permut=1
 			\getelem{#2}{\fpeval{\ind+1}}{\index} 
@@ -335,7 +507,9 @@
 				\cmdstr@vvpart@width},\cmdstr@vvpart@floor*\cmdstr@vvpart@height);
 		\fi
 	}
-	% connections: general case.
+%    \end{macrocode}
+% connections: general case.
+%    \begin{macrocode}
 	\ifnum\cmdstr@vvpart@permut=0 \foreach\block in{#2}{
 		\StrCount{\block}{,}[\numcom]
 		\ifnum\numcom>0\foreach\ind in {2,...,\fpeval{\numcom+1}}{
@@ -348,7 +522,9 @@
 				\renewcommand{\secbul}{-\oldsecbul}
 			\fi
 			\draw[line width=\cmdstr@vvpart@strwidth]
-				% from.
+%    \end{macrocode}
+% from.
+%    \begin{macrocode}
 				(\fpeval{(abs(\firbul)-1)*\cmdstr@vvpart@width},
 					\ifnum\firbul>0 
 						\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height}
@@ -356,14 +532,18 @@
 						\fpeval{\cmdstr@vvpart@floor*\cmdstr@vvpart@height}
 					\fi
 				)
-					% bending.
+%    \end{macrocode}
+% bending.
+%    \begin{macrocode}
 					to[bend right=\ifnum \fpeval{\firbul*\secbul}>0
 						\fpeval{(\firbul/abs(\firbul))*((abs(\secbul)-abs(\firbul))/
 						abs(abs(\secbul)-abs(\firbul)))*\cmdstr@vvpart@bend}
 					\else
 						0
 					\fi]
-				% to.
+%    \end{macrocode}
+% to.
+%    \begin{macrocode}
 				(\fpeval{(abs(\secbul)-1)*\cmdstr@vvpart@width},
 					\ifnum\secbul>0
 						\fpeval{(\cmdstr@vvpart@floor+1)*\cmdstr@vvpart@height}
@@ -374,7 +554,10 @@
 		}\fi
 	}\fi
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{vpart}{bend}{}
 \define@cmdkey[str]{vpart}{bulla}{}
@@ -396,7 +579,6 @@
 \define@cmdkey[str]{vpart}{tkzpic}{}
 \define@cmdkey[str]{vpart}{type}{}
 \define@cmdkey[str]{vpart}{width}{}
-
 \presetkeys[str]{vpart}{
 	bend=\cmdstr@strands@bend,
 	bulla=1,
@@ -419,7 +601,10 @@
 	type=3,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\vpartition}
+%    \begin{macrocode}
 \newcommand{\vpartition}[2][]{
 	\setkeys[str]{vpart}{#1} % set variables.
 	\ifthenelse{\equal{\cmdstr@vpart@tkzpic}{1}}{
@@ -466,14 +651,15 @@
 		]{#2}
 	}
 }
-
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \arcpartition  - macro to draw set partitions via arcs.
-
+%
 % Example: the set partition {1,4}{2,3,7} of [7] is drawn as follows: 
-
+%
 % \arcpartition[<options>]{{1,4},{2,3,7}}
-
+%
 %          -----------------
 %          |               |
 %  -------------           |
@@ -481,7 +667,8 @@
 %  |   -----   |           |
 %  |   |   |   |           |
 %  1   2   3   4   5   6   7
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{apart}{bend}{}
 \define@cmdkey[str]{apart}{bull}{}
@@ -499,7 +686,6 @@
 \define@cmdkey[str]{apart}{tkzpic}{}
 \define@cmdkey[str]{apart}{type}{}
 \define@cmdkey[str]{apart}{width}{}
-
 \presetkeys[str]{apart}{
 	bend=\cmdstr@strands@bend,
 	bull=1,
@@ -518,7 +704,10 @@
 	type=1,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\arcpartition}
+%    \begin{macrocode}
 \newcommand{\arcpartition}[2][]{
 	\setkeys[str]{apart}{#1}
 	\vpartition[
@@ -542,13 +731,15 @@
 		width=\cmdstr@apart@width
 	]{#2}
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \permutation  - macro to draw permutations by lines.
-
+%
 % Example: the permutation 2134 of [4] is drawn as follows: 
-
+%
 % \permutation[<options>]{2,1,3,4}
-
+%
 %  1   2   3   4
 %  |   |   |   |
 %   - -    |   |
@@ -556,7 +747,8 @@
 %   - -    |   |
 %  |   |   |   |
 %  1   2   3   4
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{perm}{bulla}{}
 \define@cmdkey[str]{perm}{bullb}{}
@@ -575,7 +767,6 @@
 \define@cmdkey[str]{perm}{tkzpic}{}
 \define@cmdkey[str]{perm}{type}{}
 \define@cmdkey[str]{perm}{width}{}
-
 \presetkeys[str]{perm}{
 	bulla=1,
 	bullb=1,
@@ -595,7 +786,10 @@
 	type=2,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\permutation}
+%    \begin{macrocode}
 \newcommand{\permutation}[2][]{
 	\setkeys[str]{perm}{#1}
 	\vpartition[
@@ -619,13 +813,15 @@
 		width=\cmdstr@perm@width
 	]{#2}
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \tiedpair - macro to draw a tied permutation as a pair.
-
+%
 % Example: the permutation ({2,4},2134) of [4] is drawn as follows:
-
+%
 % \tiedpair[<options>]{{2,4}}{2,1,3,4}
-
+%
 %      2       4
 %      ---------
 %  1   |   3   |
@@ -635,7 +831,8 @@
 %   - -    |   |
 %  |   |   |   |
 %  1   2   3   4
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{tpair}{above}{}
 \define@cmdkey[str]{tpair}{bend}{}
@@ -656,7 +853,6 @@
 \define@cmdkey[str]{tpair}{tkzpic}{}
 \define@cmdkey[str]{tpair}{type}{}
 \define@cmdkey[str]{tpair}{width}{}
-
 \presetkeys[str]{tpair}{
 	above=1,
 	bend=\cmdstr@strands@bend,
@@ -678,7 +874,10 @@
 	type=-1,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\tiedpair}
+%    \begin{macrocode}
 \newcommand{\tiedpair}[3][]{
 	\setkeys[str]{tpair}{#1}
 	\ifthenelse{\equal{\cmdstr@tpair@tkzpic}{1}}{
@@ -740,12 +939,15 @@
 		]{#3}
 	}
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \tie  - macro to draw a tie.
-
+%
 % \begin{tikzpicture} \tie[height=1.5]{{1,0.8},{3,0.7},{4,0.8}} \end{tikzpicture}
 % \begin{tikzpicture} \tie[height=1.5]{1,2,5} \end{tikzpicture}
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{tie}{bend}{}
 \define@cmdkey[str]{tie}{bull}{}
@@ -761,7 +963,6 @@
 \define@cmdkey[str]{tie}{tieheight}{}
 \define@cmdkey[str]{tie}{tiewidth}{}
 \define@cmdkey[str]{tie}{width}{}
-
 \presetkeys[str]{tie}{
 	bend=\cmdstr@strands@tiebend, % bend of the ties.
 	bull=1, % use 1 to use bullets, 0 otherwise.
@@ -778,7 +979,10 @@
 	tiewidth=\cmdstr@strands@tiewidth, % width of the tie line.
 	width=\cmdstr@strands@width % width between strands.
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\tie}
+%    \begin{macrocode}
 \newcommand{\tie}[2][]{
 	\setkeys[str]{tie}{#1}
 	\foreach\elem[count=\ind]in{#2}{
@@ -820,9 +1024,12 @@
 		\fi
 	}
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \bbackstrands - macro to draws a trivial two-strands-braid of double strand width.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{bbackstr}{cdnx}{}
 \define@cmdkey[str]{bbackstr}{cdny}{}
@@ -831,7 +1038,6 @@
 \define@cmdkey[str]{bbackstr}{strwidth}{}
 \define@cmdkey[str]{bbackstr}{timeswidth}{}
 \define@cmdkey[str]{bbackstr}{width}{}
-
 \presetkeys[str]{bbackstr}{
 	cdnx=nothing,
 	cdny=nothing,
@@ -840,7 +1046,10 @@
 	timeswidth=\cmdstr@strands@timeswidth, % times the width of the back line is bigger.
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\bbackstrands}
+%    \begin{macrocode}
 \newcommand{\bbackstrands}[1][]{ % 
 	\setkeys[str]{bbackstr}{#1}
 	\draw[
@@ -855,9 +1064,12 @@
 	to(\fpeval{\cmdstr@bbackstr@cdnx+\cmdstr@bbackstr@width},
 		\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@height});
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \lleftstrand - macro to draws a strand starting from the left.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{lleftstr}{bend}{}
 \define@cmdkey[str]{lleftstr}{cdnx}{}
@@ -866,7 +1078,6 @@
 \define@cmdkey[str]{lleftstr}{height}{}
 \define@cmdkey[str]{lleftstr}{strwidth}{}
 \define@cmdkey[str]{lleftstr}{width}{}
-
 \presetkeys[str]{lleftstr}{
 	bend=\cmdstr@strands@bendbraid,
 	cdnx=nothing,
@@ -876,7 +1087,10 @@
 	strwidth=\cmdstr@strands@strwidth,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\lleftstrand}
+%    \begin{macrocode}
 \newcommand{\lleftstrand}[1][]{
 	\setkeys[str]{lleftstr}{#1}
 	\draw[
@@ -890,9 +1104,12 @@
 		(\fpeval{\cmdstr@lleftstr@cdnx+\cmdstr@lleftstr@width},
 		\fpeval{\cmdstr@lleftstr@cdny-\cmdstr@lleftstr@height-\cmdstr@strands@coverunion});
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \rrightstrand - macro to draw a strand starting from the right.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{rrightstr}{bend}{}
 \define@cmdkey[str]{rrightstr}{cdnx}{}
@@ -902,7 +1119,6 @@
 \define@cmdkey[str]{rrightstr}{height}{}
 \define@cmdkey[str]{rrightstr}{strwidth}{}
 \define@cmdkey[str]{rrightstr}{width}{}
-
 \presetkeys[str]{rrightstr}{
 	bend=\cmdstr@strands@bendbraid,
 	cdnx=nothing,
@@ -913,7 +1129,10 @@
 	strwidth=\cmdstr@strands@strwidth,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\rrightstrand}
+%    \begin{macrocode}
 \newcommand{\rrightstrand}[1][]{ % color / init-x-coordinate / init-y-coordinate.
 	\setkeys[str]{rrightstr}{#1}
 	\draw[
@@ -928,22 +1147,27 @@
 		(\cmdstr@rrightstr@cdnx,
 		\fpeval{\cmdstr@rrightstr@cdny-\cmdstr@rrightstr@height-\cmdstr@strands@coverunion});
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \ccrossback - macro to draw a \backcolor filled circle to create an over-under / under-over crossing.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{ccrossback}{cdnx}{}
 \define@cmdkey[str]{ccrossback}{cdny}{}
 \define@cmdkey[str]{ccrossback}{height}{}
 \define@cmdkey[str]{ccrossback}{width}{}
-
 \presetkeys[str]{ccrossback}{
 	cdnx=nothing,
 	cdny=nothing,
 	height=\cmdstr@strands@height,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\ccrossback}
+%    \begin{macrocode}
 \newcommand{\ccrossback}[1][]{
 	\setkeys[str]{ccrossback}{#1}
 	\filldraw[\cmdstr@strands@backcolor]
@@ -951,9 +1175,12 @@
 		\fpeval{\cmdstr@ccrossback@cdny-\cmdstr@ccrossback@height/2})
 		circle(\cmdstr@strands@braidcross pt);
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \bbraidgen - macro to draw a braid crossing (classic, virtual or singular).
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{bbraidgen}{bend}{}
 \define@cmdkey[str]{bbraidgen}{cdnx}{}
@@ -966,7 +1193,6 @@
 \define@cmdkey[str]{bbraidgen}{strwidth}{}
 \define@cmdkey[str]{bbraidgen}{type}{}
 \define@cmdkey[str]{bbraidgen}{width}{}
-
 \presetkeys[str]{bbraidgen}{
 	bend=\cmdstr@strands@bendbraid,
 	cdnx=0,
@@ -980,7 +1206,6 @@
 	type=1, % negative-braid=-1 | positive-braid=1 | virtual-braid=2 | singular-braid=3
 	width=\cmdstr@strands@width
 }{}
-
 \tikzset{
 	cross/.style={ % node style to draw x--crosses inside nodes.
 		path picture={
@@ -992,7 +1217,10 @@
 		}
 	}
 }
-
+%    \end{macrocode}
+%
+% \begin{macro}{\bbraidgen}
+%    \begin{macrocode}
 \newcommand{\bbraidgen}[1][]{
 	\setkeys[str]{bbraidgen}{#1}
 	\bbackstrands[ % trivial two-strands-braid.
@@ -1077,9 +1305,12 @@
 		\fi
 	\fi
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \ttanglegen - macro to draw a tangle generator.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{ttanglegen}{bend}{}
 \define@cmdkey[str]{ttanglegen}{cdnx}{}
@@ -1096,7 +1327,6 @@
 \define@cmdkey[str]{ttanglegen}{tiestyle}{}
 \define@cmdkey[str]{ttanglegen}{tiewidth}{}
 \define@cmdkey[str]{ttanglegen}{width}{}
-
 \presetkeys[str]{ttanglegen}{
 	bend=\cmdstr@strands@bendtangle,
 	cdnx=0,
@@ -1114,7 +1344,10 @@
 	tiewidth=\cmdstr@strands@tiewidth,
 	width=\cmdstr@strands@width		
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\ttanglegen}
+%    \begin{macrocode}
 \newcommand{\ttanglegen}[1][]{
 	\setkeys[str]{ttanglegen}{#1}
 	\bbackstrands[ % trivial two-strands-braid.
@@ -1162,9 +1395,12 @@
 				\fpeval{\cmdstr@ttanglegen@cdny-(2*\cmdstr@ttanglegen@height)/3-0.03});
 	\fi
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \aaddgen - macro to add a generator on a strand level.
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{aaddgen}{bendbraid}{}
 \define@cmdkey[str]{aaddgen}{bendtangle}{}
@@ -1188,7 +1424,6 @@
 \define@cmdkey[str]{aaddgen}{tiestyle}{}
 \define@cmdkey[str]{aaddgen}{tiewidth}{}
 \define@cmdkey[str]{aaddgen}{width}{}
-
 \presetkeys[str]{aaddgen}{
 	bendbraid=\cmdstr@strands@bendbraid,
 	bendtangle=\cmdstr@strands@bendtangle,
@@ -1213,7 +1448,10 @@
 	tiewidth=\cmdstr@strands@tiewidth,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\aaddgen}
+%    \begin{macrocode}
 \newcommand{\aaddgen}[1][]{
 	\setkeys[str]{aaddgen}{#1}
 	\StrChar{\cmdstr@aaddgen@generator}{1}[\firstchar]
@@ -1310,9 +1548,12 @@
 		]
 	}{DO NOTHING!}}}}}}} % \ifthenelse always use "else", so it will do nothing if other letter.
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
 % \strands  - macro to draw braid-like element via generators (with tikz environment).
-
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{ggens}{bendbraid}{}
 \define@cmdkey[str]{ggens}{bendtangle}{}
@@ -1340,7 +1581,6 @@
 \define@cmdkey[str]{ggens}{tiewidth}{}
 \define@cmdkey[str]{ggens}{type}{}
 \define@cmdkey[str]{ggens}{width}{}
-
 \presetkeys[str]{ggens}{
 	bendbraid=\cmdstr@strands@bendbraid,
 	bendtangle=\cmdstr@strands@bendtangle,
@@ -1369,12 +1609,16 @@
 	type=3,
 	width=\cmdstr@strands@width
 }{}
-
 \newcounter{levelscounter} % count levels.
-
+%    \end{macrocode}
+%
+% \begin{macro}{\sstrands}
+%    \begin{macrocode}
 \newcommand{\sstrands}[2][]{
 	\setkeys[str]{ggens}{#1}
-	% number of strands.
+%    \end{macrocode}
+% number of strands.
+%    \begin{macrocode}
 	\StrSubstitute{#2}{ }{}[\cmdstr@ggens@nstrsave] % remove whitespaces.
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharposbraid}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharnegbraid}{}[\cmdstr@ggens@nstrsave]
@@ -1388,7 +1632,9 @@
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{-}{,}[\cmdstr@ggens@nstrsave]
 	\let\oldnstr\cmdstr@ggens@nstr
 	\renewcommand{\cmdstr@ggens@nstr}{\fpeval{max(max(\cmdstr@ggens@nstrsave)+1,\oldnstr)}}
-	% backstrands.
+%    \end{macrocode}
+% backstrands.
+%    \begin{macrocode}
 	\StrCount{#2}{*}[\numlevs]
 	\permutation[ % backstrands.
 		bulla=0,
@@ -1399,7 +1645,9 @@
 		tkzpic=0,
 		type=0
 	]{1}
-	% generators.
+%    \end{macrocode}
+% generators.
+%    \begin{macrocode}
 	\setcounter{levelscounter}{0}
 	\ForEach{*}{ % for each level.
 		\stepcounter{levelscounter}
@@ -1442,7 +1690,10 @@
 		width=\cmdstr@ggens@width
 	]
 }
-
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
 \makeatletter
 \define@cmdkey[str]{gens}{bendbraid}{}
 \define@cmdkey[str]{gens}{bendtangle}{}
@@ -1473,7 +1724,6 @@
 \define@cmdkey[str]{gens}{tkzpic}{}
 \define@cmdkey[str]{gens}{type}{}
 \define@cmdkey[str]{gens}{width}{}
-
 \presetkeys[str]{gens}{
 	bendbraid=\cmdstr@strands@bendbraid,
 	bendtangle=\cmdstr@strands@bendtangle,
@@ -1505,7 +1755,10 @@
 	type=3,
 	width=\cmdstr@strands@width
 }{}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\strands}
+%    \begin{macrocode}
 \newcommand{\strands}[2][]{
 	\setkeys[str]{gens}{#1}
 	\ifthenelse{\equal{\cmdstr@gens@tkzpic}{1}}{
@@ -1569,4 +1822,14 @@
 			width=\cmdstr@gens@width
 		]{#2}
 	}
-}
+}%    \end{macrocode}
+% \end{macro}
+%
+
+%
+% \iffalse
+%</package>
+% \fi
+%
+% \Finale
+\endinput
