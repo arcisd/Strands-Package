@@ -31,8 +31,8 @@ It is worth to mention that the Strands package will call the following addition
 \section{The \mintinline{latex}{\vpartition} macro}
 
 Use the macro \mintinline{latex}{\vpartition} to draw a set partition in the partition monoid as\[\mintinline{latex}{\vpartition[<options>]{<sorted blocks>}}\]where \mintinline{latex}{<sorted blocks>} are the blocks, separated by commas, entered as blocks of a set partition of $\{\pm1,\ldots,\pm n\}$. The positive numbers correspond to the dots above and the negative numbers correspond to the dots below. For instance:\[\begin{array}{c}
-%\vpartition{{1,3,-3,-4,-6},{6,5,-5,-2},{-1,2}}\\
-\includegraphics{pics/000.pdf}\\
+\vpartition{{1,3,-3,-4,-6},{6,5,-5,-2},{-1,2}}\\
+%\includegraphics{pics/000.pdf}\\
 \mintinline{latex}{\vpartition{{1,3,-3,-4,-6},{6,5,-5,-2},{-1,2}}}
 \end{array}\]Note that the dots are connected in the order as the numbers appear on the blocks. So, if we change the position of numbers it will output a different representation.
 
@@ -67,19 +67,20 @@ The options \mintinline{latex}{<options>} are entered as \mintinline{latex}{<opt
 Most of the options defined above can be set as global options in the \mintinline{latex}{\usepackage} macro, these are: {\tt bend}, {\tt bulletends} (as {\tt bulletsize}), {\tt font}, {\tt height}, {\tt labelhor}, {\tt labelver}, {\tt norma}, {\tt normb}, {\tt nstr}, {\tt rotate}, {\tt scale}, {\tt strwidth}, {\tt tkzpic} and {\tt width}.
 
 Below a more complex example:\[\begin{tikzpicture}[scale=1.5]
-%\vpartition[
-%	bullb=0,
-%	floor=1,
-%	tkzpic=0,
-%	type=1
-%]{{1,3,-3,-4,-6},{6,5,-5,-2},{-1,2}}
-%\vpartition[
-%	nstr=6,
-%	tkzpic=0,
-%	type=-1
-%]{{-1,1,2,-3},{5,3,-2,-4,-5}}
+\vpartition[
+	bullb=0,
+	floor=1,
+	tkzpic=0,
+	type=1
+]{{1,3,-3,-4,-6},{6,5,-5,-2},{-1,2}}
+\vpartition[
+	nstr=6,
+	tkzpic=0,
+	type=-1
+]{{-1,1,2,-3},{5,3,-2,-4,-5}}
 \end{tikzpicture}
-\includegraphics{pics/001.pdf}\]
+%\includegraphics{pics/001.pdf}
+\]
 
 \begin{minted}{latex}
 \begin{tikzpicture}[scale=1.5]
@@ -100,8 +101,8 @@ Below a more complex example:\[\begin{tikzpicture}[scale=1.5]
 \subsection{The \mintinline{latex}{\arcpartition} macro}
 
 Use the macro \mintinline{latex}{\arcpartition} to draw the graph of a set partition of $\{1,\ldots,n\}$ as\[\mintinline{latex}{\arcpartition[<options>]{<sorted blocks>}}\]where \mintinline{latex}{<sorted blocks>} are the blocks, separated by commas. This macro is constructed from \mintinline{latex}{\vpartition}, so its behavior is similar. For instance:\[\begin{array}{c}
-%\arcpartition{{1,4},{2,3,7}}\\
-\includegraphics{pics/002.pdf}\\
+\arcpartition{{1,4},{2,3,7}}\\
+%\includegraphics{pics/002.pdf}\\
 \mintinline{latex}{\arcpartition{{1,4},{2,3,7}}}
 \end{array}\]
 
@@ -117,8 +118,8 @@ Most of the options can be set as global options in the \mintinline{latex}{\usep
 \subsection{The \mintinline{latex}{\permutation} macro}
 
 Use the macro \mintinline{latex}{\permutation} to draw permutations in the partition monoid as\[\mintinline{latex}{\permutation[<options>]{<permutation images>}}\]where \mintinline{latex}{<permutation images>} is the list of images of $1$ to $n$ under the permutation, separated by commas. This macro is constructed from \mintinline{latex}{\vpartition}, so its behavior is similar. For instance:\[\begin{array}{c}
-%\permutation{3,1,4,5,2}\\
-\includegraphics{pics/003.pdf}\\
+\permutation{3,1,4,5,2}\\
+%\includegraphics{pics/003.pdf}\\
 \mintinline{latex}{\permutation{3,1,4,5,2}}
 \end{array}\]
 
@@ -129,8 +130,8 @@ Most of the options defined above can be set as global options in the \mintinlin
 \subsection{The \mintinline{latex}{\tiedpair} macro}
 
 Use the macro \mintinline{latex}{\tiedpair} to draw a permutation with a set partition of $[n]$ above as\[\mintinline{latex}{\tiedpair{<permutation>}{<set partition>}}\]where \mintinline{latex}{<permutation>} works as in \mintinline{latex}{\permutation} and \mintinline{latex}{<set partition>} works as in \mintinline{latex}{\arcpartition} macro. This macro is constructed from the mentioned ones, so its behavior is similar. For instance:\[\begin{array}{c}
-%\tiedpair{2,1,4,6,7,3,5}{{1,4,5},{3,6,7}}\\
-\includegraphics{pics/004.pdf}\\
+\tiedpair{2,1,4,6,7,3,5}{{1,4,5},{3,6,7}}\\
+%\includegraphics{pics/004.pdf}\\
 \mintinline{latex}{\tiedpair{2,1,4,6,7,3,5}{{1,4,5},{3,6,7}}}
 \end{array}\]
 
@@ -141,13 +142,14 @@ Most of the options defined above can be set as global options in the \mintinlin
 \subsection{The \mintinline{latex}{\tie} macro}
 
 Use the macro \mintinline{latex}{\tie} inside a \mintinline{latex}{tikzpicture} environment to draw a tie with some other pictures as\[\mintinline{latex}{\tie[<options>]{<dots>}}\]where \mintinline{latex}{<dots>} is the list of dots where this tie is connected. Each dot can be entered as a number $k$ defining the horizontal position inside the \mintinline{latex}{width} or as a pair $\{k,h\}$ where $h$ is its vertical position respect to \mintinline{latex}{height}. For instance:
-\[%\begin{tikzpicture}[scale=1.5]
-%	\permutation[tkzpic=0]{1,2,3,4,5,7,6}
-%	\tie{1,2,4}
-%	\tie{{5,0.7},{6.3,0.7}}
-%	\tie{{5,0.3},{6.3,0.3}}
-%\end{tikzpicture}
-\includegraphics{pics/005.pdf}\]
+\[\begin{tikzpicture}[scale=1.5]
+	\permutation[tkzpic=0]{1,2,3,4,5,7,6}
+	\tie{1,2,4}
+	\tie{{5,0.7},{6.3,0.7}}
+	\tie{{5,0.3},{6.3,0.3}}
+\end{tikzpicture}
+%\includegraphics{pics/005.pdf}
+\]
 
 \begin{minted}{latex}
 \begin{tikzpicture}[scale=1.5]
@@ -179,8 +181,8 @@ The options \mintinline{latex}{<options>} are defined as follows:
 \section{The \mintinline{latex}{\strands} macro}
 
 Use the macro \mintinline{latex}{\strands} to draw braid-like objects as a product of generators as\[\mintinline{latex}{\strands[<options>]{<generators>}}\]where \mintinline{latex}{<generators>} is a list of generators \mintinline{latex}{ai} separated by elements in $\{*,-\}$. Use $*$ to put the next generator in the following floor and $-$ otherwise. For instance:\[\begin{array}{c}
-%\strands{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}\\
-\includegraphics{pics/006.pdf}\\
+\strands{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}\\
+%\includegraphics{pics/006.pdf}\\
 \mintinline{latex}{\strands{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}}
 \end{array}\]See a more complex picture at the end of this section. Note that it is used is similar to the known Braid Package but with different options.
 
@@ -228,15 +230,16 @@ The options \mintinline{latex}{<options>} for this macro are defined as follows:
 \end{itemize}Most of the options can be set as global options in the \mintinline{latex}{\usepackage} macro, these are: {\tt bendbraid}, {\tt bendtangle}, {\tt bulletends} (as {\tt bulletsize}), {\tt direction}, {\tt font}, {\tt height}, {\tt labelver}, {\tt labelhor}, {\tt rotate}, {\tt scale}, {\tt strwidth}, {\tt tiebull}, {\tt tiebullsize}, {\tt tiecolor}, {\tt tieheight}, {\tt tiesnake}, {\tt tiesnakeamp}, {\tt tiesnakends}, {\tt tiesnakelen}, {\tt tiestyle}, {\tt tiewidth}, {\tt tkzpic} and {\tt width}.
 
 Here another example:
-\[%\strands[
-%	rotate=90,
-%	tiesnake=true,
-%	tiesnakeamp=2,
-%	tiesnakelen=4,
-%	tiestyle=solid,
-%	type=2
-%]{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}
-\includegraphics{pics/007.pdf}\]
+\[\strands[
+	rotate=90,
+	tiesnake=true,
+	tiesnakeamp=2,
+	tiesnakelen=4,
+	tiestyle=solid,
+	type=2
+]{p1-n3-e5*v2-t4-f6*s1-n3-p6*n1-e3-s5}
+%\includegraphics{pics/007.pdf}
+\]
 \begin{minted}{latex}
 \strands[
 	rotate=90,
