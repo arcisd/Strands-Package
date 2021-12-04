@@ -8,5 +8,6 @@
 *.zip
 README.md
 _minted-strands
-tests
 dtxtut.pdf
+test.tex
+test.pdf

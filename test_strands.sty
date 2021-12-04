@@ -1,77 +1,5 @@
-% \iffalse meta-comment
-%
-% Copyright (C) 2021 by Diego Arcis <arcisd@gmail.com>
-% --------------------------------------------------------------------
-% This work may be distributed and/or modified under the conditions of
-% the LaTeX Project Public License, either version 1.3 of this license
-% or (at your option) any later version.
-%
-% The latest version of this license is in:
-% 	http://www.latex-project.org/lppl.txt
-%
-% and version 1.3 or later is part of all distributions of LaTeX, that
-% is, version 2005/12/01 or later.
-%
-% The Current Maintainer of this work is Diego Arcis.
-%
-% This work consists of the files strands.dtx and strands.ins and they
-% derive the filebase strands.sty.
-% --------------------------------------------------------------------
-%
-% \fi
-%
-% \iffalse
-%<package>\NeedsTeXFormat{LaTeX2e}[2005/12/01]
-%<package>\ProvidesPackage{strands}[2021/07/11 v1.1 Strands]
-%
-%<*driver>
-\documentclass{ltxdoc}
-\usepackage{strands}
-\EnableCrossrefs
-\CodelineIndex
-\RecordChanges
-\begin{document}
-	\DocInput{strands.dtx}
-\end{document}
-%</driver>
-% \fi
-%
-% \CheckSum{1713}
-%
-% \CharacterTable
-%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
-%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
-%   Digits        \0\1\2\3\4\5\6\7\8\9
-%   Exclamation   \!     Double quote  \"     Hash (number) \#
-%   Dollar        \$     Percent       \%     Ampersand     \&
-%   Acute accent  \'     Left paren    \(     Right paren   \)
-%   Asterisk      \*     Plus          \+     Comma         \,
-%   Minus         \-     Point         \.     Solidus       \/
-%   Colon         \:     Semicolon     \;     Less than     \<
-%   Equals        \=     Greater than  \>     Question mark \?
-%   Commercial at \@     Left bracket  \[     Backslash     \\
-%   Right bracket \]     Circumflex    \^     Underscore    \_
-%   Grave accent  \`     Left brace    \{     Vertical bar  \|
-%   Right brace   \}     Tilde         \~}
-%
-%
-% \changes{v1.1}{2021/07/11}{Initial version}
-%
-% \GetFileInfo{strands.sty}
-%
-% \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\}
-% \DoNotIndex{\@ne}
-% \DoNotIndex{\advance,\begingroup,\catcode,\closein}
-% \DoNotIndex{\closeout,\day,\def,\edef,\else,\empty,\endgroup}
-%
-% \title{The \textsf{strands} package
-%   \thanks{This document corresponds to \textsf{strands}~\fileversion, dated~\filedate.}
-% }
-% \author{Diego Arcis \\ \texttt{arcisd@gmail.com}}
-%
-% \maketitle
-%
-% \StopEventually{\PrintIndex}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{strands}[2021/07/05 v1.1 Strands]
 
 % packages:
 \RequirePackage{forarray}
@@ -106,9 +34,11 @@
 \define@cmdkey[str]{strands}{gencharvirtual}{}
 \define@cmdkey[str]{strands}{gencharsingular}{}
 \define@cmdkey[str]{strands}{genchartangle}{}
+\define@cmdkey[str]{strands}{gencharrook}{}
 \define@cmdkey[str]{strands}{genchartie}{}
 \define@cmdkey[str]{strands}{genchartiedtangle}{}
 \define@cmdkey[str]{strands}{genchartrivial}{}
+\define@cmdkey[str]{strands}{genchartierook}{}
 \define@cmdkey[str]{strands}{height}{}
 \define@cmdkey[str]{strands}{labelver}{}
 \define@cmdkey[str]{strands}{labelhor}{}
@@ -118,6 +48,7 @@
 \define@cmdkey[str]{strands}{normsymbol}{}
 \define@cmdkey[str]{strands}{nstr}{}
 \define@cmdkey[str]{strands}{num}{}
+\define@cmdkey[str]{strands}{rookextend}{}
 \define@cmdkey[str]{strands}{rotate}{}
 \define@cmdkey[str]{strands}{scale}{}
 \define@cmdkey[str]{strands}{strwidth}{}
@@ -150,14 +81,16 @@
 	direction=1,
 	externalize=0, % use 1 to transform images to PDF.
 	font=0.7, % size of the fonts for labels.
-	gencharposbraid=p,
-	gencharnegbraid=n,
+	gencharposbraid=p, % s.
+	gencharnegbraid=n, % s^{-1}
 	gencharvirtual=v,
 	gencharsingular=s,
 	genchartangle=t,
+	gencharrook=r,
 	genchartie=e,
 	genchartiedtangle=f,
 	genchartrivial=i,
+	genchartierook=q,
 	height=1, % to set the height of strands.
 	labelver=0.2,
 	labelhor=0.03,
@@ -167,6 +100,7 @@
 	normsymbol=-,
 	nstr=0, % number of strands.
 	num=0, % number of dots for arc partitions.
+	rookextend=0.25, % extend to use with rook generators.
 	rotate=0, % to rotate all pictures.
 	scale=1, % to scale all pictures.
 	strwidth=0.7, % to set the width of the strands.
@@ -206,6 +140,7 @@
 \DeclareOptionX{gencharvirtual}{\renewcommand{\cmdstr@strands@gencharvirtual}{#1}}
 \DeclareOptionX{gencharsingular}{\renewcommand{\cmdstr@strands@gencharsingular}{#1}}
 \DeclareOptionX{genchartangle}{\renewcommand{\cmdstr@strands@genchartangle}{#1}}
+\DeclareOptionX{gencharrook}{\renewcommand{\cmdstr@strands@gencharrook}{#1}}
 \DeclareOptionX{genchartie}{\renewcommand{\cmdstr@strands@genchartie}{#1}}
 \DeclareOptionX{genchartiedtangle}{\renewcommand{\cmdstr@strands@genchartiedtangle}{#1}}
 \DeclareOptionX{height}{\renewcommand{\cmdstr@strands@height}{#1}}
@@ -216,6 +151,7 @@
 \DeclareOptionX{normcolor}{\renewcommand{\cmdstr@strands@normcolor}{#1}}
 \DeclareOptionX{nstr}{\renewcommand{\cmdstr@strands@nstr}{#1}}
 \DeclareOptionX{num}{\renewcommand{\cmdstr@strands@num}{#1}}
+\DeclareOptionX{rookextend}{\renewcommand{\cmdstr@strands@rookextend}{#1}}
 \DeclareOptionX{rotate}{\renewcommand{\cmdstr@strands@rotate}{#1}}
 \DeclareOptionX{scale}{\renewcommand{\cmdstr@strands@scale}{#1}}
 \DeclareOptionX{strwidth}{\renewcommand{\cmdstr@strands@strwidth}{#1}}
@@ -900,6 +836,8 @@
 \define@cmdkey[str]{bbackstr}{cdny}{}
 \define@cmdkey[str]{bbackstr}{color}{}
 \define@cmdkey[str]{bbackstr}{height}{}
+\define@cmdkey[str]{bbackstr}{rook}{}
+\define@cmdkey[str]{bbackstr}{rookextend}{}
 \define@cmdkey[str]{bbackstr}{strwidth}{}
 \define@cmdkey[str]{bbackstr}{timeswidth}{}
 \define@cmdkey[str]{bbackstr}{width}{}
@@ -908,6 +846,8 @@
 	cdnx=nothing,
 	cdny=nothing,
 	height=\cmdstr@strands@height,
+	rook=0,
+	rookextend=\cmdstr@strands@rookextend,
 	strwidth=\cmdstr@strands@strwidth,
 	timeswidth=\cmdstr@strands@timeswidth, % times the width of the back line is bigger.
 	width=\cmdstr@strands@width
@@ -915,17 +855,20 @@
 
 \newcommand{\bbackstrands}[1][]{ % 
 	\setkeys[str]{bbackstr}{#1}
+	\ifnum\cmdstr@bbackstr@rook=0
+		\draw[
+			color=\cmdstr@strands@backcolor,
+			line width=\fpeval{\cmdstr@bbackstr@timeswidth*\cmdstr@bbackstr@strwidth}pt
+		](\cmdstr@bbackstr@cdnx,\cmdstr@bbackstr@cdny)
+		to(\cmdstr@bbackstr@cdnx,\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@height});
+	\fi	
 	\draw[
 		color=\cmdstr@strands@backcolor,
 		line width=\fpeval{\cmdstr@bbackstr@timeswidth*\cmdstr@bbackstr@strwidth}pt
-	](\cmdstr@bbackstr@cdnx,\cmdstr@bbackstr@cdny)
-	to(\cmdstr@bbackstr@cdnx,\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@height});
-	\draw[
-		color=\cmdstr@strands@backcolor,
-		line width=\fpeval{\cmdstr@bbackstr@timeswidth*\cmdstr@bbackstr@strwidth}pt
-	](\fpeval{\cmdstr@bbackstr@cdnx+\cmdstr@bbackstr@width},\cmdstr@bbackstr@cdny)
+	](\fpeval{\cmdstr@bbackstr@cdnx+\cmdstr@bbackstr@width},
+		\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@rookextend*\cmdstr@bbackstr@rook})
 	to(\fpeval{\cmdstr@bbackstr@cdnx+\cmdstr@bbackstr@width},
-		\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@height});
+		\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@height+\cmdstr@bbackstr@rookextend*\cmdstr@bbackstr@rook});
 }
 
 % \lleftstrand - macro to draws a strand starting from the left.
@@ -1235,6 +1178,72 @@
 	\fi
 }
 
+% \rrookgen - macro to draw a rook generator.
+
+\makeatletter
+\define@cmdkey[str]{rrookgen}{cdnx}{}
+\define@cmdkey[str]{rrookgen}{cdny}{}
+\define@cmdkey[str]{rrookgen}{height}{}
+\define@cmdkey[str]{rrookgen}{rookextend}{}
+\define@cmdkey[str]{rrookgen}{strwidth}{}
+\define@cmdkey[str]{rrookgen}{tiecolor}{}
+\define@cmdkey[str]{rrookgen}{tied}{}
+\define@cmdkey[str]{rrookgen}{tiesnake}{}
+\define@cmdkey[str]{rrookgen}{tiesnakeamp}{}
+\define@cmdkey[str]{rrookgen}{tiesnakelen}{}
+\define@cmdkey[str]{rrookgen}{tiesnakends}{}
+\define@cmdkey[str]{rrookgen}{tiestyle}{}
+\define@cmdkey[str]{rrookgen}{tiewidth}{}
+\define@cmdkey[str]{rrookgen}{width}{}
+
+\presetkeys[str]{rrookgen}{
+	cdnx=0,
+	cdny=0,
+	height=\cmdstr@strands@height,
+	rookextend=\cmdstr@strands@rookextend,
+	strwidth=\cmdstr@strands@strwidth,
+	tiecolor=\cmdstr@strands@tiecolor,
+	tied=0,
+	tiesnake=\cmdstr@strands@tiesnake,
+	tiesnakeamp=\cmdstr@strands@tiesnakeamp,
+	tiesnakelen=\cmdstr@strands@tiesnakelen,
+	tiesnakends=\cmdstr@strands@tiesnakends,
+	tiestyle=\cmdstr@strands@tiestyle,
+	tiewidth=\cmdstr@strands@tiewidth,
+	width=\cmdstr@strands@width		
+}{}
+
+\newcommand{\rrookgen}[1][]{
+	\setkeys[str]{rrookgen}{#1}
+	\bbackstrands[ % trivial two-strands-braid.
+		cdnx=\cmdstr@rrookgen@cdnx,
+		cdny=\cmdstr@rrookgen@cdny,
+		height=\cmdstr@rrookgen@height,
+		rook=1,
+		rookextend=\cmdstr@rrookgen@rookextend,
+		strwidth=\cmdstr@rrookgen@strwidth,
+		width=\cmdstr@rrookgen@width
+	]
+	\ifnum\cmdstr@rrookgen@tied=1 % tied version.
+		\draw[
+			color=\cmdstr@rrookgen@tiecolor,
+			line width=\cmdstr@rrookgen@tiewidth,
+			decorate=\cmdstr@rrookgen@tiesnake,
+			decoration={
+				snake,
+				amplitude=\cmdstr@rrookgen@tiesnakeamp,
+				post length=\cmdstr@rrookgen@tiesnakends,
+				pre length=\cmdstr@rrookgen@tiesnakends,
+				segment length=\cmdstr@rrookgen@tiesnakelen
+			},
+			style=\cmdstr@rrookgen@tiestyle
+		](\fpeval{\cmdstr@rrookgen@cdnx+\cmdstr@rrookgen@width},
+			\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@rookextend})
+		to(\fpeval{\cmdstr@rrookgen@cdnx+\cmdstr@rrookgen@width},
+			\fpeval{\cmdstr@bbackstr@cdny-\cmdstr@bbackstr@height+\cmdstr@bbackstr@rookextend});
+	\fi
+}
+
 % \aaddgen - macro to add a generator on a strand level.
 
 \makeatletter
@@ -1248,6 +1257,7 @@
 \define@cmdkey[str]{aaddgen}{numlevs}{}
 \define@cmdkey[str]{aaddgen}{posx}{}
 \define@cmdkey[str]{aaddgen}{posy}{}
+\define@cmdkey[str]{aaddgen}{rookextend}{}
 \define@cmdkey[str]{aaddgen}{strwidth}{}
 \define@cmdkey[str]{aaddgen}{tiebull}{}
 \define@cmdkey[str]{aaddgen}{tiebullsize}{}
@@ -1272,6 +1282,7 @@
 	numlevs=0,
 	posx=nothing, % internal.
 	posy=nothing, % internal.
+	rookextend=\cmdstr@strands@rookextend,
 	strwidth=\cmdstr@strands@strwidth,
 	tiebull=\cmdstr@strands@tiebull,
 	tiebullsize=\cmdstr@strands@tiebullsize,
@@ -1380,7 +1391,34 @@
 			tiewidth=\cmdstr@aaddgen@tiewidth,
 			width=\cmdstr@aaddgen@width
 		]
-	}{DO NOTHING!}}}}}}} % \ifthenelse always use "else", so it will do nothing if other letter.
+	}{\ifthenelse{\equal{\firstchar}{\cmdstr@strands@gencharrook}}{
+		\rrookgen[
+			cdnx=\cmdstr@aaddgen@posx,
+			cdny=\cmdstr@aaddgen@posy,
+			height=\cmdstr@aaddgen@height,
+			rookextend=\cmdstr@aaddgen@rookextend,
+			strwidth=\cmdstr@aaddgen@strwidth,
+			width=\cmdstr@aaddgen@width
+		]
+	}{
+	\ifthenelse{\equal{\firstchar}{\cmdstr@strands@genchartierook}}{
+		\rrookgen[
+			cdnx=\cmdstr@aaddgen@posx,
+			cdny=\cmdstr@aaddgen@posy,
+			height=\cmdstr@aaddgen@height,
+			rookextend=\cmdstr@aaddgen@rookextend,
+			strwidth=\cmdstr@aaddgen@strwidth,
+			tiecolor=\cmdstr@aaddgen@tiecolor,
+			tied=1,
+			tiesnake=\cmdstr@aaddgen@tiesnake,
+			tiesnakeamp=\cmdstr@aaddgen@tiesnakeamp,
+			tiesnakelen=\cmdstr@aaddgen@tiesnakelen,
+			tiesnakends=\cmdstr@aaddgen@tiesnakends,
+			tiestyle=\cmdstr@aaddgen@tiestyle,
+			tiewidth=\cmdstr@aaddgen@tiewidth,
+			width=\cmdstr@aaddgen@width
+		]
+	}{DO NOTHING!}}}}}}}}} % \ifthenelse always use "else", so it will do nothing if other letter.
 }
 
 % \strands  - macro to draw braid-like element via generators (with tikz environment).
@@ -1399,6 +1437,7 @@
 \define@cmdkey[str]{ggens}{labelhor}{}
 \define@cmdkey[str]{ggens}{nstr}{}
 \define@cmdkey[str]{ggens}{nstrsave}{}
+\define@cmdkey[str]{ggens}{rookextend}{}
 \define@cmdkey[str]{ggens}{strwidth}{}
 \define@cmdkey[str]{ggens}{tiebull}{}
 \define@cmdkey[str]{ggens}{tiebullsize}{}
@@ -1427,6 +1466,7 @@
 	labelhor=\cmdstr@strands@labelhor,
 	nstr=0,
 	nstrsave=0,
+	rookextend=\cmdstr@strands@rookextend,
 	strwidth=\cmdstr@strands@strwidth,
 	tiebull=\cmdstr@strands@tiebull,
 	tiebullsize=\cmdstr@strands@tiebullsize,
@@ -1453,9 +1493,11 @@
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharvirtual}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharsingular}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartangle}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@gencharrook}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartie}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartiedtangle}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartrivial}{}[\cmdstr@ggens@nstrsave]
+	\StrSubstitute{\cmdstr@ggens@nstrsave}{\cmdstr@strands@genchartierook}{}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{*}{,}[\cmdstr@ggens@nstrsave]
 	\StrSubstitute{\cmdstr@ggens@nstrsave}{-}{,}[\cmdstr@ggens@nstrsave]
 	\let\oldnstr\cmdstr@ggens@nstr
@@ -1485,6 +1527,7 @@
 				height=\cmdstr@ggens@height,
 				level=\thelevelscounter,
 				numlevs=\numlevs,
+				rookextend=\cmdstr@ggens@rookextend,
 				strwidth=\cmdstr@ggens@strwidth,
 				tiebull=\cmdstr@ggens@tiebull,
 				tiebullsize=\cmdstr@ggens@tiebullsize,
@@ -1529,6 +1572,7 @@
 \define@cmdkey[str]{gens}{labelhor}{}
 \define@cmdkey[str]{gens}{nstr}{}
 \define@cmdkey[str]{gens}{nstrsave}{}
+\define@cmdkey[str]{gens}{rookextend}{}
 \define@cmdkey[str]{gens}{rotate}{}
 \define@cmdkey[str]{gens}{scale}{}
 \define@cmdkey[str]{gens}{strwidth}{}
@@ -1560,6 +1604,7 @@
 	labelhor=\cmdstr@strands@labelhor,
 	nstr=0,
 	nstrsave=0,
+	rookextend=\cmdstr@strands@rookextend,
 	rotate=\cmdstr@strands@rotate,
 	scale=\cmdstr@strands@scale,
 	strwidth=\cmdstr@strands@strwidth,
@@ -1596,6 +1641,7 @@
 				labelhor=\cmdstr@gens@labelhor,
 				nstr=\cmdstr@gens@nstr,
 				nstrsave=\cmdstr@gens@nstrsave,
+				rookextend=\cmdstr@gens@rookextend,
 				strwidth=\cmdstr@gens@strwidth,
 				tiebull=\cmdstr@gens@tiebull,
 				tiebullsize=\cmdstr@gens@tiebullsize,
@@ -1626,6 +1672,7 @@
 			labelhor=\cmdstr@gens@labelhor,
 			nstr=\cmdstr@gens@nstr,
 			nstrsave=\cmdstr@gens@nstrsave,
+			rookextend=\cmdstr@gens@rookextend,
 			strwidth=\cmdstr@gens@strwidth,
 			tiebull=\cmdstr@gens@tiebull,
 			tiebullsize=\cmdstr@gens@tiebullsize,
@@ -1642,6 +1689,3 @@
 		]{#2}
 	}
 }
-
-% \Finale
-\endinput
